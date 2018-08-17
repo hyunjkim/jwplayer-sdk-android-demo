@@ -13,8 +13,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
+import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JWPlayerViewExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
@@ -58,15 +64,57 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
 		setupJWPlayer();
 	}
 
-
 	private void setupJWPlayer() {
-		// Load a media source
-		PlaylistItem pi = new PlaylistItem.Builder()
-				.file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-				.title("BipBop")
-				.description("A video player testing video.")
-				.build();
-		mPlayerView.load(pi);
+
+		List<PlaylistItem> playlistItemList = createDRMPlaylist();
+
+		mPlayerView.setup(new PlayerConfig.Builder()
+				.playlist(playlistItemList)
+				.preload(true)
+				.build()
+		);
+	}
+
+	private List<PlaylistItem> createDRMPlaylist() {
+
+		List<PlaylistItem> playlistItemList = new ArrayList<>();
+		WidevineMediaDrmCallback widevineMediaDrmCallback = new WidevineMediaDrmCallback();
+
+		String[] drmPlaylist = {
+				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
+				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
+				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
+		};
+
+		String[] nonDRM = {
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+		};
+
+		for(int i = 0; i < drmPlaylist.length; i++){
+
+			List<MediaSource> mediaSourceList = new ArrayList<>();
+
+			MediaSource ms = new MediaSource.Builder()
+					.file(drmPlaylist[i])
+					.type(MediaType.MPD)
+					.build();
+
+			mediaSourceList.add(ms);
+
+			// Add this for every other DRM content, to test if the content still works when it is mixed
+			if(i < nonDRM.length) {
+				playlistItemList.add(new PlaylistItem.Builder()
+						.file(nonDRM[i])
+						.build());
+			}
+
+			playlistItemList.add(new PlaylistItem.Builder()
+					.sources(mediaSourceList)
+					.mediaDrmCallback(widevineMediaDrmCallback)
+					.build());
+		}
+		return playlistItemList;
 	}
 
 	@Override
