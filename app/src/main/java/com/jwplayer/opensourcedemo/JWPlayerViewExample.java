@@ -1,7 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -14,17 +13,17 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
+import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+public class JWPlayerViewExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -36,10 +35,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private JWEventHandler mEventHandler;
 
-	/**
-	 * Reference to the {@link CastManager}
-	 */
-	private CastManager mCastManager;
 
 	/**
 	 * Stored instance of CoordinatorLayout
@@ -71,13 +66,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Setup JWPlayer
 		setupJWPlayer();
 
-		// Get a reference to the CastManager
-		mCastManager = CastManager.getInstance();
 	}
 
 
 	private void setupJWPlayer() {
-		List<PlaylistItem> playlistItemList = createPlaylist();
+
+		List<PlaylistItem> playlistItemList = createDRMPlaylist();
+
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
 					.preload(true)
@@ -85,23 +80,45 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				);
 	}
 
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
+	private List<PlaylistItem> createDRMPlaylist() {
 
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+		List<PlaylistItem> playlistItemList = new ArrayList<>();
+		WidevineMediaDrmCallback widevineMediaDrmCallback = new WidevineMediaDrmCallback();
+
+		String[] drmPlaylist = {
+				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
+				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
+				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
 				};
 
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
-		}
+		String[] nonDRM = {
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+				};
 
+		for(int i = 0; i < drmPlaylist.length; i++){
+
+			List<MediaSource> mediaSourceList = new ArrayList<>();
+
+			MediaSource ms = new MediaSource.Builder()
+					.file(drmPlaylist[i])
+					.type(MediaType.MPD)
+					.build();
+
+			mediaSourceList.add(ms);
+
+			// Add this for every other DRM content, to test if the content still works when it is mixed
+			if(i < nonDRM.length) {
+				playlistItemList.add(new PlaylistItem.Builder()
+						.file(nonDRM[i])
+						.build());
+			}
+
+			playlistItemList.add(new PlaylistItem.Builder()
+					.sources(mediaSourceList)
+					.mediaDrmCallback(widevineMediaDrmCallback)
+					.build());
+		}
 		return playlistItemList;
 	}
 
@@ -152,6 +169,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	@Override
 	public void onFullscreen(FullscreenEvent fullscreenEvent) {
+
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			if (fullscreenEvent.getFullscreen()) {
@@ -163,14 +181,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// When going to Fullscreen we want to set fitsSystemWindows="false"
 		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
-	}
 
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 		return true;
 	}
 
@@ -185,4 +201,5 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				return super.onOptionsItemSelected(item);
 		}
 	}
+
 }
