@@ -30,6 +30,5 @@ dependencies {
 
 	implementation 'com.longtailvideo.jwplayer:jwplayer-core:2+'
 	implementation 'com.longtailvideo.jwplayer:jwplayer-common:2+'
-//	implementation 'com.longtailvideo.jwplayer:jwplayer-ima:2+'        // Only required if using IMA features
-	implementation 'com.longtailvideo.jwplayer:jwplayer-chromecast:2+' // Only required if using Chromecast
+	implementation 'com.longtailvideo.jwplayer:jwplayer-ima:2+'        // Only required if using IMA features
 }
