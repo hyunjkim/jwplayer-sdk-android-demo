@@ -1,7 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -16,18 +15,21 @@ import android.widget.TextView;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.RelatedConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_DISPLAY_MODE_OVERLAY;
+import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_CLICK_LINK;
+import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_COMPLETE_AUTOPLAY;
+
 public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+		VideoPlayerEvents.OnFullscreenListener{
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -68,25 +70,43 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
+
 		// Instantiate the JW Player event handler class
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-		// Setup JWPlayer
-		setupJWPlayer();
+		setupOverlay();
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
+	private void setupOverlay() {
+		List<PlaylistItem> playlistItemList = createPlaylist();
+
+		RelatedConfig relatedConfig = new RelatedConfig.Builder()
+				.file("http://content.bitsontherun.com/feeds/482jsTAr.rss")
+				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
+				.build();
+
+		mPlayerView.setup(new PlayerConfig.Builder()
+//				.playlist(playlistItemList)
+				.file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+				.relatedConfig(relatedConfig)
+				.preload(true)
+				.autostart(true)
+				.build()
+		);
+	}
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
-					.playlist(playlistItemList)
-					.preload(true)
-					.build()
-				);
+				.playlist(playlistItemList)
+				.preload(true)
+				.autostart(true)
+				.build()
+		);
 	}
 
 	private List<PlaylistItem> createPlaylist() {
@@ -100,7 +120,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
 				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-				};
+		};
 
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem(each));
@@ -189,4 +209,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				return super.onOptionsItemSelected(item);
 		}
 	}
+
+
+
 }

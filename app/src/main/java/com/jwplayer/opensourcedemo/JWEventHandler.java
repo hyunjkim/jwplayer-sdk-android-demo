@@ -44,6 +44,7 @@ import com.longtailvideo.jwplayer.events.PlaylistCompleteEvent;
 import com.longtailvideo.jwplayer.events.PlaylistEvent;
 import com.longtailvideo.jwplayer.events.PlaylistItemEvent;
 import com.longtailvideo.jwplayer.events.ReadyEvent;
+import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
@@ -51,10 +52,12 @@ import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -90,6 +93,12 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnBufferChangeListener,
         VideoPlayerEvents.OnReadyListener,
 
+
+//        RelatedPluginEvents,
+//        RelatedPluginEvents.OnRelatedCloseListener,
+//        RelatedPluginEvents.OnRelatedOpenListener,
+//        RelatedPluginEvents.OnRelatedPlayListener,
+
         AdvertisingEvents.OnAdBreakEndListener,
         AdvertisingEvents.OnAdBreakStartListener,
         AdvertisingEvents.OnAdClickListener,
@@ -111,7 +120,11 @@ public class JWEventHandler implements
     private ScrollView mScroll;
     private final StringBuilder outputStringBuilder = new StringBuilder();
 
-
+    /**
+     *@params {method} - The method used to open the plugin. (api, complete, or click).
+     *@params {url} - URL of the feed that was loaded into the player.
+     *@params {list} - List of all PlaylistItems that have been loaded into the related plugin.
+     */
     JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mScroll = scrollview;
         mOutput = output;
@@ -161,6 +174,7 @@ public class JWEventHandler implements
         jwPlayerView.addOnReadyListener(this);
     }
 
+
     private void updateOutput(String output) {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
         outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
@@ -169,7 +183,7 @@ public class JWEventHandler implements
     }
 
     private void print(String s){
-        Log.i("",s);
+        Log.i("JWEVENTHANDLER" ,s);
     }
 
 
