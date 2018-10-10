@@ -21,6 +21,7 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
+import com.longtailvideo.jwplayer.media.captions.Caption;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -80,33 +81,24 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 	private void setupJWPlayer() {
-		List<PlaylistItem> playlistItemList = createPlaylist();
+		String captionVideo = "http://wowzaec2demo.streamlock.net/vod-multitrack/_definst_/smil:ElephantsDream/elephantsdream2.smil/playlist.m3u8";
+		String captionVideo2 = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
 
-		mPlayerView.setup(new PlayerConfig.Builder()
-					.playlist(playlistItemList)
-					.preload(true)
-					.build()
-				);
-	}
+		// Create a list of Caption objects to represent the captions tracks
+		List<Caption> captionTracks = new ArrayList<>();
 
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
+		// Create a Caption pointing to English subtitles and add it to the list
+		Caption emptyCaps = new Caption("file_en.srt");
+		captionTracks.add(emptyCaps);
 
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-				};
+		PlaylistItem video = new PlaylistItem.Builder()
+				.file(captionVideo2)
+				.build();
 
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
-		}
+		// Add the Caption tracks to the PlaylistItem
+		video.setCaptions(captionTracks);
 
-		return playlistItemList;
+		mPlayerView.load(video);
 	}
 
 	@Override
