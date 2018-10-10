@@ -18,6 +18,7 @@ import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
@@ -67,6 +68,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
+
+		// My fullscreen handler
+		Configuration configuration = new Configuration();
+		MyFullScreenHandler myFullScreenHandler = new MyFullScreenHandler(mPlayerView, configuration.orientation, getWindow());
+		mPlayerView.addOnFullscreenListener(myFullScreenHandler);
 
 		// Instantiate the JW Player event handler class
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
