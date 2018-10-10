@@ -172,6 +172,7 @@ public class JWEventHandler implements
         jwPlayerView.addOnBeforeCompleteListener(this);
         jwPlayerView.addOnBeforePlayListener(this);
         jwPlayerView.addOnReadyListener(this);
+
     }
 
 

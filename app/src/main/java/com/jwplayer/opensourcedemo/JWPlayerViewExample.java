@@ -2,22 +2,31 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.RelatedConfig;
+import com.longtailvideo.jwplayer.configuration.SharingConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
+import com.longtailvideo.jwplayer.events.RelatedPlayEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
@@ -25,8 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_DISPLAY_MODE_OVERLAY;
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_CLICK_LINK;
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_COMPLETE_AUTOPLAY;
+import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_DISPLAY_MODE_SHELF;
+import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_CLICK_PLAY;
+import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_COMPLETE_SHOW;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
 		VideoPlayerEvents.OnFullscreenListener{
@@ -53,6 +63,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private CoordinatorLayout mCoordinatorLayout;
 
 
+	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,28 +85,53 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Instantiate the JW Player event handler class
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-		setupOverlay();
+		setupJWPlayer();
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
-	private void setupOverlay() {
+
+
+	private void setupSharingConfig() {
+
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		RelatedConfig relatedConfig = new RelatedConfig.Builder()
-				.file("http://content.bitsontherun.com/feeds/482jsTAr.rss")
-				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
+		SharingConfig sharingConfig = new SharingConfig.Builder()
+				.heading("Facebook")
+//				.link("https://www.facebook.com/1987166751294652/videos/2027391690605491/")
 				.build();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
-//				.playlist(playlistItemList)
-				.file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+				.playlist(playlistItemList)
+				.sharingConfig(sharingConfig)
+				.preload(true)
+				.autostart(true)
+				.build()
+		);
+
+	}
+
+	private void setupOverlay() {
+		List<PlaylistItem> playlistItemList = createPlaylist();
+
+		String feed = "http://content.bitsontherun.com/feeds/482jsTAr.rss";
+		RelatedConfig relatedConfig = new RelatedConfig.Builder()
+				.file(feed)
+				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
+				.onClick(RELATED_ON_CLICK_PLAY)
+				.build();
+
+		mPlayerView.setup(new PlayerConfig.Builder()
+				.file(playlistItemList.get(0).getFile())
 				.relatedConfig(relatedConfig)
 				.preload(true)
 				.autostart(true)
 				.build()
 		);
+
+		mPlayerView.openRelatedOverlay();
+
 	}
 
 	private void setupJWPlayer() {
@@ -104,6 +140,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mPlayerView.setup(new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.preload(true)
+				.controls(true)
 				.autostart(true)
 				.build()
 		);
