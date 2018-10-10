@@ -73,32 +73,42 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Setup JWPlayer
-		setupJWPlayer();
+		setupJWPlayerPlaylistItem();
+//		setupJWPlayerPlayConfigWithEmptyCaptions();
+
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
 
-	private void setupJWPlayer() {
-		String captionVideo = "http://wowzaec2demo.streamlock.net/vod-multitrack/_definst_/smil:ElephantsDream/elephantsdream2.smil/playlist.m3u8";
-		String captionVideo2 = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
-
-		// Create a list of Caption objects to represent the captions tracks
-		List<Caption> captionTracks = new ArrayList<>();
-
-		// Create a Caption pointing to English subtitles and add it to the list
-		Caption emptyCaps = new Caption("file_en.srt");
-		captionTracks.add(emptyCaps);
+	private void setupJWPlayerPlaylistItem() {
+		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
 
 		PlaylistItem video = new PlaylistItem.Builder()
-				.file(captionVideo2)
+				.file(captionVideo)
 				.build();
 
-		// Add the Caption tracks to the PlaylistItem
+		mPlayerView.load(video);
+	}
+
+	private void setupJWPlayerPlayConfigWithEmptyCaptions() {
+		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
+
+		PlaylistItem video = new PlaylistItem.Builder()
+				.file(captionVideo)
+				.build();
+
+		List<Caption> captionTracks = new ArrayList<>();
+		Caption emptyCaps = new Caption("file_en.srt");
+		captionTracks.add(emptyCaps);
 		video.setCaptions(captionTracks);
 
-		mPlayerView.load(video);
+		List<PlaylistItem> item = new ArrayList<>();
+		item.add(video);
+		mPlayerView.setup(new PlayerConfig.Builder()
+		.playlist(item)
+		.build());
 	}
 
 	@Override
