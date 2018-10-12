@@ -1,33 +1,60 @@
 package com.jwplayer.opensourcedemo;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.ValueCallback;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.jwplayer.opensourcedemo.network.NetworkReceiver;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+		VideoPlayerEvents.OnFullscreenListener,
+		SwipeRefreshLayout.OnRefreshListener{
+
+
+	public static final String WIFI = "Wi-Fi";
+	public static final String ANY = "Any";
+
+	// Whether there is a Wi-Fi connection.
+	private static boolean wifiConnected = false;
+	// Whether there is a mobile connection.
+	private static boolean mobileConnected = false;
+	// Whether the display should be refreshed.
+	public static boolean refreshDisplay = false;
+
+	// The user's current network preference setting.
+	public static String sPref = null;
+
+	// The BroadcastReceiver that tracks network connectivity changes.
+	private NetworkReceiver receiver;
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -49,7 +76,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
-
+	private SwipeRefreshLayout swipeRefresh;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +87,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		TextView outputTextView = (TextView)findViewById(R.id.output);
 		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		swipeRefresh = findViewById(R.id.swiperefresh);
 
+		swipeRefresh.setOnRefreshListener(this);
+
+		// Check for any network changes
+		networkChecker();
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -78,15 +110,36 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mCastManager = CastManager.getInstance();
 	}
 
+	// Checks the network connection and sets the wifiConnected and mobileConnected
+	// variables accordingly.
+	public void updateConnectedFlags() {
+		ConnectivityManager connMgr = (ConnectivityManager)
+				getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+		if (activeInfo != null && activeInfo.isConnected()) {
+			wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+			mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+		} else {
+			wifiConnected = false;
+			mobileConnected = false;
+		}
+	}
+
+	private void networkChecker() {
+		IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		receiver = new NetworkReceiver(swipeRefresh);
+		this.registerReceiver(receiver, filter);
+	}
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
-					.playlist(playlistItemList)
-					.preload(true)
-					.build()
-				);
+				.playlist(playlistItemList)
+				.preload(true)
+				.build()
+		);
 	}
 
 	private List<PlaylistItem> createPlaylist() {
@@ -100,13 +153,44 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
 				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-				};
+		};
 
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem(each));
 		}
 
 		return playlistItemList;
+	}
+
+	@Override
+	public void onStart () {
+		super.onStart();
+
+		// Gets the user's network preference settings
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		// Retrieves a string value for the preferences. The second parameter
+		// is the default value to use if a preference value is not found.
+		sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+		sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+		sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+
+		updateConnectedFlags();
+
+		if(refreshDisplay){
+			mPlayerView.onResume();
+			mPlayerView.play();
+			swipeRefresh.setRefreshing(false);
+		}
+	}
+
+	@Override
+	public void onRefresh() {
+		Log.i("HYUNJOO-REFRESH", "onRefresh called from SwipeRefreshLayout");
+		if(refreshDisplay) {
+			mPlayerView.onPause();
+			onStart();
+		}
 	}
 
 	@Override
@@ -120,6 +204,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	protected void onResume() {
 		// Let JW Player know that the app has returned from the background
 		super.onResume();
+		swipeRefresh.setRefreshing(false);
 		mPlayerView.onResume();
 	}
 
@@ -132,6 +217,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 	@Override
 	protected void onDestroy() {
+		// Unregisters BroadcastReceiver when app is destroyed.
+		if (receiver != null) {
+			this.unregisterReceiver(receiver);
+		}
 		// Let JW Player know that the app is being destroyed
 		mPlayerView.onDestroy();
 		super.onDestroy();

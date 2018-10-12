@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:dependency="pref_sync"
+        android:key="pref_syncConnectionType"
+        android:title="Network Settings"
+        android:dialogTitle="pref_syncConnectionType"
+        android:entries="@array/network_preference"
+        android:entryValues="@array/network_preference_saved"
+        android:defaultValue="Wi-fi" />
+</PreferenceScreen>

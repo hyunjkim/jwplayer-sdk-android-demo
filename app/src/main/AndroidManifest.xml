@@ -18,6 +18,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".network.NetworkSettingsActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+        </activity>
+        <activity
             android:name=".JWPlayerFragmentExample"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
         </activity>

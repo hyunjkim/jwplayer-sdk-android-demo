@@ -1,5 +1,4 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_jwplayerview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,12 +10,19 @@
         android:background="@color/gray"
         android:orientation="vertical">
 
-        <com.longtailvideo.jwplayer.JWPlayerView
-            android:id="@+id/jwplayer"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-        </com.longtailvideo.jwplayer.JWPlayerView>
+
+            <com.longtailvideo.jwplayer.JWPlayerView
+                android:id="@+id/jwplayer"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
 
         <ScrollView
             android:id="@+id/scroll"
