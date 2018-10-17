@@ -4,6 +4,13 @@
     android:background="@color/gray"
     android:orientation="vertical">
 
+    <android.support.v7.app.MediaRouteButton
+        android:id="@+id/chromecast_btn"
+        android:layout_marginLeft="300dp"
+        android:layout_marginStart="300dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"/>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

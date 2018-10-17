@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,8 +44,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
-        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
+        TextView outputTextView = findViewById(R.id.output);
+        ScrollView scrollView = findViewById(R.id.scroll);
 
         setupJWPlayer();
 
@@ -55,7 +56,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Get a reference to the CastManager
+        MediaRouteButton chromecastbtn = findViewById(R.id.chromecast_btn);
         mCastManager = CastManager.getInstance();
+        mCastManager.addMediaRouterButton(chromecastbtn);
     }
 
     private void setupJWPlayer() {
@@ -89,15 +92,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
-        // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
-        return true;
     }
 
     @Override

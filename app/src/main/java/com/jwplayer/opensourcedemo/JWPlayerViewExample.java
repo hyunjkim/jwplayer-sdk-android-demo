@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -50,6 +52,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
+	private MediaRouteButton chromecastbtn;
 
 
 	@Override
@@ -57,10 +60,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+		chromecastbtn = findViewById(R.id.chromecast_btn);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
 
 
 		// Handle hiding/showing of ActionBar
@@ -79,6 +83,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
+		mCastManager.addMediaRouterButton(chromecastbtn);
+		chromecastbtn.setVisibility(View.VISIBLE);
+		chromecastbtn.bringToFront();
+
 	}
 
 
@@ -169,15 +177,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// When going to Fullscreen we want to set fitsSystemWindows="false"
 		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
-	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
-		return true;
 	}
 
 	@Override
