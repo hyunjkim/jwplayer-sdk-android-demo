@@ -9,6 +9,7 @@ import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -59,6 +60,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         MediaRouteButton chromecastbtn = findViewById(R.id.chromecast_btn);
         mCastManager = CastManager.getInstance();
         mCastManager.addMediaRouterButton(chromecastbtn);
+        chromecastbtn.setVisibility(View.VISIBLE);
+        chromecastbtn.bringToFront();
     }
 
     private void setupJWPlayer() {
