@@ -1,5 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
+import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -136,6 +137,11 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         mScroll.scrollTo(0, mOutput.getBottom());
 
     }
+
+    private void print(String s){
+        Log.i("JWPLAYER-LOG", s);
+    }
+
     /**
      * Regular playback events below here
      */
@@ -143,46 +149,55 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     @Override
     public void onAudioTracks(List<AudioTrack> audioTracks) {
         updateOutput("onAudioTracks(List<AudioTrack>)");
+        print("onAudioTracks(List<AudioTrack>)");
     }
 
     @Override
     public void onBeforeComplete() {
         updateOutput("onBeforeComplete()");
+        print("onBeforeComplete()");
     }
 
     @Override
     public void onBeforePlay() {
         updateOutput("onBeforePlay()");
+        print("onBeforePlay()");
     }
 
     @Override
     public void onBuffer(PlayerState oldState) {
         updateOutput("onBuffer(" + oldState + ")");
+        print("onBuffer(" + oldState + ")");
     }
 
     @Override
     public void onCaptionsList(List<Caption> tracks) {
         updateOutput("onCaptionsList(List<Caption>)");
+        print("onCaptionsList(List<Caption>)");
     }
 
     @Override
     public void onComplete() {
         updateOutput("onComplete()");
+        print("onComplete()");
     }
 
     @Override
     public void onFullscreen(boolean fullscreen) {
         updateOutput("onFullscreen(" + fullscreen + ")");
+        print("onFullscreen(" + fullscreen + ")");
     }
 
     @Override
     public void onIdle(PlayerState oldState) {
         updateOutput("onIdle(" + oldState + ")");
+        print("onIdle(" + oldState + ")");
     }
 
     @Override
     public void onMeta(Metadata meta) {
         updateOutput("onMeta(Metadata)");
+        print("onMeta(Metadata)");
 
         if(meta.getId3Metadata().size() > 0) {
             List<Id3Frame> id3 = meta.getId3Metadata();
@@ -203,36 +218,43 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     @Override
     public void onPause(PlayerState oldState) {
         updateOutput("onPause(" + oldState + ")");
+        print("onPause(" + oldState + ")");
     }
 
     @Override
     public void onPlay(PlayerState oldState) {
         updateOutput("onPlay(" + oldState + ")");
+        print("onPlay(" + oldState + ")");
     }
 
     @Override
     public void onPlaylistComplete() {
         updateOutput("onPlaylistComplete()");
+        print("onPlaylistComplete()");
     }
 
     @Override
     public void onPlaylistItem(int index, PlaylistItem playlistItem) {
         updateOutput("onPlaylistItem(" + index + ", PlaylistItem)");
+        print("onPlaylistItem(" + index + ", PlaylistItem)");
     }
 
     @Override
     public void onPlaylist(List<PlaylistItem> playlist) {
         updateOutput("onPlaylist(List<PlaylistItem>)");
+        print("onPlaylist(List<PlaylistItem>)");
     }
 
     @Override
     public void onSeek(int position, int offset) {
         updateOutput("onSeek(" + position + ", " + offset + ")");
+        print("onSeek(" + position + ", " + offset + ")");
     }
 
     @Override
     public void onSetupError(String message) {
         updateOutput("onSetupError(\"" + message + "\")");
+        print("onSetupError(\"" + message + "\")");
     }
 
     @Override
@@ -243,51 +265,62 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     @Override
     public void onAdError(String tag, String message) {
         updateOutput("onAdError(\"" + tag + "\", \"" + message + "\")");
+        print("onAdError(\"" + tag + "\", \"" + message + "\")");
     }
 
     @Override
     public void onError(ErrorEvent errorEvent) {
         updateOutput("onError(\"" + errorEvent.getMessage() + "\")");
+        print("onError(\"" + errorEvent.getMessage() + "\")");
+        Log.i("JWEVENTHANDLER", "onError"+ errorEvent.getMessage());
     }
 
     @Override
     public void onLevelsChanged(int i) {
         updateOutput("onLevelsChange(" + i + ")");
+        print("onLevelsChange(" + i + ")");
     }
 
     @Override
     public void onLevels(List<QualityLevel> list) {
+        print("onLevels(List<QualityLevel>)");
         updateOutput("onLevels(List<QualityLevel>)");
     }
 
     @Override
     public void onAudioTrackChanged(int i) {
         updateOutput("onAudioTrackChanged(" + i + ")");
+        print("onAudioTrackChanged(" + i + ")");
     }
 
     @Override
     public void onCaptionsChanged(int i, List<Caption> list) {
         updateOutput("onCaptionsChanged(" + i + ", List<Caption>)");
+        print("onCaptionsChanged(" + i + ", List<Caption>)");
     }
 
     @Override
     public void onAdClick(AdClickEvent adClickEvent) {
         updateOutput("onAdClick(\"" + adClickEvent.getTag() + "\")");
+        print("onAdClick(\"" + adClickEvent.getTag() + "\")");
     }
 
     @Override
     public void onAdComplete(AdCompleteEvent adCompleteEvent) {
         updateOutput("onAdComplete(\"" + adCompleteEvent.getTag() + "\")");
+        print("onAdComplete(\"" + adCompleteEvent.getTag() + "\")");
     }
 
     @Override
     public void onAdSkipped(AdSkippedEvent adSkippedEvent) {
         updateOutput("onAdSkipped(\"" + adSkippedEvent.getTag() + "\")");
+        print("onAdSkipped(\"" + adSkippedEvent.getTag() + "\")");
     }
 
     @Override
     public void onAdImpression(AdImpressionEvent adImpressionEvent) {
         updateOutput("onAdImpression(\"" + adImpressionEvent.getTag() + "\", \"" + adImpressionEvent.getCreativeType() + "\", \"" + adImpressionEvent.getAdPosition().name() + "\")");
+        print("onAdImpression(\"" + adImpressionEvent.getTag() + "\", \"" + adImpressionEvent.getCreativeType() + "\", \"" + adImpressionEvent.getAdPosition().name() + "\")");
 
     }
 
@@ -299,50 +332,60 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     @Override
     public void onAdPause(AdPauseEvent adPauseEvent) {
         updateOutput("onAdPause(\"" + adPauseEvent.getTag() + "\", \"" + adPauseEvent.getOldState() + "\")");
+        print("onAdPause(\"" + adPauseEvent.getTag() + "\", \"" + adPauseEvent.getOldState() + "\")");
     }
 
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
         updateOutput("onAdPlay(\"" + adPlayEvent.getTag() + "\", \"" + adPlayEvent.getOldState() + "\")");
+        print("onAdPlay(\"" + adPlayEvent.getTag() + "\", \"" + adPlayEvent.getOldState() + "\")");
     }
 
     @Override
     public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
         updateOutput("onRelatedClose(\"" + relatedCloseEvent.getMethod() + "\")");
+        print("onRelatedClose(\"" + relatedCloseEvent.getMethod() + "\")");
     }
 
     @Override
     public void onControls(ControlsEvent controlsEvent) {
         updateOutput("onControls(\"" + controlsEvent.getControls() + "\")");
+        print("onControls(\"" + controlsEvent.getControls() + "\")");
     }
 
     @Override
     public void onDisplayClick() {
+        print("onDisplayClick(\"" + "displayClick" + "\")");
         updateOutput("onDisplayClick(\"" + "displayClick" + "\")");
     }
 
     @Override
     public void onMute(boolean b) {
         updateOutput("onMute(\"" + b + "\")");
+        print("onMute(\"" + b + "\")");
     }
 
     @Override
     public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
         updateOutput("onRelatedOpen(\"" + relatedOpenEvent.getMethod() + "\")");
+        print("onRelatedOpen(\"" + relatedOpenEvent.getMethod() + "\")");
     }
 
     @Override
     public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
         updateOutput("onRelatedPlay(\"" + relatedPlayEvent.getAuto() + "\")");
+        print("onRelatedPlay(\"" + relatedPlayEvent.getAuto() + "\")");
     }
 
     @Override
     public void onSeeked() {
         updateOutput("onSeeked(\"" + "seeked" + "\")");
+        print("onSeeked(\"" + "seeked" + "\")");
     }
 
     @Override
     public void onVisualQuality(VisualQuality visualQuality) {
         updateOutput("onVisualQuality(\"" + visualQuality.getQualityLevel().getLabel() + "\")");
+        print("onVisualQuality(\"" + visualQuality.getQualityLevel().getLabel() + "\")");
     }
 }
