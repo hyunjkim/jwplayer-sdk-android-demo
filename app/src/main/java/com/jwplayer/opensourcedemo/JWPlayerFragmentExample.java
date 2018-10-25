@@ -1,10 +1,12 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.mediarouter.app.MediaRouteButton;
 
 public class JWPlayerFragmentExample extends AppCompatActivity {
 
@@ -57,6 +60,12 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the CastManager
         mCastManager = CastManager.getInstance();
+        MediaRouteButton mCustomCastBtn = findViewById(R.id.custom_mediaroutebtn_fragment);
+        mCastManager.addMediaRouterButton(mCustomCastBtn);
+        mCustomCastBtn.setBackgroundColor(Color.WHITE);
+        mCustomCastBtn.setVisibility(View.VISIBLE);
+        mCustomCastBtn.bringToFront();
+        mCastManager.addConnectionListener(new MyCastListener(mCustomCastBtn));
     }
 
     private void setupJWPlayer() {
@@ -92,12 +101,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
-        // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
         return true;
     }
 

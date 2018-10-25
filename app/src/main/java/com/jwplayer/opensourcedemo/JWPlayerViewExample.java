@@ -2,10 +2,12 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
@@ -25,6 +28,7 @@ import java.util.List;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.mediarouter.app.MediaRouteButton;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
 		VideoPlayerEvents.OnFullscreenListener {
@@ -76,20 +80,34 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
-	}
+		MediaRouteButton mCustomCastBtn = findViewById(R.id.custom_mediaroutebtn);
+		mCastManager.addMediaRouterButton(mCustomCastBtn);
+		mCustomCastBtn.setBackgroundColor(Color.WHITE);
+		mCustomCastBtn.setVisibility(View.VISIBLE);
+		mCustomCastBtn.bringToFront();
+		mCastManager.addConnectionListener(new MyCastListener(mCustomCastBtn));
 
+	}
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		List<AdBreak> adbreaklist = new ArrayList<>();
-		String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=";
-		adbreaklist.add(new AdBreak("pre", AdSource.IMA, ad));
-		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
+
+		// Vast Vpaid tag Example
+		String vpaid = "https://testing.streamboatserver.ch/20min/vastplayer/vast-axe-orig.xml";
+		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
+		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
+
+		// Ima AD Tag Example
+//		String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=";
+//		adbreaklist.add(new AdBreak("pre", AdSource.IMA, ad));
+//		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
 
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
 					.advertising(advertise)
+				    .controls(true)
 					.autostart(true)
 					.preload(true)
 					.build()
@@ -180,8 +198,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 		return true;
 	}
 

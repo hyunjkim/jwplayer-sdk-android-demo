@@ -10,10 +10,12 @@ android {
 		targetSdkVersion 28
 		versionCode 1
 		versionName "1.0"
+		multiDexEnabled true
+
 	}
 	buildTypes {
 		release {
-			minifyEnabled false
+			minifyEnabled true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
@@ -34,6 +36,8 @@ dependencies {
 	implementation 'androidx.appcompat:appcompat:1.0.0'
 	implementation 'com.google.android.material:material:1.0.0'
 	implementation 'androidx.multidex:multidex:2.0.0'
+
+	implementation 'androidx.fragment:fragment:1.0.0'
 
 
 	implementation 'com.longtailvideo.jwplayer:jwplayer-core:3+'
