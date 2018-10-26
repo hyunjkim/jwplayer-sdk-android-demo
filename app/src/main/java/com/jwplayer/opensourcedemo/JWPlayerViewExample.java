@@ -74,14 +74,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Setup JWPlayer
 		setupJWPlayerPlaylistItem();
-//		setupJWPlayerPlayConfigWithEmptyCaptions();
-
+//		setupJWPlayerPlayConfigWithCaptions();
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
 
+	// Sample of a video with inline captions
 	private void setupJWPlayerPlaylistItem() {
 		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
 
@@ -92,20 +92,27 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mPlayerView.load(video);
 	}
 
-	private void setupJWPlayerPlayConfigWithEmptyCaptions() {
-		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
+	private void setupJWPlayerPlayConfigWithCaptions() {
+		String captionVideo = "videofile.mp4";
 
+		// Build a playlistitem
 		PlaylistItem video = new PlaylistItem.Builder()
 				.file(captionVideo)
 				.build();
 
+		// Add captions here
 		List<Caption> captionTracks = new ArrayList<>();
-		Caption emptyCaps = new Caption("file_en.srt");
-		captionTracks.add(emptyCaps);
+		Caption caption1 = new Caption("file_en.srt");
+		captionTracks.add(caption1);
+
+		// Set the caption to the video
 		video.setCaptions(captionTracks);
 
+		// Add the playlist item with the caption to a Playlist
 		List<PlaylistItem> item = new ArrayList<>();
 		item.add(video);
+
+		// Pass the playlist to the player config
 		mPlayerView.setup(new PlayerConfig.Builder()
 		.playlist(item)
 		.build());
