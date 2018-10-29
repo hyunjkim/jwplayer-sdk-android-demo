@@ -2,6 +2,8 @@ package com.jwplayer.opensourcedemo;
 
 
 import android.content.res.Configuration;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -13,30 +15,49 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 
 import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
-import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
 public class MyFullScreenHandler implements FullscreenHandler,
         VideoPlayerEvents.OnFullscreenListener{
 
+    private ActionBar mSupportActionBar;
     private JWPlayerView mPlayer;
     private int mConfig;
     private Window mWindow;
+    private CoordinatorLayout mCoordinatorLayout;
 
-    public MyFullScreenHandler(JWPlayerView jwPlayerView, int config, Window window) {
+    public MyFullScreenHandler(JWPlayerViewExample jwPlayerViewExample, CoordinatorLayout mCoordinatorLayout, JWPlayerView jwPlayerView, int config, Window window) {
         mPlayer = jwPlayerView;
         mConfig = config;
         mWindow = window;
+        mSupportActionBar = jwPlayerViewExample.getSupportActionBar();
+        this.mCoordinatorLayout = mCoordinatorLayout;
     }
 
+    /**
+     * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
+     *
+     * @param fullscreenEvent true if the player is fullscreen
+     */
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
-        // Make a toast or log that it was on fullscreen
-        Log.i("HYUNJOO", " onFullScreen? " + fullscreenEvent.getFullscreen());
+        ActionBar actionBar = mSupportActionBar;
+        Log.i("JWEVENTHANDLER", " onFullScreen: " + fullscreenEvent.getFullscreen());
+        if (actionBar != null) {
+            if (fullscreenEvent.getFullscreen()) {
+                actionBar.hide();
+            } else {
+                actionBar.show();
+            }
+        }
+
+        // When going to Fullscreen we want to set fitsSystemWindows="false"
+        mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
+
+
     @Override
     public void onFullscreenRequested() {
         setUseFullscreenLayoutFlags(true);
-
         mWindow.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }

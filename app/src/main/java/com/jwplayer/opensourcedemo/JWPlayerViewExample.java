@@ -27,8 +27,7 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+public class JWPlayerViewExample extends AppCompatActivity {
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -51,27 +50,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 
+	private MyFullScreenHandler myFullScreenHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
-
-
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// My fullscreen handler
 		Configuration configuration = new Configuration();
-		MyFullScreenHandler myFullScreenHandler = new MyFullScreenHandler(mPlayerView, configuration.orientation, getWindow());
+		myFullScreenHandler = new MyFullScreenHandler(
+				this,
+				mCoordinatorLayout,
+				mPlayerView,
+				configuration.orientation,
+				getWindow());
 		mPlayerView.addOnFullscreenListener(myFullScreenHandler);
 
 		// Instantiate the JW Player event handler class
@@ -140,6 +141,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	protected void onDestroy() {
 		// Let JW Player know that the app is being destroyed
 		mPlayerView.onDestroy();
+		mPlayerView.removeOnFullscreenListener(myFullScreenHandler);
 		super.onDestroy();
 	}
 
@@ -153,26 +155,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 			}
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	/**
-	 * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
-	 *
-	 * @param fullscreenEvent true if the player is fullscreen
-	 */
-	@Override
-	public void onFullscreen(FullscreenEvent fullscreenEvent) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
-
-		// When going to Fullscreen we want to set fitsSystemWindows="false"
-		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
 	}
 
 
