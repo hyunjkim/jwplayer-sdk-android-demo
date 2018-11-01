@@ -1,21 +1,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/gray"
     android:orientation="vertical">
 
-    <android.support.v7.app.MediaRouteButton
-        android:id="@+id/chromecast_btn"
-        android:layout_marginLeft="300dp"
-        android:layout_marginStart="300dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"/>
-
     <FrameLayout
-        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <android.support.v7.app.MediaRouteButton
+            android:id="@+id/fragment_chromecast_btn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+        <fragment
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.longtailvideo.jwplayer.JWPlayerFragment"
+            tools:layout="@layout/jw_player_fragment_sample_layout"/>
+    </FrameLayout>
 
     <ScrollView
         android:id="@+id/scroll"

@@ -1,17 +1,20 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteButton;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
@@ -35,11 +38,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private CastManager mCastManager;
 
-    /**
-     * An instance of our event handling class
-     */
-    private JWEventHandler mEventHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,13 +52,25 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+        new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Get a reference to the CastManager
-        MediaRouteButton chromecastbtn = findViewById(R.id.chromecast_btn);
+        MediaRouteButton chromecastbtn = findViewById(R.id.fragment_chromecast_btn);
         mCastManager = CastManager.getInstance();
+        mCastManager.addConnectionListener(new MyCastListener(mCastManager));
         mCastManager.addMediaRouterButton(chromecastbtn);
+        chromecastbtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(!mCastManager.isConnected()) {
+                    Toast.makeText(JWPlayerFragmentExample.this,"Make sure you are on the same network as your device", Toast.LENGTH_LONG).show();
+                    LogUtil.log("Make sure your device is connected & that you're on the same network");
+                }
+            }
+        });
+
         chromecastbtn.setVisibility(View.VISIBLE);
+        chromecastbtn.setBackgroundColor(Color.WHITE);
         chromecastbtn.bringToFront();
     }
 
@@ -95,6 +105,14 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        // Inflate the menu
+        getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+        return true;
     }
 
     @Override
