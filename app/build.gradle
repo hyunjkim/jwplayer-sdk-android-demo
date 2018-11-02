@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 25
-	buildToolsVersion "27.0.3"
+	compileSdkVersion 27
+	buildToolsVersion "28.0.3"
 
 	defaultConfig {
 		applicationId "com.jwplayer.opensourcedemo"
 		minSdkVersion 16
-		targetSdkVersion 25
+		targetSdkVersion 27
 		versionCode 1
 		versionName "1.0"
 	}
@@ -20,17 +20,21 @@ android {
 	lintOptions{
 		abortOnError false
 	}
+	configurations.all{
+		resolutionStrategy {
+			force 'com.android.support:customtabs:27.1.1', 'com.android.support:animated-vector-drawable:27.1.1'
+		}
+	}
 }
 
 dependencies {
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	testImplementation 'junit:junit:4.12'
-	implementation 'com.android.support:appcompat-v7:25.2.0'
-	implementation 'com.android.support:design:25.2.0'
+	implementation 'com.android.support:appcompat-v7:27.1.1'
+	implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:multidex:1.0.3'
 
     implementation 'com.longtailvideo.jwplayer:jwplayer-core:3+'
 	implementation 'com.longtailvideo.jwplayer:jwplayer-common:3+'
-
 	implementation 'com.longtailvideo.jwplayer:jwplayer-ima:3+'        // Only required if using IMA features
 }
