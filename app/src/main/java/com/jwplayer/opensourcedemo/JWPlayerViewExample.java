@@ -104,7 +104,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/FfjcgqZK.m3u8"
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8"
 		};
 
 		for(String each : playlist){
