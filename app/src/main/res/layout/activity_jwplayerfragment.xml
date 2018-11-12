@@ -1,14 +1,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/gray"
     android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <android.support.v7.app.MediaRouteButton
+            android:id="@+id/custom_mediaroutebtn_fragment"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+        <fragment
+            android:id="@+id/fragment_container"
+            tools:layout="@layout/jw_player_fragment_sample_layout"
+            android:name="com.longtailvideo.jwplayer.JWPlayerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
 
     <ScrollView
         android:id="@+id/scroll"

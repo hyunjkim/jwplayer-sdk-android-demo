@@ -3,13 +3,16 @@ package com.jwplayer.opensourcedemo;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -77,45 +80,32 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
+		MediaRouteButton mCustomCastBtn = findViewById(R.id.custom_mediaroutebtn);
+		mCastManager.addMediaRouterButton(mCustomCastBtn);
+		mCustomCastBtn.setBackgroundColor(Color.WHITE);
+		mCustomCastBtn.setVisibility(View.VISIBLE);
+		mCustomCastBtn.bringToFront();
+		mCastManager.addConnectionListener(new MyCastListener(mCustomCastBtn));
 	}
-
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		// Vast Vpaid tag Example
-//		List<AdBreak> adbreaklist = new ArrayList<>();
-//		String vpaid = "";
-//		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
-//		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
-
-		// Ima tag Example
-		List<AdBreak> adbreaklist = new ArrayList<>();
-		String vpaid = "https://testing.streamboatserver.ch/20min/vastplayer/vast-axe-orig.xml";
-		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
-		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
-
 		mPlayerView.setup(new PlayerConfig.Builder()
-					.playlist(playlistItemList)
-					.advertising(advertise)
-					.autostart(true)
-					.preload(true)
-					.build()
-				);
+				.playlist(playlistItemList)
+				.controls(true)
+				.autostart(true)
+				.preload(true)
+				.build()
+		);
 	}
 
 	private List<PlaylistItem> createPlaylist() {
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-				};
+				"https://cdn.jwplayer.com/manifests/FfjcgqZK.m3u8"
+		};
 
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem(each));

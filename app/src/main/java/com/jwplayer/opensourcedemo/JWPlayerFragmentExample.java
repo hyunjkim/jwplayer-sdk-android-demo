@@ -1,13 +1,16 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -43,8 +46,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
-        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
+        TextView outputTextView = findViewById(R.id.output);
+        ScrollView scrollView =findViewById(R.id.scroll);
 
         setupJWPlayer();
 
@@ -56,6 +59,13 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the CastManager
         mCastManager = CastManager.getInstance();
+        MediaRouteButton mCustomCastBtn = findViewById(R.id.custom_mediaroutebtn_fragment);
+        mCastManager.addMediaRouterButton(mCustomCastBtn);
+        mCustomCastBtn.setBackgroundColor(Color.WHITE);
+        mCustomCastBtn.setVisibility(View.VISIBLE);
+        mCustomCastBtn.bringToFront();
+        mCastManager.addConnectionListener(new MyCastListener(mCustomCastBtn));
+        mCastManager.addDeviceListener(new MyCastListener(mCustomCastBtn));
     }
 
     private void setupJWPlayer() {
