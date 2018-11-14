@@ -30,7 +30,7 @@
         <!--TODO Set your license key-->
         <meta-data
             android:name="JW_LICENSE_KEY"
-            android:value="qngSiJ14kqJ2G+BW3lu/OmzqSVs2xZOF3GCH2z42tKjBElMJ" />
+            android:value="" />
     </application>
 
 </manifest>
