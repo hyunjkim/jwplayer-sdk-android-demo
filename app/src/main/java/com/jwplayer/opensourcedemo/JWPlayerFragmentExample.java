@@ -14,11 +14,16 @@ import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.mediarouter.app.MediaRouteButton;
+
 
 public class JWPlayerFragmentExample extends AppCompatActivity {
 
@@ -41,6 +46,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      * An instance of our event handling class
      */
     private JWEventHandler mEventHandler;
+    private  MyCastListener castListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +71,16 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         mCustomCastBtn.setBackgroundColor(Color.WHITE);
         mCustomCastBtn.setVisibility(View.VISIBLE);
         mCustomCastBtn.bringToFront();
-        mCastManager.addConnectionListener(new MyCastListener(mCustomCastBtn));
+
+        castListener= new MyCastListener(mCustomCastBtn);
+        mCastManager.addConnectionListener(castListener);
+        mCastManager.addDeviceListener(castListener);
     }
 
     private void setupJWPlayer() {
 
-        // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
         mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .playlist(createPlaylist())
                 .build());
 
         // Attach the Fragment to our layout
@@ -87,6 +95,29 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
+    }
+
+    private List<PlaylistItem> createPlaylist() {
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+
+        String[] playlist = {
+                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8"
+        };
+
+        for(String each : playlist){
+            playlistItemList.add(new PlaylistItem(each));
+        }
+
+        return playlistItemList;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPlayerView.onDestroy();
+        mCastManager.removeConnectionListener(castListener);
+        mCastManager.removeDeviceListener(castListener);
     }
 
     @Override

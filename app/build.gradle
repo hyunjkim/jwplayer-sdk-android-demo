@@ -1,50 +1,44 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 28
-	buildToolsVersion "28.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
-	defaultConfig {
-		applicationId "com.jwplayer.opensourcedemo"
-		minSdkVersion 16
-		targetSdkVersion 28
-		versionCode 1
-		versionName "1.0"
-		multiDexEnabled true
+    defaultConfig {
+        applicationId "com.jwplayer.opensourcedemo"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
 
-	}
-	buildTypes {
-		release {
-			minifyEnabled true
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-		}
-	}
-	lintOptions{
-		abortOnError false
-	}
-	configurations.all {
-		resolutionStrategy {
-			force "androidx.browser:browser:1.0.0", "androidx.mediarouter:mediarouter:1.0.0", "androidx.legacy:legacy-support-v4:1.0.0"
-		}
-	}
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
-	implementation fileTree(include: ['*.jar'], dir: 'libs')
-	testImplementation 'junit:junit:4.12'
-	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-	implementation 'androidx.appcompat:appcompat:1.0.0'
-	implementation 'com.google.android.material:material:1.0.0'
-	implementation 'androidx.multidex:multidex:2.0.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
 
-	implementation 'androidx.fragment:fragment:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.mediarouter:mediarouter:1.0.0'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
-
-	implementation 'com.longtailvideo.jwplayer:jwplayer-core:3+'
-	implementation 'com.longtailvideo.jwplayer:jwplayer-common:3+'
-	//	implementation 'com.google.android.gms:play-services-ads:11.8.0' // Only required if using AAR / JAR
-	implementation 'com.longtailvideo.jwplayer:jwplayer-ima:3+'			// Only required if using IMA features
-	//    implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1'
-	implementation 'com.longtailvideo.jwplayer:jwplayer-chromecast:3+' // Only required if using Chromecast
-	implementation 'com.longtailvideo.jwplayer:jwplayer-freewheel:3+'
+    implementation 'com.longtailvideo.jwplayer:jwplayer-core:3+'
+    implementation 'com.longtailvideo.jwplayer:jwplayer-common:3+'
+    implementation 'com.longtailvideo.jwplayer:jwplayer-ima:3+'         // Only required if using IMA features
+    implementation 'com.longtailvideo.jwplayer:jwplayer-chromecast:3+'  // Only required if using Chromecast
+    implementation 'com.longtailvideo.jwplayer:jwplayer-freewheel:3+'   // Only required if using Freewheel
 }

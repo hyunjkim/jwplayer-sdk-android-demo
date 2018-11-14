@@ -16,10 +16,6 @@ import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -65,7 +61,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
 
@@ -92,22 +87,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		// Vast Vpaid tag Example
-		String vpaid = "https://testing.streamboatserver.ch/20min/vastplayer/vast-axe-orig.xml";
-		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
-		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
-
-		// Ima AD Tag Example
-//		String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=";
-//		adbreaklist.add(new AdBreak("pre", AdSource.IMA, ad));
-//		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
-
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
-					.advertising(advertise)
+//					.file("https://cdn.jwplayer.com/manifests/FfjcgqZK.m3u8")
 				    .controls(true)
+					.allowCrossProtocolRedirects(true)
 					.autostart(true)
 					.preload(true)
 					.build()
@@ -118,14 +102,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-				};
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8"};
+
 
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem(each));
