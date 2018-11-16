@@ -3,9 +3,6 @@ package com.jwplayer.opensourcedemo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,16 +14,17 @@ import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.RelatedConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
-import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_DISPLAY_MODE_OVERLAY;
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_CLICK_LINK;
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_COMPLETE_AUTOPLAY;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
 		VideoPlayerEvents.OnFullscreenListener{
@@ -85,17 +83,18 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		RelatedConfig relatedConfig = new RelatedConfig.Builder()
 				.file("http://content.bitsontherun.com/feeds/482jsTAr.rss")
+				.onClick(RelatedConfig.RELATED_ON_CLICK_PLAY)
 				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
 				.build();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
-//				.playlist(playlistItemList)
-				.file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+				.playlist(playlistItemList)
 				.relatedConfig(relatedConfig)
 				.preload(true)
 				.autostart(true)
 				.build()
 		);
+
 	}
 
 	private void setupJWPlayer() {
