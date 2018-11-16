@@ -3,9 +3,7 @@ package com.jwplayer.opensourcedemo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,16 +15,15 @@ import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.RelatedConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
-import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_DISPLAY_MODE_OVERLAY;
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_CLICK_LINK;
-import static com.longtailvideo.jwplayer.configuration.RelatedConfig.RELATED_ON_COMPLETE_AUTOPLAY;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
 		VideoPlayerEvents.OnFullscreenListener{
@@ -52,6 +49,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 
+	private String url;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,37 +70,36 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+//		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		setupOverlay();
+
+		JWRelatedHandler handler = new JWRelatedHandler(mPlayerView, outputTextView, scrollView, relatedMethod() ,url);
+		mPlayerView.addOnRelatedOpenListener(handler);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
+	private String relatedMethod() {
+		Log.i("JWEVENTHANDLER", "HI HYUNJOO THISI S RELATED METHOD!!");
+		return RelatedConfig.RELATED_ON_CLICK_PLAY;
+	}
+
 	private void setupOverlay() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
+		url = "http://content.bitsontherun.com/feeds/482jsTAr.rss";
+
 		RelatedConfig relatedConfig = new RelatedConfig.Builder()
-				.file("http://content.bitsontherun.com/feeds/482jsTAr.rss")
-				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
+				.file(url)
+				.onClick(RelatedConfig.RELATED_ON_CLICK_PLAY)
+				.displayMode(RelatedConfig.RELATED_DISPLAY_MODE_SHELF)
 				.build();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
-//				.playlist(playlistItemList)
-				.file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
-				.relatedConfig(relatedConfig)
-				.preload(true)
-				.autostart(true)
-				.build()
-		);
-	}
-
-	private void setupJWPlayer() {
-		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		mPlayerView.setup(new PlayerConfig.Builder()
 				.playlist(playlistItemList)
+				.relatedConfig(relatedConfig)
 				.preload(true)
 				.autostart(true)
 				.build()
@@ -114,16 +111,26 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		String[] playlist = {
 				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+		};
+		String[] mediaIds = {
+				"4rHUg9DO",
+				"BPj1qEa5",
+				"Oakmzugb",
+				"WOFbUhIg",
+				"n8JMh8A2",
+				"f3mGvLI0",
 		};
 
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
+		for(int i = 0; i < playlist.length; i++){
+			playlistItemList.add(new PlaylistItem.Builder()
+					.file(playlist[i])
+					.mediaId(mediaIds[i])
+					.build());
 		}
 
 		return playlistItemList;
