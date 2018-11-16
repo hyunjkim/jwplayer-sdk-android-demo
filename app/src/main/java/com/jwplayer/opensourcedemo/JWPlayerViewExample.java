@@ -35,11 +35,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private JWPlayerView mPlayerView;
 
 	/**
-	 * An instance of our event handling class
-	 */
-	private JWEventHandler mEventHandler;
-
-	/**
 	 * Reference to the {@link CastManager}
 	 */
 	private CastManager mCastManager;
@@ -69,7 +64,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		/**
+		 * An instance of our event handling class
+		 */
+		new JWSeekHandler(mPlayerView, outputTextView, scrollView);
 
 		// Setup JWPlayer
 		setupJWPlayer();
@@ -81,13 +79,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		// Vast Vpaid tag Example
-//		List<AdBreak> adbreaklist = new ArrayList<>();
-//		String vpaid = "";
-//		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
-//		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
-
 		// Ima tag Example
 		List<AdBreak> adbreaklist = new ArrayList<>();
 		String vpaid = "https://testing.streamboatserver.ch/20min/vastplayer/vast-axe-orig.xml";
@@ -96,7 +87,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
-					.advertising(advertise)
+//					.advertising(advertise)
 					.autostart(true)
 					.preload(true)
 					.build()
