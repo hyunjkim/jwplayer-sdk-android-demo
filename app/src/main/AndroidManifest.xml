@@ -17,10 +17,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".JWPlayerFragmentExample"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
-        </activity>
 
         <!--TODO Add this if you are using AAR & Maven imports-->
         <meta-data

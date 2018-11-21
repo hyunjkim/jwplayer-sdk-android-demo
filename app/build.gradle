@@ -26,7 +26,6 @@ android {
 		resolutionStrategy {
 			force 'com.android.support:animated-vector-drawable:27.1.1',
 					'com.android.support:mediarouter-v7:27.1.1','com.android.support:customtabs:27.1.1'
-//					'com.android.support:support-v4:27.1.1'
 		}
 	}
 }
