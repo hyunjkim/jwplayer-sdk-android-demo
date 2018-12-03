@@ -1,7 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_jwplayerfragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <FrameLayout
@@ -10,22 +12,12 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <ScrollView
-        android:id="@+id/scroll"
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/my_recycler_view"
+        android:layout_gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical">
-
-        <TextView
-            android:id="@+id/output"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:textColor="@color/white" />
-    </ScrollView>
-
+        android:scrollbars="vertical"/>
 </LinearLayout>
