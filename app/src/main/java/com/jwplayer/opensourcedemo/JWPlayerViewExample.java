@@ -23,6 +23,8 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jwplayer.opensourcedemo.MyCustomPlaylist.myCustomPlaylist;
+
 public class JWPlayerViewExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
 	/**
@@ -68,58 +70,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
 
 	}
 
-
 	private void setupJWPlayer() {
 
-		List<PlaylistItem> playlistItemList = createDRMPlaylist();
+		List<PlaylistItem> playlistItemList = myCustomPlaylist();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
 					.preload(true)
 					.build()
 				);
-	}
-
-	private List<PlaylistItem> createDRMPlaylist() {
-
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-		WidevineMediaDrmCallback widevineMediaDrmCallback = new WidevineMediaDrmCallback();
-
-		String[] drmPlaylist = {
-				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
-				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
-				"https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
-				};
-
-		String[] nonDRM = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				};
-
-		for(int i = 0; i < drmPlaylist.length; i++){
-
-			List<MediaSource> mediaSourceList = new ArrayList<>();
-
-			MediaSource ms = new MediaSource.Builder()
-					.file(drmPlaylist[i])
-					.type(MediaType.MPD)
-					.build();
-
-			mediaSourceList.add(ms);
-
-			// Add this for every other DRM content, to test if the content still works when it is mixed
-			if(i < nonDRM.length) {
-				playlistItemList.add(new PlaylistItem.Builder()
-						.file(nonDRM[i])
-						.build());
-			}
-
-			playlistItemList.add(new PlaylistItem.Builder()
-					.sources(mediaSourceList)
-					.mediaDrmCallback(widevineMediaDrmCallback)
-					.build());
-		}
-		return playlistItemList;
 	}
 
 	@Override

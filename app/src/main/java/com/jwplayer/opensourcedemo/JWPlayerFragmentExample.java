@@ -21,6 +21,8 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jwplayer.opensourcedemo.MyCustomPlaylist.myCustomPlaylist;
+
 public class JWPlayerFragmentExample extends AppCompatActivity {
 
     /**
@@ -59,10 +61,13 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
     private void setupJWPlayer() {
 
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(myCustomPlaylist())
+                .autostart(true)
+                .build();
+
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
-        mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
-                .playlist(createDRMPlaylist())
-                .build());
+        mPlayerFragment = JWPlayerSupportFragment.newInstance();
 
         // Attach the Fragment to our layout
         FragmentManager fm = getSupportFragmentManager();
@@ -76,50 +81,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
+        mPlayerView.setup(config);
     }
-
-    private List<PlaylistItem> createDRMPlaylist() {
-
-        List<PlaylistItem> playlistItemList = new ArrayList<>();
-        WidevineMediaDrmCallback widevineMediaDrmCallback = new WidevineMediaDrmCallback();
-
-        String[] drmPlaylist = {
-                "https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
-                "https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
-                "https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd",
-        };
-
-        String[] nonDRM = {
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-        };
-
-        for(int i = 0; i < drmPlaylist.length; i++){
-
-            List<MediaSource> mediaSourceList = new ArrayList<>();
-
-            MediaSource ms = new MediaSource.Builder()
-                    .file(drmPlaylist[i])
-                    .type(MediaType.MPD)
-                    .build();
-
-            mediaSourceList.add(ms);
-
-            // Add this for every other DRM content, to test if the content still works when it is mixed
-            if(i < nonDRM.length) {
-                playlistItemList.add(new PlaylistItem.Builder()
-                        .file(nonDRM[i])
-                        .build());
-            }
-
-            playlistItemList.add(new PlaylistItem.Builder()
-                    .sources(mediaSourceList)
-                    .mediaDrmCallback(widevineMediaDrmCallback)
-                    .build());
-        }
-        return playlistItemList;
-    }
-
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -132,7 +95,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
