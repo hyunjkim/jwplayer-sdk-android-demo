@@ -49,17 +49,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 
-	private String url;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
 
 		// Handle hiding/showing of ActionBar
@@ -74,22 +72,16 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		setupOverlay();
 
-		JWRelatedHandler handler = new JWRelatedHandler(mPlayerView, outputTextView, scrollView, relatedMethod() ,url);
-		mPlayerView.addOnRelatedOpenListener(handler);
+		new JWRelatedHandler(mPlayerView, outputTextView, scrollView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
-	private String relatedMethod() {
-		Log.i("JWEVENTHANDLER", "HI HYUNJOO THISI S RELATED METHOD!!");
-		return RelatedConfig.RELATED_ON_CLICK_PLAY;
-	}
-
 	private void setupOverlay() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		url = "http://content.bitsontherun.com/feeds/482jsTAr.rss";
+		String url = "http://content.bitsontherun.com/feeds/482jsTAr.rss";
 
 		RelatedConfig relatedConfig = new RelatedConfig.Builder()
 				.file(url)
