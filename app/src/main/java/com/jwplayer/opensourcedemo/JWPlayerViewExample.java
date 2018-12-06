@@ -1,15 +1,20 @@
 package com.jwplayer.opensourcedemo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -18,10 +23,6 @@ import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -36,11 +37,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private JWPlayerView mPlayerView;
 
 	/**
-	 * An instance of our event handling class
-	 */
-	private JWEventHandler mEventHandler;
-
-	/**
 	 * Reference to the {@link CastManager}
 	 */
 	private CastManager mCastManager;
@@ -51,17 +47,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 
+	private MediaRouteButton mCastButton;
 
+	@SuppressLint("JavascriptInterface")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			WebView.setWebContentsDebuggingEnabled(true);
+		}
 
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+		mCastButton = findViewById(R.id.custom_castBtn);
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -70,31 +72,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		//new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Setup JWPlayer
 		setupJWPlayer();
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
-	}
+		mCastManager.addMediaRouterButton(mCastButton);
 
+		CastListener castListener = new CastListener(mPlayerView, mCastManager, mCastButton);
+		mCastManager.addConnectionListener(castListener);
+	}
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		List<AdBreak> adbreaklist = new ArrayList<>();
-		String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=";
-		adbreaklist.add(new AdBreak("pre", AdSource.IMA, ad));
-		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
+		PlayerConfig config = new PlayerConfig.Builder()
+				.playlist(playlistItemList)
+				.autostart(true)
+				.preload(true)
+				.build();
 
-		mPlayerView.setup(new PlayerConfig.Builder()
-					.playlist(playlistItemList)
-					.advertising(advertise)
-					.autostart(true)
-					.preload(true)
-					.build()
-				);
+		mPlayerView.setup(config);
 	}
 
 	private List<PlaylistItem> createPlaylist() {
@@ -120,7 +120,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// Set fullscreen when the device is rotated to landscape
-		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
+		boolean isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE;
+		mPlayerView.setFullscreen(isLandscape, true);
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -165,14 +166,19 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	@Override
 	public void onFullscreen(FullscreenEvent fullscreenEvent) {
 		ActionBar actionBar = getSupportActionBar();
+
 		if (actionBar != null) {
+			actionBar.show();
 			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				LinearLayout.LayoutParams toFullscreen = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+				mPlayerView.setLayoutParams(toFullscreen);
 			} else {
-				actionBar.show();
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				LinearLayout.LayoutParams toMinimize = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,1);
+				mPlayerView.setLayoutParams(toMinimize);
 			}
 		}
-
 		// When going to Fullscreen we want to set fitsSystemWindows="false"
 		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
 	}

@@ -169,7 +169,7 @@ public class JWEventHandler implements
     }
 
     private void print(String s){
-        Log.i("",s);
+        Log.i("JWEVENTHANDLER",s);
     }
 
 
