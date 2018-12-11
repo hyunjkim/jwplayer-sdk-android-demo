@@ -17,6 +17,7 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
@@ -87,21 +88,28 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
 		ImaAdvertising advertising = getImaAd();
 
+		SkinConfig skinConfig = new SkinConfig.Builder()
+				.name("remove-overlay")
+				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/examples/css/remove-overlay.css")
+				.build();
+
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
-				.autostart(true)
+				.autostart(false)
+				.skinConfig(skinConfig)
 				.preload(true)
 				.allowCrossProtocolRedirects(true)
-				.advertising(advertising)
+//				.advertising(advertising)
 				.build();
 
 		mPlayerView.setup(config);
+
 	}
 
 	private ImaAdvertising getImaAd(){
 		List<AdBreak> adbreakList = new ArrayList<>();
 
-		String imaurl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
+		String imaurl = "";
 
 		adbreakList.add(new AdBreak("pre", AdSource.IMA, imaurl));
 
@@ -125,6 +133,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		PlaylistItem item = new PlaylistItem.Builder()
 				.sources(mediaSourceList)
+				.image("https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg")
 				.build();
 
 		playlistItemList.add(item);
