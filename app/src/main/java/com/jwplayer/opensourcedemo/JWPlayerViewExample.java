@@ -1,7 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -9,9 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -20,9 +17,6 @@ import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.captions.Caption;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
@@ -52,7 +46,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
-	private MediaRouteButton chromecastbtn;
+	private MediaRouteButton mChromecastbtn;
 
 
 	@Override
@@ -61,7 +55,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		setContentView(R.layout.activity_jwplayerview);
 
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
-		chromecastbtn = findViewById(R.id.chromecast_btn);
+		mChromecastbtn = findViewById(R.id.chromecast_btn);
 		mPlayerView = findViewById(R.id.jwplayer);
 		TextView outputTextView = findViewById(R.id.output);
 		ScrollView scrollView = findViewById(R.id.scroll);
@@ -76,6 +70,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Instantiate the JW Player event handler class
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
+
 		// Setup JWPlayer
 		setupJWPlayerPlaylistItem();
 //		setupJWPlayerPlayConfigWithEmptyCaptions();
@@ -83,9 +78,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
-		mCastManager.addMediaRouterButton(chromecastbtn);
-		chromecastbtn.setVisibility(View.VISIBLE);
-		chromecastbtn.bringToFront();
+		mCastManager.addMediaRouterButton(mChromecastbtn);
+		JWCastHandler castHandler = new JWCastHandler(mChromecastbtn);
+		mCastManager.addDeviceListener(castHandler);
+		mCastManager.addConnectionListener(castHandler);
+		mPlayerView.addOnControlBarVisibilityListener(castHandler);
 
 	}
 
