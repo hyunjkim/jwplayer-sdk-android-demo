@@ -55,6 +55,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			WebView.setWebContentsDebuggingEnabled(true);
 		}
@@ -168,13 +170,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ActionBar actionBar = getSupportActionBar();
 
 		if (actionBar != null) {
-			actionBar.show();
 			if (fullscreenEvent.getFullscreen()) {
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				actionBar.hide();
 				LinearLayout.LayoutParams toFullscreen = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
 				mPlayerView.setLayoutParams(toFullscreen);
 			} else {
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				actionBar.show();
 				LinearLayout.LayoutParams toMinimize = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,1);
 				mPlayerView.setLayoutParams(toMinimize);
 			}
@@ -188,7 +189,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
 		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+//		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 		return true;
 	}
 

@@ -96,7 +96,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
         // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+//        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
         return true;
     }
 
