@@ -15,11 +15,9 @@ import android.widget.TextView;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -80,21 +78,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		// Vast Vpaid tag Example
-//		List<AdBreak> adbreaklist = new ArrayList<>();
-//		String vpaid = "";
-//		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
-//		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
-
-		// Ima tag Example
-		List<AdBreak> adbreaklist = new ArrayList<>();
-		String imaAd = "";
-		adbreaklist.add(new AdBreak("pre", AdSource.IMA, imaAd));
-		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
+		SkinConfig skinConfig = new SkinConfig.Builder()
+				.name("removequality.css")
+				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/examples/css/removequality.css")
+				.build();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
-//					.advertising(advertise)
+					.skinConfig(skinConfig)
 					.autostart(true)
 					.preload(true)
 					.build()
