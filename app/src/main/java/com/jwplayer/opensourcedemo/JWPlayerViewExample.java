@@ -1,7 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -21,7 +20,6 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -34,11 +32,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 * Reference to the {@link JWPlayerView}
 	 */
 	private JWPlayerView mPlayerView;
-
-	/**
-	 * An instance of our event handling class
-	 */
-	private JWEventHandler mEventHandler;
 
 	/**
 	 * Reference to the {@link CastManager}
@@ -70,7 +63,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+//		new JWEventHandler(mPlayerView, outputTextView, scrollView);
+
+		new AdEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Setup JWPlayer
 		setupJWPlayer();
@@ -83,16 +78,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		// Vast Vpaid tag Example
-//		List<AdBreak> adbreaklist = new ArrayList<>();
-//		String vpaid = "";
-//		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
-//		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
-
-		// Ima tag Example
+		// AD Tag
 		List<AdBreak> adbreaklist = new ArrayList<>();
-		String vpaid = "https://testing.streamboatserver.ch/20min/vastplayer/vast-axe-orig.xml";
-		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vpaid));
+        String vast = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=";
+		adbreaklist.add(new AdBreak("pre", AdSource.VAST, vast));
 		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
 
 		mPlayerView.setup(new PlayerConfig.Builder()

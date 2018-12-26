@@ -49,7 +49,6 @@ import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
-import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
 import java.text.DateFormat;
@@ -88,24 +87,7 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnVisualQualityListener,
         VideoPlayerEvents.OnFirstFrameListener,
         VideoPlayerEvents.OnBufferChangeListener,
-        VideoPlayerEvents.OnReadyListener,
-
-        AdvertisingEvents.OnAdBreakEndListener,
-        AdvertisingEvents.OnAdBreakStartListener,
-        AdvertisingEvents.OnAdClickListener,
-        AdvertisingEvents.OnAdCompanionsListener,
-        AdvertisingEvents.OnAdCompleteListener,
-        AdvertisingEvents.OnAdErrorListener,
-        AdvertisingEvents.OnAdImpressionListener,
-        AdvertisingEvents.OnAdPauseListener,
-        AdvertisingEvents.OnAdPlayListener,
-        AdvertisingEvents.OnAdRequestListener,
-        AdvertisingEvents.OnAdScheduleListener,
-        AdvertisingEvents.OnAdSkippedListener,
-        AdvertisingEvents.OnAdStartedListener,
-        AdvertisingEvents.OnAdTimeListener,
-        AdvertisingEvents.OnBeforeCompleteListener,
-        AdvertisingEvents.OnBeforePlayListener {
+        VideoPlayerEvents.OnReadyListener{
 
     private TextView mOutput;
     private ScrollView mScroll;
@@ -142,22 +124,6 @@ public class JWEventHandler implements
         jwPlayerView.addOnMetaListener(this);
         jwPlayerView.addOnPlaylistCompleteListener(this);
         jwPlayerView.addOnFirstFrameListener(this);
-        jwPlayerView.addOnAdBreakEndListener(this);
-        jwPlayerView.addOnAdStartedListener(this);
-        jwPlayerView.addOnAdClickListener(this);
-        jwPlayerView.addOnAdCompanionsListener(this);
-        jwPlayerView.addOnAdCompleteListener(this);
-        jwPlayerView.addOnAdErrorListener(this);
-        jwPlayerView.addOnAdImpressionListener(this);
-        jwPlayerView.addOnAdPauseListener(this);
-        jwPlayerView.addOnAdPlayListener(this);
-        jwPlayerView.addOnAdSkippedListener(this);
-        jwPlayerView.addOnAdRequestListener(this);
-        jwPlayerView.addOnAdScheduleListener(this);
-        jwPlayerView.addOnAdStartedListener(this);
-        jwPlayerView.addOnAdTimeListener(this);
-        jwPlayerView.addOnBeforeCompleteListener(this);
-        jwPlayerView.addOnBeforePlayListener(this);
         jwPlayerView.addOnReadyListener(this);
     }
 
@@ -191,104 +157,6 @@ public class JWEventHandler implements
                 " position=" + bufferChangeEvent.getPosition() + "\r\n" +
                 " duration=" + bufferChangeEvent.getDuration());
     }
-    @Override
-    public void onAdClick(AdClickEvent adClickEvent) {
-        updateOutput(" " + "onAdClick(\"" + adClickEvent.getTag() + ")\r\n");
-        print(" " + "onAdClick");
-    }
-
-    @Override
-    public void onAdComplete(AdCompleteEvent adCompleteEvent) {
-        updateOutput(" " + "onAdComplete(\"" + adCompleteEvent.getTag() + ")\r\n");
-        print(" " + "onAdComplete");
-    }
-
-    @Override
-    public void onAdSkipped(AdSkippedEvent adSkippedEvent) {
-        updateOutput(" " + "onAdSkipped(\"" + adSkippedEvent.getTag() + ")\r\n");
-        print(" " + "onAdSkipped");
-    }
-
-    @Override
-    public void onAdImpression(AdImpressionEvent adImpressionEvent) {
-        updateOutput(" " + "onAdImpression(\"" + adImpressionEvent.getTag() + "\r\n" +
-                " Video Type: " + adImpressionEvent.getCreativeType()+ "\r\n" +
-                " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
-        print(" " + "onAdImpression(\"" + adImpressionEvent.getTag() + "\r\n" +
-                " Video Type: " + adImpressionEvent.getCreativeType()+ "\r\n" +
-                " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
-    }
-
-    @Override
-    public void onAdTime(AdTimeEvent adTimeEvent) {
-        // Do nothing - this fires several times per second
-    }
-
-    @Override
-    public void onAdPause(AdPauseEvent adPauseEvent) {
-        updateOutput(" " + "onAdPause(\"" + adPauseEvent.getTag() + "\", \"" + adPauseEvent.getOldState() + "\")\n");
-        print(" " + "onAdPause(\"" + adPauseEvent.getTag() + " " + adPauseEvent.getOldState());
-    }
-
-    @Override
-    public void onAdPlay(AdPlayEvent adPlayEvent) {
-        updateOutput(" " + "onAdPlay(\"" + adPlayEvent.getTag() + "\", \"" + adPlayEvent.getOldState() + ")\r\n");
-        print(" " + "onAdPlay(\"" + adPlayEvent.getTag() + " " + adPlayEvent.getOldState());
-    }
-
-    @Override
-    public void onAdCompanions(AdCompanionsEvent adCompanionsEvent) {
-        updateOutput(" " + "onAdCompanions  tag:" + adCompanionsEvent.getTag());
-        print(" " + "onAdCompanions  tag:" + adCompanionsEvent);
-    }
-
-    @Override
-    public void onAdError(AdErrorEvent adErrorEvent) {
-        updateOutput(" " + "adErrorEvent " + adErrorEvent.getMessage());
-        print(" " + "adErrorEvent " + adErrorEvent);
-    }
-
-    @Override
-    public void onAdStarted(AdStartedEvent adStartedEvent) {
-
-        updateOutput(" " + "adStartedEvent " + adStartedEvent.getCreativeType());
-        print(" " + "adStartedEvent " + adStartedEvent);
-    }
-
-    @Override
-    public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
-
-        updateOutput(" " + "onBeforeComplete " + beforeCompleteEvent);
-        print(" " + "onBeforeComplete ");
-    }
-
-
-    @Override
-    public void onAdRequest(AdRequestEvent adRequestEvent) {
-        updateOutput(" " + "onAdRequest " + adRequestEvent);
-        print(" " + "onAdRequest ");
-    }
-
-    @Override
-    public void onError(ErrorEvent errorEvent) {
-        updateOutput("onError: " + errorEvent.getMessage());
-        Exception exception = errorEvent.getException();
-        Log.i("JWPLAYER-LOG", "onError: " + errorEvent.getMessage(), exception);
-    }
-
-    @Override
-    public void onAdSchedule(AdScheduleEvent adScheduleEvent) {
-        updateOutput(" " + "onAdSchedule " + adScheduleEvent);
-        print(" " + "onAdSchedule ");
-    }
-
-
-    @Override
-    public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
-        updateOutput(" " + "beforePlayEvent " + beforePlayEvent);
-        print(" " + "beforePlayEvent ");
-    }
-
     @Override
     public void onAudioTrackChanged(AudioTrackChangedEvent audioTrackChangedEvent) {
         updateOutput(" " + "audioTrackChangedEvent " + audioTrackChangedEvent);
@@ -440,14 +308,10 @@ public class JWEventHandler implements
     }
 
     @Override
-    public void onAdBreakEnd(AdBreakEndEvent adBreakEndEvent) {
-        updateOutput(" " + "AdBreakEndEvent " + adBreakEndEvent.getAdPosition());
-        print(" " + "AdBreakEndEvent " + adBreakEndEvent);
+    public void onError(ErrorEvent errorEvent) {
+        updateOutput("onError: " + errorEvent.getMessage());
+        Exception exception = errorEvent.getException();
+        Log.i("JWPLAYER-LOG", "onError: " + errorEvent.getMessage(), exception);
     }
 
-    @Override
-    public void onAdBreakStart(AdBreakStartEvent adBreakStartEvent) {
-        updateOutput(" " + "AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
-        print(" " + "AdBreakStartEvent " + adBreakStartEvent);
-    }
 }
