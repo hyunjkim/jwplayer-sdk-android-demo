@@ -7,11 +7,16 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
@@ -57,11 +62,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		// Setup JWPlayer
+		setupJWPlayer();
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -72,20 +79,22 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Instantiate the JW Player event handler class
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-		// Setup JWPlayer
-		setupJWPlayer();
-
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
-
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		List<AdBreak> adbreaklist = new ArrayList<>();
-		String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=";
-		adbreaklist.add(new AdBreak("pre", AdSource.IMA, ad));
+		String pre = "https://pubads.g.doubleclick.net/gampad/ads?correlator=http%3A%2F%2Fwww3.stream.co.jp&iu=/28331925/moviead_pre_test&env=vp&gdfp_req=1&output=vast&sz=640x360|640x480&description_url=https%3A%2F%2Fwww.stream.co.jp%2F&tfcd=0&npa=0&vpmute=0&vpa=0&vad_format=linear&url=https%3A%2F%2Fwww.stream.co.jp%2F&vpos=preroll&unviewed_position_start=1";
+		String mid = "https://pubads.g.doubleclick.net/gampad/ads?correlator=http%3A%2F%2Fwww3.stream.co.jp&iu=/28331925/moviead_mid_test&env=vp&gdfp_req=1&output=vast&sz=640x360|640x480&description_url=https%3A%2F%2Fwww.stream.co.jp%2F&tfcd=0&npa=0&vpmute=0&vpa=0&vad_format=linear&url=https%3A%2F%2Fwww.stream.co.jp%2F&vpos=midroll&videoad_start_delay=0&unviewed_position_start=1";
+		String post = "https://pubads.g.doubleclick.net/gampad/ads?correlator=http%3A%2F%2Fwww3.stream.co.jp&iu=/28331925/moviead_post_test&env=vp&gdfp_req=1&output=vast&sz=640x360|640x480&description_url=https%3A%2F%2Fwww.stream.co.jp%2F&tfcd=0&npa=0&vpmute=0&vpa=0&vad_format=linear&url=https%3A%2F%2Fwww.stream.co.jp%2F&vpos=postroll&unviewed_position_start=1";
+
+		adbreaklist.add(new AdBreak("pre", AdSource.IMA, pre));
+		adbreaklist.add(new AdBreak("50%", AdSource.IMA, mid));
+		adbreaklist.add(new AdBreak("post", AdSource.IMA, post));
+
 		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
 
 		mPlayerView.setup(new PlayerConfig.Builder()
@@ -103,10 +112,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		String[] playlist = {
 				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
 				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+//				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+//				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+//				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+//				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
 				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
 				};
 
@@ -197,4 +206,5 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				return super.onOptionsItemSelected(item);
 		}
 	}
+
 }

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -43,8 +44,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
-        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
+        TextView outputTextView = findViewById(R.id.output);
+        ScrollView scrollView =  findViewById(R.id.scroll);
 
         setupJWPlayer();
 

@@ -1,6 +1,7 @@
 package com.jwplayer.opensourcedemo;
 
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ import com.longtailvideo.jwplayer.events.BufferEvent;
 import com.longtailvideo.jwplayer.events.CaptionsChangedEvent;
 import com.longtailvideo.jwplayer.events.CaptionsListEvent;
 import com.longtailvideo.jwplayer.events.CompleteEvent;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.ControlsEvent;
 import com.longtailvideo.jwplayer.events.DisplayClickEvent;
 import com.longtailvideo.jwplayer.events.ErrorEvent;
@@ -82,6 +84,7 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnLevelsListener,
         VideoPlayerEvents.OnCaptionsChangedListener,
         VideoPlayerEvents.OnControlsListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener,
         VideoPlayerEvents.OnDisplayClickListener,
         VideoPlayerEvents.OnMuteListener,
         VideoPlayerEvents.OnSeekedListener,
@@ -134,6 +137,7 @@ public class JWEventHandler implements
         jwPlayerView.addOnCaptionsListListener(this);
         jwPlayerView.addOnCaptionsChangedListener(this);
         jwPlayerView.addOnCompleteListener(this);
+        jwPlayerView.addOnControlBarVisibilityListener(this);
         jwPlayerView.addOnControlsListener(this);
         jwPlayerView.addOnDisplayClickListener(this);
         jwPlayerView.addOnMuteListener(this);
@@ -169,7 +173,7 @@ public class JWEventHandler implements
     }
 
     private void print(String s){
-        Log.i("",s);
+        Log.i("JWEVENTHANDLER",s);
     }
 
 
@@ -327,6 +331,7 @@ public class JWEventHandler implements
 
     @Override
     public void onDisplayClick(DisplayClickEvent displayClickEvent) {
+
         updateOutput(" " + "displayClickEvent " + displayClickEvent);
         print(" " + "displayClickEvent ");
     }
@@ -405,20 +410,21 @@ public class JWEventHandler implements
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        updateOutput(" " + "seekEvent " + seekEvent);
-        print(" " + "seekEvent ");
+        updateOutput(" " + "seekEvent()"+seekEvent.getPosition());
+        print(" " + "seekEvent position: " + seekEvent.getPosition());
+        print(" " + "seekEvent offset: " + seekEvent.getOffset());
     }
 
     @Override
     public void onSeeked(SeekedEvent seekedEvent) {
-        updateOutput(" " + "seekedEvent " + seekedEvent);
-        print(" " + "seekedEvent ");
+        updateOutput(" " + "onSeeked() ");
+        print(" " + "onSeeked() "+ seekedEvent);
     }
 
     @Override
     public void onSetupError(SetupErrorEvent setupErrorEvent) {
-        updateOutput(" " + "setupErrorEvent " + setupErrorEvent);
-        print(" " + "setupErrorEvent ");
+        updateOutput(" " + "setupErrorEvent " + setupErrorEvent.getMessage());
+        print(" " + "setupErrorEvent "+setupErrorEvent.getMessage());
     }
 
     @Override
@@ -436,18 +442,25 @@ public class JWEventHandler implements
     @Override
     public void onReady(ReadyEvent readyEvent) {
         updateOutput(" " + "onReady " + readyEvent.getSetupTime());
-        print(" " + "onReady " + readyEvent);
+        print(" " + "onReady " + readyEvent.getSetupTime());
     }
 
     @Override
     public void onAdBreakEnd(AdBreakEndEvent adBreakEndEvent) {
         updateOutput(" " + "AdBreakEndEvent " + adBreakEndEvent.getAdPosition());
-        print(" " + "AdBreakEndEvent " + adBreakEndEvent);
+        print(" " + "AdBreakEndEvent " + adBreakEndEvent.getAdPosition());
     }
 
     @Override
     public void onAdBreakStart(AdBreakStartEvent adBreakStartEvent) {
         updateOutput(" " + "AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
-        print(" " + "AdBreakStartEvent " + adBreakStartEvent);
+        print(" " + "AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
+    }
+
+    @Override
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+        boolean isVisible = controlBarVisibilityEvent.isVisible();
+        updateOutput("onControlBarVisibilityChanged(): " + isVisible);
+        print("onControlBarVisibilityChanged()");
     }
 }
