@@ -24,9 +24,11 @@ import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
+import com.longtailvideo.jwplayer.media.ads.AdRules;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
+import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -86,20 +88,17 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		List<AdBreak> adbreaklist = new ArrayList<>();
-		String pre = "https://pubads.g.doubleclick.net/gampad/ads?correlator=http%3A%2F%2Fwww3.stream.co.jp&iu=/28331925/moviead_pre_test&env=vp&gdfp_req=1&output=vast&sz=640x360|640x480&description_url=https%3A%2F%2Fwww.stream.co.jp%2F&tfcd=0&npa=0&vpmute=0&vpa=0&vad_format=linear&url=https%3A%2F%2Fwww.stream.co.jp%2F&vpos=preroll&unviewed_position_start=1";
-		String mid = "https://pubads.g.doubleclick.net/gampad/ads?correlator=http%3A%2F%2Fwww3.stream.co.jp&iu=/28331925/moviead_mid_test&env=vp&gdfp_req=1&output=vast&sz=640x360|640x480&description_url=https%3A%2F%2Fwww.stream.co.jp%2F&tfcd=0&npa=0&vpmute=0&vpa=0&vad_format=linear&url=https%3A%2F%2Fwww.stream.co.jp%2F&vpos=midroll&videoad_start_delay=0&unviewed_position_start=1";
-		String post = "https://pubads.g.doubleclick.net/gampad/ads?correlator=http%3A%2F%2Fwww3.stream.co.jp&iu=/28331925/moviead_post_test&env=vp&gdfp_req=1&output=vast&sz=640x360|640x480&description_url=https%3A%2F%2Fwww.stream.co.jp%2F&tfcd=0&npa=0&vpmute=0&vpa=0&vad_format=linear&url=https%3A%2F%2Fwww.stream.co.jp%2F&vpos=postroll&unviewed_position_start=1";
-
-		adbreaklist.add(new AdBreak("pre", AdSource.IMA, pre));
-		adbreaklist.add(new AdBreak("50%", AdSource.IMA, mid));
-		adbreaklist.add(new AdBreak("post", AdSource.IMA, post));
-
-		ImaAdvertising advertise = new ImaAdvertising(adbreaklist);
+		String vmap = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=";
+		VMAPAdvertising vmapAdvertising = new VMAPAdvertising(AdSource.VAST, vmap);
+		AdRules adRules = new AdRules.Builder()
+				.startOn(0)
+				.frequency(3)
+				.build();
+		vmapAdvertising.setAdRules(adRules);
 
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
-					.advertising(advertise)
+					.advertising(vmapAdvertising)
 					.autostart(true)
 					.preload(true)
 					.build()
@@ -112,11 +111,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		String[] playlist = {
 				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
 				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-//				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-//				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-//				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-//				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
 				};
 
 		for(String each : playlist){
