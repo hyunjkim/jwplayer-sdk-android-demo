@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -78,14 +77,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.name("removequality.css")
-				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/examples/css/removequality.css")
-				.build();
-
 		mPlayerView.setup(new PlayerConfig.Builder()
 					.playlist(playlistItemList)
-					.skinConfig(skinConfig)
+					.mute(true)
 					.autostart(true)
 					.preload(true)
 					.build()
@@ -96,13 +90,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+				"https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4",
+				"https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4",
+				"https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4"
 				};
 
 		for(String each : playlist){
