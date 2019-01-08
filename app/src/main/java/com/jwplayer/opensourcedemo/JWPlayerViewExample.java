@@ -1,37 +1,42 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
+import com.google.ads.interactivemedia.v3.api.AdEvent;
+import com.google.ads.interactivemedia.v3.api.AdsLoader;
+import com.google.ads.interactivemedia.v3.api.AdsManagerLoadedEvent;
+import com.google.ads.interactivemedia.v3.api.CuePoint;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.google.ads.interactivemedia.v3.api.StreamDisplayContainer;
+import com.google.ads.interactivemedia.v3.api.StreamManager;
+import com.google.ads.interactivemedia.v3.api.StreamRequest;
+import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
+import com.google.ads.interactivemedia.v3.api.player.VideoStreamPlayer;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
-import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.MetaEvent;
+import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+		AdsLoader.AdsLoadedListener,
+		AdEvent.AdEventListener,
+		AdErrorEvent.AdErrorListener{
+
+	private StreamDisplayContainer mDisplayContainer;
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -65,101 +70,134 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
-
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Setup JWPlayer
+
 		setupJWPlayer();
+
+		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
+	// Live stream asset key.
+	private static final String TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
+	// VOD content source and video IDs.
+	private static final String TEST_CONTENT_SOURCE_ID = "19463";
+	private static final String TEST_VIDEO_ID = "googleio-highlights";
+	private ImaSdkFactory imaSdkFactory;
+	private StreamManager mStreamManager;
 
-	private void setupJWPlayer() {
-//		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
-		List<PlaylistItem> playlistItemList = createPlaylist();
-		ImaAdvertising advertising = getImaAd();
+	private void setupJWPlayer(){
+		mPlayerCallbacks = new ArrayList<>();
 
-		PlayerConfig config = new PlayerConfig.Builder()
-				.playlist(playlistItemList)
-				.autostart(true)
-				.preload(true)
-				.allowCrossProtocolRedirects(true)
-//				.advertising(advertising)
-				.build();
+		imaSdkFactory = ImaSdkFactory.getInstance();
+		mDisplayContainer = imaSdkFactory.createStreamDisplayContainer();
 
-		mPlayerView.setup(config);
-	}
-
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreakList = new ArrayList<>();
-
-		String imaurl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
-
-		adbreakList.add(new AdBreak("pre", AdSource.IMA, imaurl));
-
-		ImaSdkSettings settings = ImaSdkFactory.getInstance().createImaSdkSettings();
+		ImaSdkSettings settings = imaSdkFactory.createImaSdkSettings();
 		settings.setEnableOmidExperimentally(true);
 
-		return new ImaAdvertising(adbreakList, settings);
+		AdsLoader mAdsLoader = imaSdkFactory.createAdsLoader(this);
+		mAdsLoader.addAdErrorListener(this);
+		mAdsLoader.addAdsLoadedListener(this);
+		mAdsLoader.requestStream(buildStreamRequest());
+
 	}
 
-	private List<PlaylistItem> createMediaSourcePlaylist() {
-		List<MediaSource> mediaSourceList = new ArrayList<>();
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
+	private StreamRequest buildStreamRequest() {
+		VideoStreamPlayer videoStreamPlayer = createVideoStreamPlayer();
+		mPlayerView.addOnMetaListener(new VideoPlayerEvents.OnMetaListener() {
+										  @Override
+										  public void onMeta(MetaEvent metaEvent) {
+											  for (VideoStreamPlayer.VideoStreamPlayerCallback callback : mPlayerCallbacks) {
+											  		Log.i("DAI GOOGLE",metaEvent.getMetadata().getId3Metadata().toString());
+												  callback.onUserTextReceived(metaEvent.getMetadata().getId3Metadata().toString());
+											  }
+										  }
+									  });
+		mPlayerView.addOnSeekListener(new VideoPlayerEvents.OnSeekListener() {
+			@Override
+			public void onSeek(SeekEvent seekEvent) {
+				long newSeekPositionMs = (long) seekEvent.getPosition();
+				if (mStreamManager != null) {
+					CuePoint prevCuePoint = mStreamManager.getPreviousCuePointForStreamTime(mPlayerView.getPosition());
+					if (prevCuePoint != null && !prevCuePoint.isPlayed()) {
+						Log.i("DAI GOOGLE","previous Cue Point: "+ prevCuePoint);
+						Log.i("DAI GOOGLE","old seek position: " +  newSeekPositionMs);
+						newSeekPositionMs = (long) (prevCuePoint.getStartTime() * 1000);
+						Log.i("DAI GOOGLE","new seek position: " +  newSeekPositionMs);
+					}
+				}
 
-		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
-				.type(MediaType.HLS)
-				.build();
-		mediaSourceList.add(ms);
+				Log.i("DAI GOOGLE","let's seek: " +  newSeekPositionMs);
+				mPlayerView.seek(newSeekPositionMs);
+			}
+		});
+		mDisplayContainer.setVideoStreamPlayer(videoStreamPlayer);
+		mDisplayContainer.setAdContainer(mPlayerView);
+		// Live stream request.
+		StreamRequest request = imaSdkFactory.createLiveStreamRequest(
+				TEST_ASSET_KEY, null, mDisplayContainer);
 
-		PlaylistItem item = new PlaylistItem.Builder()
-				.sources(mediaSourceList)
-				.build();
-
-		playlistItemList.add(item);
-
-		return playlistItemList;
+		// VOD request. Comment the createLiveStreamRequest() line above and uncomment this
+		// createVodStreamRequest() below to switch from a live stream to a VOD stream.
+		//StreamRequest request = mSdkFactory.createVodStreamRequest(TEST_CONTENT_SOURCE_ID,
+		//        TEST_VIDEO_ID, null, mDisplayContainer);
+		return request;
 	}
 
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
+	private List<VideoStreamPlayer.VideoStreamPlayerCallback> mPlayerCallbacks;
 
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+	private VideoStreamPlayer createVideoStreamPlayer() {
+		VideoStreamPlayer player = new VideoStreamPlayer() {
+			@Override
+			public void loadUrl(String url, List<HashMap<String, String>> subtitles) {
+				mPlayerView.load(new PlaylistItem(url));
+				mPlayerView.play();
+			}
+
+			@Override
+			public int getVolume() {
+				return 0;
+			}
+
+			@Override
+			public void addCallback(
+					VideoStreamPlayerCallback videoStreamPlayerCallback) {
+				mPlayerCallbacks.add(videoStreamPlayerCallback);
+			}
+
+			@Override
+			public void removeCallback(
+					VideoStreamPlayerCallback videoStreamPlayerCallback) {
+				mPlayerCallbacks.remove(videoStreamPlayerCallback);
+			}
+
+			@Override
+			public void onAdBreakStarted() {
+				// Disable player controls.
+				mPlayerView.setControls(false);
+			}
+
+			@Override
+			public void onAdBreakEnded() {
+				// Re-enable player controls.
+				mPlayerView.setControls(true);
+			}
+
+			@Override
+			public VideoProgressUpdate getContentProgress() {
+				return new VideoProgressUpdate((long)mPlayerView.getPosition(),
+						(long)mPlayerView.getDuration());
+			}
 		};
-
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
-		}
-
-		return playlistItemList;
-	}
-
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// Set fullscreen when the device is rotated to landscape
-		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
-		super.onConfigurationChanged(newConfig);
+		return player;
 	}
 
 	@Override
@@ -184,55 +222,30 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Exit fullscreen when the user pressed the Back button
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (mPlayerView.getFullscreen()) {
-				mPlayerView.setFullscreen(false, true);
-				return false;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	/**
-	 * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
-	 *
-	 * @param fullscreenEvent true if the player is fullscreen
-	 */
-	@Override
-	public void onFullscreen(FullscreenEvent fullscreenEvent) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
-
-		// When going to Fullscreen we want to set fitsSystemWindows="false"
-		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
-	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
-		return true;
+	public void onAdsManagerLoaded(AdsManagerLoadedEvent event) {
+		mStreamManager = event.getStreamManager();
+		mStreamManager.addAdErrorListener(this);
+		mStreamManager.addAdEventListener(this);
+		mStreamManager.init();
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.switch_to_fragment:
-				Intent i = new Intent(this, JWPlayerFragmentExample.class);
-				startActivity(i);
-				return true;
+	public void onAdError(AdErrorEvent adErrorEvent) {
+		mPlayerView.setControls(true);
+		mPlayerView.next();
+		mPlayerView.play();
+	}
+
+	@Override
+	public void onAdEvent(AdEvent adEvent) {
+		switch (adEvent.getType()) {
+			case AD_PROGRESS:
+				// Do nothing or else log will be filled by these messages.
+				break;
 			default:
-				return super.onOptionsItemSelected(item);
+				Log.i("DAI GOOGLE",String.format("Event: %s\n", adEvent.getType()));
+				break;
 		}
 	}
+
 }

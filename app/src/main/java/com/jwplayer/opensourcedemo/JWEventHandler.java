@@ -38,7 +38,6 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.IdleEvent;
 import com.longtailvideo.jwplayer.events.LevelsChangedEvent;
 import com.longtailvideo.jwplayer.events.LevelsEvent;
-import com.longtailvideo.jwplayer.events.MetaEvent;
 import com.longtailvideo.jwplayer.events.MuteEvent;
 import com.longtailvideo.jwplayer.events.PauseEvent;
 import com.longtailvideo.jwplayer.events.PlayEvent;
@@ -46,7 +45,6 @@ import com.longtailvideo.jwplayer.events.PlaylistCompleteEvent;
 import com.longtailvideo.jwplayer.events.PlaylistEvent;
 import com.longtailvideo.jwplayer.events.PlaylistItemEvent;
 import com.longtailvideo.jwplayer.events.ReadyEvent;
-import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
@@ -70,15 +68,14 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnPlayListener,
         VideoPlayerEvents.OnPauseListener,
         VideoPlayerEvents.OnBufferListener,
+        VideoPlayerEvents.OnSeekedListener,
         VideoPlayerEvents.OnIdleListener,
         VideoPlayerEvents.OnErrorListener,
-        VideoPlayerEvents.OnSeekListener,
         VideoPlayerEvents.OnTimeListener,
         VideoPlayerEvents.OnFullscreenListener,
         VideoPlayerEvents.OnAudioTracksListener,
         VideoPlayerEvents.OnAudioTrackChangedListener,
         VideoPlayerEvents.OnCaptionsListListener,
-        VideoPlayerEvents.OnMetaListener,
         VideoPlayerEvents.OnPlaylistCompleteListener,
         VideoPlayerEvents.OnCompleteListener,
         VideoPlayerEvents.OnLevelsChangedListener,
@@ -88,7 +85,6 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnControlBarVisibilityListener,
         VideoPlayerEvents.OnDisplayClickListener,
         VideoPlayerEvents.OnMuteListener,
-        VideoPlayerEvents.OnSeekedListener,
         VideoPlayerEvents.OnVisualQualityListener,
         VideoPlayerEvents.OnFirstFrameListener,
         VideoPlayerEvents.OnBufferChangeListener,
@@ -132,7 +128,7 @@ public class JWEventHandler implements
         jwPlayerView.addOnBufferListener(this);
         jwPlayerView.addOnIdleListener(this);
         jwPlayerView.addOnErrorListener(this);
-        jwPlayerView.addOnSeekListener(this);
+//        jwPlayerView.addOnSeekListener(this);
         jwPlayerView.addOnTimeListener(this);
         jwPlayerView.addOnFullscreenListener(this);
         jwPlayerView.addOnLevelsChangedListener(this);
@@ -146,7 +142,7 @@ public class JWEventHandler implements
         jwPlayerView.addOnMuteListener(this);
         jwPlayerView.addOnVisualQualityListener(this);
         jwPlayerView.addOnSeekedListener(this);
-        jwPlayerView.addOnMetaListener(this);
+//        jwPlayerView.addOnMetaListener(this);
         jwPlayerView.addOnPlaylistCompleteListener(this);
         jwPlayerView.addOnFirstFrameListener(this);
         jwPlayerView.addOnAdBreakEndListener(this);
@@ -392,11 +388,11 @@ public class JWEventHandler implements
         }
     }
 
-    @Override
-    public void onMeta(MetaEvent metaEvent) {
-        updateOutput(" " + "metaEvent " + metaEvent.getMetadata().toJson());
-        print(" " + "metaEvent " + metaEvent.getMetadata().toJson());
-    }
+//    @Override
+//    public void onMeta(MetaEvent metaEvent) {
+//        updateOutput(" " + "metaEvent " + metaEvent.getMetadata().toJson());
+//        print(" " + "metaEvent " + metaEvent.getMetadata().toJson());
+//    }
 
     @Override
     public void onMute(MuteEvent muteEvent) {
@@ -435,12 +431,12 @@ public class JWEventHandler implements
         print(" " + "playlistEvent() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
     }
 
-    @Override
-    public void onSeek(SeekEvent seekEvent) {
-        updateOutput(" " + "seekEvent()"+seekEvent.getPosition());
-        print(" " + "seekEvent position: " + seekEvent.getPosition());
-        print(" " + "seekEvent offset: " + seekEvent.getOffset());
-    }
+//    @Override
+//    public void onSeek(SeekEvent seekEvent) {
+//        updateOutput(" " + "seekEvent()"+seekEvent.getPosition());
+//        print(" " + "seekEvent position: " + seekEvent.getPosition());
+//        print(" " + "seekEvent offset: " + seekEvent.getOffset());
+//    }
 
     @Override
     public void onSeeked(SeekedEvent seekedEvent) {
