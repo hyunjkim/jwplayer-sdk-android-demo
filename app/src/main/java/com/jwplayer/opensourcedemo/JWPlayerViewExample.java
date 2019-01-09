@@ -12,19 +12,12 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -96,7 +89,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				.preload(true)
 				.allowCrossProtocolRedirects(true)
 				.skinConfig(skinConfig)
-//				.advertising(advertising)
 				.build();
 
 		mPlayerView.setup(config);
