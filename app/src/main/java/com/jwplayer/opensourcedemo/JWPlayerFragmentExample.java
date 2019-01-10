@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -33,11 +34,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private CastManager mCastManager;
 
-    /**
-     * An instance of our event handling class
-     */
-    private JWEventHandler mEventHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,13 +42,16 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         TextView outputTextView = (TextView)findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        WebView webView = JWWebView.getWebView(mPlayerView);
+        String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
+
         setupJWPlayer();
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+        new JWEventHandler(mPlayerView, outputTextView, scrollView, userAgent);
 
         // Get a reference to the CastManager
         mCastManager = CastManager.getInstance();

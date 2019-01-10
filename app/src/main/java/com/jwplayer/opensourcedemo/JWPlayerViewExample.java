@@ -9,15 +9,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
+import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.ads.AdBreak;
+import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -54,6 +59,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		WebView webView = JWWebView.getWebView(mPlayerView);
+		String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
+
+		// Setup JWPlayer
+		setupJWPlayer();
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -62,13 +72,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		new JWEventHandler(mPlayerView, outputTextView, scrollView, userAgent);
 
 		// Instantiate the JW Player Ad event handler class
 		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Setup JWPlayer
-		setupJWPlayer();
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
@@ -77,21 +84,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
+		List<AdBreak> schedule = createAdSchedule();
 
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.name("qualitysettings")
-				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/examples/css/qualitysettings.css")
-				.build();
+
+		ImaSdkSettings imaSdkSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
+		// Use the 2-letter ISO 639-1 language code for your desired language
+		imaSdkSettings.setLanguage("KO");
+		ImaAdvertising imaAdvertising = new ImaAdvertising(schedule, imaSdkSettings);
 
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
 				.preload(true)
+//				.advertising(imaAdvertising)
 				.allowCrossProtocolRedirects(true)
-				.skinConfig(skinConfig)
 				.build();
 
 		mPlayerView.setup(config);
+	}
+
+	private List<AdBreak> createAdSchedule() {
+		List<AdBreak> schedule = new ArrayList<>();
+		schedule.add(new AdBreak("pre", AdSource.IMA, "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="));
+		return schedule;
 	}
 
 	private List<PlaylistItem> createPlaylist() {

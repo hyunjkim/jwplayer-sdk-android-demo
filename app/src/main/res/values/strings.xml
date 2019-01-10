@@ -4,4 +4,15 @@
     <string name="view_example">JWPlayerView Example</string>
     <string name="media_route_menu_title">Cast</string>
     <string name="myfontdefault">monospace</string>
+    <string name="jw_error_unrecognized_input_format_exception">Testing 123 Displayed when the content URL doesn\'t point to video, or is being redirected to a WiFi portal or proxy.</string>
+    <string name="jw_error_decoder_initialization_exception">Testing 123 Displayed when the device does not have a hardware decoder that can decode the video content.</string>
+    <string name="jw_error_io_exception">Testing 123 Displayed when any IO exception occurs - e.g. interrupted stream, failed to read local file.</string>
+    <string name="jw_error_illegal_argument_exception">Testing 123 Displayed when an illegal argument is passed to ExoPlayer.</string>
+    <string name="jw_error_invalid_response_code_exception">Testing 123 Displayed when an HTTP request receives an unsupported response code - e.g. 500, 404.</string>
+    <string name="jw_error_http_data_source_exception">Testing 123 Displayed when ExoPlayer fails to fetch a segment of content - e.g. attempting to buffer while offline.</string>
+    <string name="jw_error_cast_media_format_unsupported">Testing 123 Displayed when casting is attempted with an unsupported media type.</string>
+    <string name="jw_error_cast_loading_failed">Testing 123 Displayed when loading fails during casting.</string>
+    <string name="jw_error_cast_loading_failed_with_status_code">Testing 123 Displayed when loading failed during casting and a status code is available.</string>
+    <string name="jw_error_cast_loading_failed_no_connection">Testing 123 Displayed when connecting to Chromecast fails</string>
+    <string name="license_has_expired">Where is your license key?</string>
 </resources>

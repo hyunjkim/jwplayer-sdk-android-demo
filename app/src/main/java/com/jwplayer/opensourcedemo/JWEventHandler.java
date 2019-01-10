@@ -88,11 +88,12 @@ public class JWEventHandler implements
     private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview, String userAgentString) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
         mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
+        mOutput.setText(outputStringBuilder.append("User-Agent: ").append(userAgentString).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnBeforeCompleteListener(this);
@@ -180,7 +181,7 @@ public class JWEventHandler implements
     public void onError(ErrorEvent errorEvent) {
         updateOutput("onError: " + errorEvent.getMessage());
         Exception exception = errorEvent.getException();
-        Log.i("JWPLAYER-LOG", "onError: " + errorEvent.getMessage(), exception);
+        Log.i("JWEVENTHANDLER", "onError: " + errorEvent.getMessage(), exception);
     }
 
     @Override
