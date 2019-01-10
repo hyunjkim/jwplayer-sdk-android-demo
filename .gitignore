@@ -1,16 +1,22 @@
-.gradle/
+.gradle
 /local.properties
 /.idea/*
-.idea/*
 .DS_Store
+
+app/src/main/res/values/secrets.xml
+
+# Built application files
 /build
-/captures
-/jwplayer-android-sdk-*
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
 
+# Signing files
+.signing/
+
 *.iml
+/captures
+/jwplayer-android-sdk-*
 
 # OS-specific files
 .DS_Store
