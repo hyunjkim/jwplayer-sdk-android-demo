@@ -38,9 +38,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private JWPlayerView mPlayerView;
 
 	/**
-	 * Reference to the {@link CastManager}
+	 * Reference to the
+	 * 	private CastManager mCastManager; {@link CastManager}
 	 */
-	private CastManager mCastManager;
 
 	/**
 	 * Stored instance of CoordinatorLayout
@@ -59,11 +59,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-		WebView webView = JWWebView.getWebView(mPlayerView);
-		String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
-
 		// Setup JWPlayer
 		setupJWPlayer();
+
+		WebView webView = JWWebView.getWebView(mPlayerView);
+		String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
