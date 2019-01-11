@@ -15,6 +15,8 @@ import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
+import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -71,15 +73,33 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Setup JWPlayer
 		setupJWPlayerPlaylistItem();
-//		setupJWPlayerPlayConfigWithCaptions();
+//		setupJWPlayerMediaSourceFile();
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
 
+	private void setupJWPlayerMediaSourceFile() {
+		List<MediaSource> mediaSourceList = new ArrayList<>();
+
+		String hls = "";
+
+		MediaSource ms = new MediaSource.Builder()
+				.file(hls)
+				.type(MediaType.HLS)
+				.build();
+		mediaSourceList.add(ms);
+
+		PlaylistItem item = new PlaylistItem.Builder()
+				.sources(mediaSourceList)
+				.build();
+
+		mPlayerView.load(item);
+	}
 	// Sample of a video with inline captions
 	private void setupJWPlayerPlaylistItem() {
+
 		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
 
 		PlaylistItem video = new PlaylistItem.Builder()
