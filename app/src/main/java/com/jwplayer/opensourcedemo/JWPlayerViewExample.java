@@ -127,7 +127,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		setUserAgent.put("useragent","JW PLAYER - HYUNJOO");
 
 		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem.Builder().file(each).httpHeaders(setUserAgent).build());
+			playlistItemList.add(new PlaylistItem.Builder()
+					.file(each)
+					.httpHeaders(setUserAgent)
+					.build());
 		}
 
 		return playlistItemList;
