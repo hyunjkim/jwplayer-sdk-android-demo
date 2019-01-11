@@ -88,12 +88,11 @@ public class JWEventHandler implements
     private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview, String userAgentString) {
+    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
         mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
-        mOutput.setText(outputStringBuilder.append("User-Agent: ").append(userAgentString).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnBeforeCompleteListener(this);

@@ -15,6 +15,10 @@ import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -26,7 +30,9 @@ import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
@@ -41,6 +47,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 * Reference to the
 	 * 	private CastManager mCastManager; {@link CastManager}
 	 */
+	private CastManager mCastManager;
 
 	/**
 	 * Stored instance of CoordinatorLayout
@@ -62,9 +69,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Setup JWPlayer
 		setupJWPlayer();
 
-		WebView webView = JWWebView.getWebView(mPlayerView);
-		String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
-
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
 
@@ -72,7 +76,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView, userAgent);
+		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Instantiate the JW Player Ad event handler class
 		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
@@ -118,8 +122,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
 		};
 
+
+		Map<String, String> setUserAgent = new HashMap<>();
+		setUserAgent.put("useragent","JW PLAYER - HYUNJOO");
+
 		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
+			playlistItemList.add(new PlaylistItem.Builder().file(each).httpHeaders(setUserAgent).build());
 		}
 
 		return playlistItemList;
