@@ -18,6 +18,8 @@ import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
+import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 		// Setup JWPlayer
-		setupJWPlayerPlaylistItem();
+//		setupJWPlayerPlaylistItem();
 //		setupJWPlayerPlayConfigWithEmptyCaptions();
 
 
@@ -85,6 +87,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mPlayerView.addOnControlBarVisibilityListener(castHandler);
 
 	}
+
 
 
 	private void setupJWPlayerPlaylistItem() {

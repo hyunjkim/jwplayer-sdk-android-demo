@@ -67,7 +67,7 @@ public class JWCastHandler implements
 
     @Override
     public void onDeviceSelected(CastDevice castDevice) {
-        print("onDeviceSelected (model#): "+castDevice.getModelName());
+//        print("onDeviceSelected (model#): "+castDevice.getModelName());
     }
 
     @Override
