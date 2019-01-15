@@ -7,9 +7,9 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyCustomPlaylist {
+class MyCustomPlaylist {
 
-    public static List<PlaylistItem> myCustomPlaylist(){
+    static List<PlaylistItem> myCustomPlaylist(){
 
         List<PlaylistItem> playlistItemList = new ArrayList<>();
         WidevineMediaDrmCallback widevineMediaDrmCallback = new WidevineMediaDrmCallback();
@@ -30,7 +30,7 @@ public class MyCustomPlaylist {
                 widevineMediaDrmCallback = new WidevineMediaDrmCallback("d286538032258a1c", "widevine_test");
             } else widevineMediaDrmCallback = new WidevineMediaDrmCallback();
             playlistItemList.add(new PlaylistItem.Builder()
-                    .sources(buildMediaSource(drmPlaylist[i],MediaType.MPD))
+                    .sources(buildMediaSource(drmPlaylist[i], MediaType.MPD))
                     .mediaDrmCallback(widevineMediaDrmCallback)
                     .build());
             if (i!=drmPlaylist.length-1) playlistItemList.add(new PlaylistItem(nonDRM[i])); // Add this for every other DRM content, to test if the content still works when it is mixed
@@ -51,5 +51,55 @@ public class MyCustomPlaylist {
 
         return mediaSourceList;
     }
+
+    /*
+     * Create a Playlist Example
+     * */
+    private List<PlaylistItem> createPlaylist() {
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+        String[] playlist = {
+                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+        };
+
+        for(String each : playlist){
+            playlistItemList.add(new PlaylistItem(each));
+        }
+
+        return playlistItemList;
+    }
+
+    /**
+     * MediaSource Playlist Example
+     * */
+    static List<PlaylistItem> createMediaSourcePlaylist() {
+        List<MediaSource> mediaSourceList = new ArrayList<>();
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+        String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
+
+        MediaSource ms = new MediaSource.Builder()
+                .file(hls)
+                .type(MediaType.HLS)
+                .build();
+        mediaSourceList.add(ms);
+
+        PlaylistItem item = new PlaylistItem.Builder()
+                .sources(mediaSourceList)
+                .build();
+
+        playlistItemList.add(item);
+
+        return playlistItemList;
+    }
+
 
 }

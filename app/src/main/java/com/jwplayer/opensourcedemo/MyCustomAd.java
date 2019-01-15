@@ -1,0 +1,40 @@
+package com.jwplayer.opensourcedemo;
+
+import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
+import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.longtailvideo.jwplayer.media.ads.AdBreak;
+import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.Advertising;
+import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
+
+import java.util.ArrayList;
+import java.util.List;
+
+class MyCustomAd {
+
+    /*
+     * VAST AD Example
+     * */
+    static Advertising getVastAd(){
+        List<AdBreak> adbreaklist = new ArrayList<>();
+        String adtag = "";
+        adbreaklist.add(new AdBreak("pre", AdSource.VAST, adtag));
+        return new Advertising(AdSource.VAST,adbreaklist);
+    }
+
+    /*
+     * IMA Ad Example*/
+    static ImaAdvertising getImaAd(){
+        List<AdBreak> adbreakList = new ArrayList<>();
+
+        String imaurl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
+
+        adbreakList.add(new AdBreak("pre", AdSource.IMA, imaurl));
+
+        ImaSdkSettings settings = ImaSdkFactory.getInstance().createImaSdkSettings();
+        settings.setEnableOmidExperimentally(true);
+
+        return new ImaAdvertising(adbreakList, settings);
+    }
+
+}
