@@ -13,15 +13,8 @@ import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.jwplayer.opensourcedemo.MyCustomPlaylist.myCustomPlaylist;
 
 public class JWPlayerFragmentExample extends AppCompatActivity {
 
@@ -40,6 +33,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private JWEventHandler mEventHandler;
 
+    /**
+     * Reference to the {@link CastManager}
+     */
+    private CastManager mCastManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,17 +54,18 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Instantiate the JW Player event handler class
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
+        // Get a reference to the CastManager
+        mCastManager = CastManager.getInstance();
     }
 
     private void setupJWPlayer() {
 
         PlayerConfig config = new PlayerConfig.Builder()
-                .playlist(myCustomPlaylist())
-                .autostart(true)
+                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
                 .build();
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
-        mPlayerFragment = JWPlayerSupportFragment.newInstance();
+        mPlayerFragment = JWPlayerSupportFragment.newInstance(config);
 
         // Attach the Fragment to our layout
         FragmentManager fm = getSupportFragmentManager();
@@ -81,7 +79,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
-        mPlayerView.setup(config);
     }
 
     @Override
@@ -99,7 +96,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
-        return true;    }
+        // Register the MediaRouterButton on the JW Player SDK
+        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
