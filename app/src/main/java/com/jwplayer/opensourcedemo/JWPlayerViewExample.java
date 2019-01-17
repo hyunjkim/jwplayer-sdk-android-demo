@@ -55,6 +55,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 	private MediaRouteButton mChromecastbtn;
+	private MediaRouteButton chromecastbtn;
 	private MyCastListener myCastListener;
 
 	@Override
@@ -87,29 +88,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 
-//		mCastManager.addMediaRouterButton(mChromecastbtn);
-//		JWCastHandler castHandler = new JWCastHandler(mChromecastbtn);
-//		mCastManager.addDeviceListener(castHandler);
-//		mCastManager.addConnectionListener(castHandler);
-//		mPlayerView.addOnControlBarVisibilityListener(castHandler);
+		mCastManager.addMediaRouterButton(mChromecastbtn);
+		JWCastHandler castHandler = new JWCastHandler(mChromecastbtn);
+		mCastManager.addDeviceListener(castHandler);
+		mCastManager.addConnectionListener(castHandler);
+		mPlayerView.addOnControlBarVisibilityListener(castHandler);
 
 
-		myCastListener = new MyCastListener(mCastManager);
-		mCastManager.addConnectionListener(myCastListener);
-		mCastManager.addMediaRouterButton(chromecastbtn);
-		chromecastbtn.setBackgroundColor(Color.WHITE);
-		chromecastbtn.setVisibility(View.VISIBLE);
-		chromecastbtn.bringToFront();
-		chromecastbtn.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				if(!mCastManager.isConnected()) {
-					Toast.makeText(JWPlayerViewExample.this,"Make sure you are on the same network as your device", Toast.LENGTH_LONG).show();
-					LogUtil.log("Make sure your device is connected & that you're on the same network");
-				}
-			}
-		});
-
+//		myCastListener = new MyCastListener(mCastManager);
+//		mCastManager.addConnectionListener(myCastListener);
+//		mCastManager.addMediaRouterButton(chromecastbtn);
+//		chromecastbtn.setBackgroundColor(Color.WHITE);
+//		chromecastbtn.setVisibility(View.VISIBLE);
+//		chromecastbtn.bringToFront();
+//		chromecastbtn.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				if (!mCastManager.isConnected()) {
+//					Toast.makeText(JWPlayerViewExample.this, "Make sure you are on the same network as your device", Toast.LENGTH_LONG).show();
+//					LogUtil.log("Make sure your device is connected & that you're on the same network");
+//				}
+//			}
+//		});
+	}
 
 
 	private void setupJWPlayerPlaylistItem() {
@@ -202,13 +203,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		// Inflate the menu
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		return true;
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		super.onCreateOptionsMenu(menu);
+//		// Inflate the menu
+//		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+//		return true;
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
