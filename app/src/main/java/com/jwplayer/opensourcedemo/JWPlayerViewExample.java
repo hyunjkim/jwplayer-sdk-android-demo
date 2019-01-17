@@ -2,16 +2,22 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteActionProvider;
 import android.support.v7.app.MediaRouteButton;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.libraries.cast.companionlibrary.utils.LogUtils;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -49,7 +55,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 	private MediaRouteButton mChromecastbtn;
-
+	private MyCastListener myCastListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,13 +86,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
-		mCastManager.addMediaRouterButton(mChromecastbtn);
-		JWCastHandler castHandler = new JWCastHandler(mChromecastbtn);
-		mCastManager.addDeviceListener(castHandler);
-		mCastManager.addConnectionListener(castHandler);
-		mPlayerView.addOnControlBarVisibilityListener(castHandler);
 
-	}
+//		mCastManager.addMediaRouterButton(mChromecastbtn);
+//		JWCastHandler castHandler = new JWCastHandler(mChromecastbtn);
+//		mCastManager.addDeviceListener(castHandler);
+//		mCastManager.addConnectionListener(castHandler);
+//		mPlayerView.addOnControlBarVisibilityListener(castHandler);
+
+
+		myCastListener = new MyCastListener(mCastManager);
+		mCastManager.addConnectionListener(myCastListener);
+		mCastManager.addMediaRouterButton(chromecastbtn);
+		chromecastbtn.setBackgroundColor(Color.WHITE);
+		chromecastbtn.setVisibility(View.VISIBLE);
+		chromecastbtn.bringToFront();
+		chromecastbtn.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				if(!mCastManager.isConnected()) {
+					Toast.makeText(JWPlayerViewExample.this,"Make sure you are on the same network as your device", Toast.LENGTH_LONG).show();
+					LogUtil.log("Make sure your device is connected & that you're on the same network");
+				}
+			}
+		});
 
 
 
@@ -144,6 +166,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	protected void onDestroy() {
 		// Let JW Player know that the app is being destroyed
 		mPlayerView.onDestroy();
+		mCastManager.removeConnectionListener(myCastListener);
 		super.onDestroy();
 	}
 
@@ -177,6 +200,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		// When going to Fullscreen we want to set fitsSystemWindows="false"
 		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		// Inflate the menu
+		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+		return true;
 	}
 
 	@Override

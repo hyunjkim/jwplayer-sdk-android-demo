@@ -47,5 +47,8 @@ dependencies {
 	implementation 'com.longtailvideo.jwplayer:jwplayer-ima:3+'
 	implementation 'com.longtailvideo.jwplayer:jwplayer-freewheel:3+'
 	implementation 'com.longtailvideo.jwplayer:jwplayer-chromecast:3+'
-	// Only required if using Chromecast
+	// Only required if importing from AAR / JAR
+	//	implementation 'com.google.android.gms:play-services-ads:'			  // Only required if using IMA features
+	//	implementation 'com.google.ads.interactivemedia.v3:interactivemedia:' // Only required if using IMA features
+	//  implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1'// Only required if using Chromecast
 }
