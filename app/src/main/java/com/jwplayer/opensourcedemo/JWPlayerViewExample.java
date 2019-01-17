@@ -74,7 +74,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 		// Setup JWPlayer
-//		setupJWPlayerPlaylistItem();
+		setupJWPlayerPlaylistItem();
 //		setupJWPlayerPlayConfigWithEmptyCaptions();
 
 
