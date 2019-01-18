@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.listeners;
 
 import android.graphics.Color;
 import android.support.v7.app.MediaRouteButton;
@@ -18,7 +18,7 @@ public class JWCastHandler implements
 
     private MediaRouteButton mChromecastbtn;
 
-    JWCastHandler(MediaRouteButton mChromecastbtn){
+    public JWCastHandler(MediaRouteButton mChromecastbtn){
         this.mChromecastbtn = mChromecastbtn;
     }
 
@@ -56,7 +56,7 @@ public class JWCastHandler implements
     }
 
     private void print(String s) {
-        Log.i("JWCASTHANDLER", "onJWCast: "+ s);
+        Log.i("JWEVENTHANDLER", "(CHROMECAST): "+ s);
     }
 
     @Override

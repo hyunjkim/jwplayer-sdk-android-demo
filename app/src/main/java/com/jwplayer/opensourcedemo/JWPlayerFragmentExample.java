@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteButton;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +15,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jwplayer.opensourcedemo.listeners.JWCastHandler;
+import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
+import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.utils.LogUtil;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
@@ -37,6 +40,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      * Reference to the {@link CastManager}
      */
     private CastManager mCastManager;
+    private JWCastHandler castHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
+        MediaRouteButton mChromecastbtn = findViewById(R.id.fragment_chromecast_btn);
 
         setupJWPlayer();
 
@@ -55,23 +60,12 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Get a reference to the CastManager
-        MediaRouteButton chromecastbtn = findViewById(R.id.fragment_chromecast_btn);
         mCastManager = CastManager.getInstance();
-        mCastManager.addConnectionListener(new MyCastListener(mCastManager));
-        mCastManager.addMediaRouterButton(chromecastbtn);
-        chromecastbtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(!mCastManager.isConnected()) {
-                    Toast.makeText(JWPlayerFragmentExample.this,"Make sure you are on the same network as your device", Toast.LENGTH_LONG).show();
-                    LogUtil.log("Make sure your device is connected & that you're on the same network");
-                }
-            }
-        });
-
-        chromecastbtn.setVisibility(View.VISIBLE);
-        chromecastbtn.setBackgroundColor(Color.WHITE);
-        chromecastbtn.bringToFront();
+        mCastManager.addMediaRouterButton(mChromecastbtn);
+        castHandler = new JWCastHandler(mChromecastbtn);
+        mCastManager.addDeviceListener(castHandler);
+        mCastManager.addConnectionListener(castHandler);
+        mPlayerView.addOnControlBarVisibilityListener(castHandler);
     }
 
     private void setupJWPlayer() {
@@ -96,6 +90,16 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        // Let JW Player know that the app is being destroyed
+        mPlayerView.onDestroy();
+        mCastManager.removeDeviceListener(castHandler);
+        mCastManager.removeConnectionListener(castHandler);
+        mPlayerView.removeOnControlBarVisibilityListener(castHandler);
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Exit fullscreen when the user pressed the Back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -112,6 +116,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         super.onCreateOptionsMenu(menu);
         // Inflate the menu
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+//        mCastManager.addMediaRouterButton(menu,R.id.media_route_menu_item);
         return true;
     }
 

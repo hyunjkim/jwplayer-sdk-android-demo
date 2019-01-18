@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.listeners;
 
 import android.os.Build;
 import android.util.Log;
@@ -81,7 +81,7 @@ public class JWAdEventHandler implements
     }
 
     private void print(String s){
-        Log.i("JWEVENT", " - (ADEVENT) - "+ s);
+        Log.i("JWEVENTHANDLER", " - (ADEVENT) - "+ s);
     }
 
     @Override
