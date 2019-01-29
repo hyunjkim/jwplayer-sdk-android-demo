@@ -1,5 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
+import android.os.Build;
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -44,13 +45,16 @@ import com.longtailvideo.jwplayer.events.PlaylistCompleteEvent;
 import com.longtailvideo.jwplayer.events.PlaylistEvent;
 import com.longtailvideo.jwplayer.events.PlaylistItemEvent;
 import com.longtailvideo.jwplayer.events.ReadyEvent;
+import com.longtailvideo.jwplayer.events.RelatedCloseEvent;
 import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
+import com.longtailvideo.jwplayer.events.RelatedPlayEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
+import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
@@ -93,11 +97,9 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnBufferChangeListener,
         VideoPlayerEvents.OnReadyListener,
 
-
-//        RelatedPluginEvents,
-//        RelatedPluginEvents.OnRelatedCloseListener,
-//        RelatedPluginEvents.OnRelatedOpenListener,
-//        RelatedPluginEvents.OnRelatedPlayListener,
+        RelatedPluginEvents.OnRelatedCloseListener,
+        RelatedPluginEvents.OnRelatedOpenListener,
+        RelatedPluginEvents.OnRelatedPlayListener,
 
         AdvertisingEvents.OnAdBreakEndListener,
         AdvertisingEvents.OnAdBreakStartListener,
@@ -172,6 +174,10 @@ public class JWEventHandler implements
         jwPlayerView.addOnBeforeCompleteListener(this);
         jwPlayerView.addOnBeforePlayListener(this);
         jwPlayerView.addOnReadyListener(this);
+
+        jwPlayerView.addOnRelatedCloseListener(this);
+        jwPlayerView.addOnRelatedOpenListener(this);
+        jwPlayerView.addOnRelatedPlayListener(this);
     }
 
 
@@ -463,5 +469,36 @@ public class JWEventHandler implements
     public void onAdBreakStart(AdBreakStartEvent adBreakStartEvent) {
         updateOutput(" " + "AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
         print(" " + "AdBreakStartEvent " + adBreakStartEvent);
+    }
+
+    @Override
+    public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
+        updateOutput("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        print("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        print("");
+    }
+
+    @Override
+    public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
+        updateOutput("onRelatedOpen()"+
+                "method: "+relatedOpenEvent.getMethod() +
+                "onRelatedOpen url: "+relatedOpenEvent.getUrl());
+        print("onRelatedOpen()" + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            print("onRelatedOpen getitems(): ");
+            relatedOpenEvent.getItems().forEach(e->print(" getitems - " + e + "\r\n"));
+        }
+
+    }
+
+    @Override
+    public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
+        updateOutput("onRelatedPlay(): " +relatedPlayEvent.getItem().getFile());
+        print("onRelatedPlay(): "+
+                "\r\nAuto"+relatedPlayEvent.getAuto() +
+                "\r\nFile:" +relatedPlayEvent.getItem().getFile() +
+                "\r\nPosition: "+relatedPlayEvent.getPosition());
+
     }
 }

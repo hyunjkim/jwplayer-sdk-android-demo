@@ -58,11 +58,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		// Setup JWPlayer with Related Plugin
+		setupOverlay();
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -74,8 +76,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Instantiate the JW Player event handler class
 		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-		setupOverlay();
-
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
@@ -84,25 +84,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		RelatedConfig relatedConfig = new RelatedConfig.Builder()
-				.file("http://content.bitsontherun.com/feeds/482jsTAr.rss")
+				.file("https://content.bitsontherun.com/feeds/482jsTAr.rss")
 				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
 				.build();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
-//				.playlist(playlistItemList)
-				.file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
-				.relatedConfig(relatedConfig)
-				.preload(true)
-				.autostart(true)
-				.build()
-		);
-	}
-
-	private void setupJWPlayer() {
-		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		mPlayerView.setup(new PlayerConfig.Builder()
 				.playlist(playlistItemList)
+				.relatedConfig(relatedConfig)
+				.allowCrossProtocolRedirects(true)
 				.preload(true)
 				.autostart(true)
 				.build()
