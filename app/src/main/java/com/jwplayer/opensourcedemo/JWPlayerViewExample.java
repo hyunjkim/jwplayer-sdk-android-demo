@@ -47,11 +47,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private JWPlayerView mPlayerView;
 
 	/**
-	 * An instance of our event handling class
-	 */
-	private JWEventHandler mEventHandler;
-
-	/**
 	 * Reference to the {@link CastManager}
 	 */
 	private CastManager mCastManager;
@@ -69,11 +64,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		setupSharingConfig();
+//		setupOverlay();
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -81,11 +78,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
-
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
-
-		setupJWPlayer();
+		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
@@ -98,8 +92,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		SharingConfig sharingConfig = new SharingConfig.Builder()
-				.heading("Facebook")
-//				.link("https://www.facebook.com/1987166751294652/videos/2027391690605491/")
+				.heading("Youtube")
+				.link("https://www.youtube.com/watch?v=BGtROJeMPeE")
 				.build();
 
 		mPlayerView.setup(new PlayerConfig.Builder()
@@ -116,6 +110,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		String feed = "http://content.bitsontherun.com/feeds/482jsTAr.rss";
+
 		RelatedConfig relatedConfig = new RelatedConfig.Builder()
 				.file(feed)
 				.displayMode(RELATED_DISPLAY_MODE_OVERLAY)
@@ -132,18 +127,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		mPlayerView.openRelatedOverlay();
 
-	}
-
-	private void setupJWPlayer() {
-		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		mPlayerView.setup(new PlayerConfig.Builder()
-				.playlist(playlistItemList)
-				.preload(true)
-				.controls(true)
-				.autostart(true)
-				.build()
-		);
 	}
 
 	private List<PlaylistItem> createPlaylist() {
