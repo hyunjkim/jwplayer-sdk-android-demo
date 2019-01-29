@@ -37,11 +37,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private JWPlayerView mPlayerView;
 
 	/**
-	 * An instance of our event handling class
-	 */
-	private JWEventHandler mEventHandler;
-
-	/**
 	 * Reference to the {@link CastManager}
 	 */
 	private CastManager mCastManager;
@@ -72,9 +67,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
+		// Instantiate the JW Player event handler class
+		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
