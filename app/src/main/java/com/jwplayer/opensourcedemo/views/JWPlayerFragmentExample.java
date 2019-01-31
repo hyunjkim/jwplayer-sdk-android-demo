@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.views;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -11,12 +11,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.jwplayer.opensourcedemo.JWEventHandler;
+import com.jwplayer.opensourcedemo.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.R;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
@@ -24,7 +24,6 @@ import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.fullscreen.DefaultFullscreenHandler;
 
 public class JWPlayerFragmentExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
@@ -156,6 +155,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
             case R.id.switch_to_view:
                 Intent i = new Intent(this, JWPlayerViewExample.class);
                 startActivity(i);
+                return true;
+            case R.id.switch_to_myjwplayerview:
+                Intent myjwp = new Intent(this, MyJWPlayerViewExample.class);
+                startActivity(myjwp);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

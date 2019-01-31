@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.views;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -12,20 +12,16 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.jwplayer.opensourcedemo.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.JWEventHandler;
+import com.jwplayer.opensourcedemo.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.R;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
+import com.longtailvideo.jwplayer.configuration.LogoConfig;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -83,74 +79,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 	private void setupJWPlayer() {
+		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
-//		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		// Ima Tag Example
-		ImaAdvertising imaAdvertising = getImaAd();
-
-		// VAST Tag Example
-		Advertising vastAdvertising = getVastAd();
-
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.url("https://myserver.com/css/mycustomcss.css")
-				.name("mycustomcss")
+		LogoConfig logoConfig = new LogoConfig.Builder()
+				.file("http://starsshow.in/uploads/starsshow.png")
+				.link("https://www.starsshow.in/")
+				.margin(10)
+				.hide(false)
+				.position(LogoConfig.LOGO_POSITION_BOTTOM_RIGHT)
+//				.position(LogoConfig.LOGO_POSITION_BOTTOM_LEFT)
+//				.position(LogoConfig.LOGO_POSITION_CONTROL_BAR)
+//				.position(LogoConfig.LOGO_POSITION_TOP_LEFT)
+//				.position(LogoConfig.LOGO_POSITION_TOP_RIGHT)
 				.build();
 
-		PlayerConfig config = new PlayerConfig.Builder()
+		PlayerConfig playerConfig = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
+				.logoConfig(logoConfig)
 				.autostart(true)
-				.preload(true)
-				.allowCrossProtocolRedirects(true)
-				.skinConfig(skinConfig)
 				.build();
 
-		mPlayerView.setup(config);
+		mPlayerView.setup(playerConfig);
+
 	}
-
-	/*
-	 * Vast Setup Example
-	 * */
-
-	private Advertising getVastAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adbreak = new AdBreak("pre",AdSource.VAST, ad);
-
-		adbreaklist.add(adbreak);
-
-		return new Advertising(AdSource.VAST, adbreaklist);
-	}
-
-	/*
-	* IMA Ad Example
-	* */
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
-
-		adbreaklist.add(adBreak);
-
-		ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
-//		imaSettings.setRestrictToCustomPlayer(true);
-//		imaSettings.setPpid("");
-//		imaSettings.setPlayerVersion("");
-//		imaSettings.setPlayerType("");
-//		imaSettings.setMaxRedirects(1);
-//		imaSettings.setLanguage("");
-//		imaSettings.setEnableOmidExperimentally(true);
-//		imaSettings.setDebugMode(true);
-//		imaSettings.setAutoPlayAdBreaks(true);
-
-		return new ImaAdvertising(adbreaklist);
-	}
-
 	/*
 	* Create a Playlist Example
 	* */
@@ -172,30 +123,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem(each));
 		}
-
-		return playlistItemList;
-	}
-
-	/**
-	 * MediaSource Playlist Example
-	 * */
-	private List<PlaylistItem> createMediaSourcePlaylist() {
-		List<MediaSource> mediaSourceList = new ArrayList<>();
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
-
-		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
-				.type(MediaType.HLS)
-				.build();
-		mediaSourceList.add(ms);
-
-		PlaylistItem item = new PlaylistItem.Builder()
-				.sources(mediaSourceList)
-				.build();
-
-		playlistItemList.add(item);
 
 		return playlistItemList;
 	}
@@ -278,6 +205,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 			case R.id.switch_to_fragment:
 				Intent i = new Intent(this, JWPlayerFragmentExample.class);
 				startActivity(i);
+				return true;
+			case R.id.switch_to_myjwplayerview:
+				Intent myjwp = new Intent(this, MyJWPlayerViewExample.class);
+				startActivity(myjwp);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
