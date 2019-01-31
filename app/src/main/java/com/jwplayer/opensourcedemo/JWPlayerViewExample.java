@@ -80,7 +80,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		SkinConfig skinConfig = new SkinConfig.Builder()
 				.name("qualitysettings")
-				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/examples/css/qualitysettings.css")
+				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/qualitysettings.css")
 				.build();
 
 		PlayerConfig config = new PlayerConfig.Builder()
