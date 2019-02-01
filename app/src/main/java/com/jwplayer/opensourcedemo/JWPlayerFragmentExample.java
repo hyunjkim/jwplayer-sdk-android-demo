@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteButton;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +15,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.handlers.JWCastHandler;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
@@ -37,6 +40,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      * Reference to the {@link CastManager}
      */
     private CastManager mCastManager;
+    private JWCastHandler mCastHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,24 +59,18 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Get a reference to the CastManager
-        MediaRouteButton chromecastbtn = findViewById(R.id.fragment_chromecast_btn);
-        mCastManager = CastManager.getInstance();
-        mCastManager.addConnectionListener(new MyCastListener(mCastManager));
-        mCastManager.addMediaRouterButton(chromecastbtn);
-        chromecastbtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(!mCastManager.isConnected()) {
-                    Toast.makeText(JWPlayerFragmentExample.this,"Make sure you are on the same network as your device", Toast.LENGTH_LONG).show();
-                    LogUtil.log("Make sure your device is connected & that you're on the same network");
-                }
-            }
-        });
+        // Instantiate the JW Player Adevent handler class
+        new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
-        chromecastbtn.setVisibility(View.VISIBLE);
-        chromecastbtn.setBackgroundColor(Color.WHITE);
-        chromecastbtn.bringToFront();
+        // Get a reference to the CastManager
+        MediaRouteButton mChromecastbtn = findViewById(R.id.fragment_chromecast_btn);
+
+        // My Custom Cast Button
+        mCastManager.addMediaRouterButton(mChromecastbtn);
+        mCastHandler = new JWCastHandler(mChromecastbtn);
+        mCastManager.addDeviceListener(mCastHandler);
+        mCastManager.addConnectionListener(mCastHandler);
+        mPlayerView.addOnControlBarVisibilityListener(mCastHandler);
     }
 
     private void setupJWPlayer() {
