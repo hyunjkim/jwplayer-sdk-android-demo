@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gray"
@@ -14,15 +14,13 @@
         <com.longtailvideo.jwplayer.JWPlayerView
             android:id="@+id/jwplayer"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_weight="1">
+            android:layout_height="40dp">
         </com.longtailvideo.jwplayer.JWPlayerView>
 
         <ScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:scrollbars="vertical">
 
             <TextView
@@ -38,5 +36,5 @@
                 android:textColor="@color/white" />
 
         </ScrollView>
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

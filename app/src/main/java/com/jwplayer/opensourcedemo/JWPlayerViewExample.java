@@ -55,7 +55,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_jwplayerview);
+		setContentView(R.layout.activity_jwview);
 
 		mPlayerView = findViewById(R.id.jwplayer);
 		TextView outputTextView = findViewById(R.id.output);
@@ -94,8 +94,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		Advertising vastAdvertising = getVastAd();
 
 		SkinConfig skinConfig = new SkinConfig.Builder()
-				.url("https://myserver.com/css/mycustomcss.css")
-				.name("mycustomcss")
+				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/audio.css")
+				.name("audio")
 				.build();
 
 		PlayerConfig config = new PlayerConfig.Builder()
@@ -108,6 +108,56 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		mPlayerView.setup(config);
 	}
+
+	/*
+	 * MediaSource Playlist Example
+	 * */
+	private List<PlaylistItem> createMediaSourcePlaylist() {
+		List<MediaSource> mediaSourceList = new ArrayList<>();
+		List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
+
+		MediaSource ms = new MediaSource.Builder()
+				.file(hls)
+				.type(MediaType.MP3)
+				.build();
+		mediaSourceList.add(ms);
+
+		PlaylistItem item = new PlaylistItem.Builder()
+				.sources(mediaSourceList)
+				.build();
+
+		playlistItemList.add(item);
+
+		return playlistItemList;
+	}
+
+	/*
+	 * Create a Playlist Example
+	 * */
+	private List<PlaylistItem> createPlaylist() {
+		List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+		String[] playlist = {
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+		};
+
+		for(String each : playlist){
+			playlistItemList.add(new PlaylistItem(each));
+		}
+
+		return playlistItemList;
+	}
+
 
 	/*
 	 * Vast Setup Example
@@ -149,55 +199,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 //		imaSettings.setAutoPlayAdBreaks(true);
 
 		return new ImaAdvertising(adbreaklist);
-	}
-
-	/*
-	* Create a Playlist Example
-	* */
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-		};
-
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
-		}
-
-		return playlistItemList;
-	}
-
-	/**
-	 * MediaSource Playlist Example
-	 * */
-	private List<PlaylistItem> createMediaSourcePlaylist() {
-		List<MediaSource> mediaSourceList = new ArrayList<>();
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
-
-		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
-				.type(MediaType.HLS)
-				.build();
-		mediaSourceList.add(ms);
-
-		PlaylistItem item = new PlaylistItem.Builder()
-				.sources(mediaSourceList)
-				.build();
-
-		playlistItemList.add(item);
-
-		return playlistItemList;
 	}
 
 	/*
