@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
-
+ext{
+	jwplayerVersion = '3.4.2'
+	supportLibVersion = '28.0.0'
+}
 android {
 	compileSdkVersion 28
 	buildToolsVersion '28.0.3'
@@ -25,10 +28,10 @@ android {
 
 	configurations.all {
 		resolutionStrategy {
-			force 'com.android.support:animated-vector-drawable:28.0.0',
-					'com.android.support:mediarouter-v7:28.0.0',
-					'com.android.support:customtabs:28.0.0',
-					'com.android.support:support-v4:28.0.0'
+			force "com.android.support:animated-vector-drawable:${supportLibVersion}",
+					"com.android.support:mediarouter-v7:${supportLibVersion}",
+					"com.android.support:customtabs:${supportLibVersion}",
+					"com.android.support:support-v4:${supportLibVersion}"
 		}
 	}
 	compileOptions {
@@ -41,8 +44,8 @@ android {
 dependencies {
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	testImplementation 'junit:junit:4.12'
-	implementation 'com.android.support:appcompat-v7:28.0.0'
-	implementation 'com.android.support:design:28.0.0'
+	implementation "com.android.support:appcompat-v7:${supportLibVersion}"
+	implementation "com.android.support:design:${supportLibVersion}"
 	implementation 'com.android.support:multidex:1.0.3'
 
 //	implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -50,10 +53,10 @@ dependencies {
 //	implementation 'androidx.multidex:multidex:2.0.0'
 
 
-	implementation 'com.longtailvideo.jwplayer:jwplayer-core:3+'
-	implementation 'com.longtailvideo.jwplayer:jwplayer-common:3+'
+	implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
+	implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
 // Only required if you are using IMA, FreeWheel, Chromecast
-	implementation 'com.longtailvideo.jwplayer:jwplayer-ima:3+'
-	implementation 'com.longtailvideo.jwplayer:jwplayer-freewheel:3+'
-	implementation 'com.longtailvideo.jwplayer:jwplayer-chromecast:3+'
+	implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
+	implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
+	implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
 }

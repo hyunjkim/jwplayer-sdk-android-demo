@@ -2,18 +2,22 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.jwplayer.opensourcedemo.handler.JWEventHandler;
+import com.jwplayer.opensourcedemo.handler.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.handler.MyCastHandler;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.events.FullscreenEvent;
-import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.captions.Caption;
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
@@ -25,19 +29,14 @@ import java.util.List;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.mediarouter.app.MediaRouteButton;
 
-public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+public class JWPlayerViewExample extends AppCompatActivity{
 
 	/**
 	 * Reference to the {@link JWPlayerView}
 	 */
 	private JWPlayerView mPlayerView;
-
-	/**
-	 * An instance of our event handling class
-	 */
-	private JWEventHandler mEventHandler;
 
 	/**
 	 * Reference to the {@link CastManager}
@@ -56,29 +55,57 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = (JWPlayerView)findViewById(R.id.jwplayer);
-		TextView outputTextView = (TextView)findViewById(R.id.output);
-		ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-		mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_jwplayerview);
+		mPlayerView = findViewById(R.id.jwplayer);
+		TextView outputTextView = findViewById(R.id.output);
+		ScrollView scrollView = findViewById(R.id.scroll);
+		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
-
-		// Keep the screen on during playback
-		new KeepScreenOnHandler(mPlayerView, getWindow());
-
-		// Instantiate the JW Player event handler class
-		mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		hideActionBar();
 
 		// Setup JWPlayer
 		setupJWPlayerPlaylistItem();
 //		setupJWPlayerMediaSourceFile();
 
+		// Keep the screen on during playback
+		new KeepScreenOnHandler(mPlayerView, getWindow());
+
+		// Instantiate the JW Player event handler class
+		new JWEventHandler(mPlayerView, outputTextView, scrollView);
+
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
+
+		addChromeCastButton();
 	}
 
+	private void addChromeCastButton() {
+		MediaRouteButton chromecastBtn = findViewById(R.id.chromecast_btn);
+		mCastManager.addMediaRouterButton(chromecastBtn);
+		MyCastHandler mCastHandler = new MyCastHandler(chromecastBtn,mPlayerView);
+		mCastManager.addConnectionListener(mCastHandler);
+		mCastManager.addDeviceListener(mCastHandler);
+		mPlayerView.addOnControlBarVisibilityListener(mCastHandler);
+	}
+
+	private void hideActionBar() {
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.hide();
+		}
+		mCoordinatorLayout.setFitsSystemWindows(false);
+	}
+
+	// Sample of a video with inline captions
+	private void setupJWPlayerPlaylistItem() {
+
+		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
+
+		PlaylistItem video = new PlaylistItem.Builder()
+				.file(captionVideo)
+				.build();
+
+		mPlayerView.load(video);
+	}
 
 	private void setupJWPlayerMediaSourceFile() {
 		List<MediaSource> mediaSourceList = new ArrayList<>();
@@ -96,17 +123,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				.build();
 
 		mPlayerView.load(item);
-	}
-	// Sample of a video with inline captions
-	private void setupJWPlayerPlaylistItem() {
-
-		String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
-
-		PlaylistItem video = new PlaylistItem.Builder()
-				.file(captionVideo)
-				.build();
-
-		mPlayerView.load(video);
 	}
 
 	private void setupJWPlayerPlayConfigWithCaptions() {
@@ -175,32 +191,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		return super.onKeyDown(keyCode, event);
 	}
 
-	/**
-	 * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
-	 *
-	 * @param fullscreenEvent true if the player is fullscreen
-	 */
-	@Override
-	public void onFullscreen(FullscreenEvent fullscreenEvent) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
-
-		// When going to Fullscreen we want to set fitsSystemWindows="false"
-		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
-	}
-
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 		return true;
 	}
 

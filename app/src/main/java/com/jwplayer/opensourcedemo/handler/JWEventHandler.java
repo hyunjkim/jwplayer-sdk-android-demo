@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handler;
 
 import android.util.Log;
 import android.widget.ScrollView;
@@ -112,7 +112,7 @@ public class JWEventHandler implements
     private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mScroll = scrollview;
         mOutput = output;
         mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
