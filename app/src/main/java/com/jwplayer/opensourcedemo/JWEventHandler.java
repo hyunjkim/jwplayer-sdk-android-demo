@@ -32,6 +32,9 @@ import com.longtailvideo.jwplayer.events.PlaylistCompleteEvent;
 import com.longtailvideo.jwplayer.events.PlaylistEvent;
 import com.longtailvideo.jwplayer.events.PlaylistItemEvent;
 import com.longtailvideo.jwplayer.events.ReadyEvent;
+import com.longtailvideo.jwplayer.events.RelatedCloseEvent;
+import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
+import com.longtailvideo.jwplayer.events.RelatedPlayEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
@@ -39,6 +42,8 @@ import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -79,14 +84,25 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnBufferChangeListener,
         VideoPlayerEvents.OnReadyListener,
 
+        RelatedPluginEvents.OnRelatedCloseListener,
+        RelatedPluginEvents.OnRelatedOpenListener,
+        RelatedPluginEvents.OnRelatedPlayListener,
+
         AdvertisingEvents.OnBeforeCompleteListener,
         AdvertisingEvents.OnBeforePlayListener {
 
     private JWPlayerView mPlayer;
     private TextView mOutput;
     private ScrollView mScroll;
+    private int next = 0;
     private final StringBuilder outputStringBuilder = new StringBuilder();
-
+    private String[] playlist = {
+            "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+            "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+            "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+            "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+            "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+    };
 
     JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
@@ -104,36 +120,28 @@ public class JWEventHandler implements
         jwPlayerView.addOnCompleteListener(this);
         jwPlayerView.addOnControlBarVisibilityListener(this);
         jwPlayerView.addOnControlsListener(this);
-
         jwPlayerView.addOnDisplayClickListener(this);
-
         jwPlayerView.addOnErrorListener(this);
-
         jwPlayerView.addOnFirstFrameListener(this);
         jwPlayerView.addOnFullscreenListener(this);
-
         jwPlayerView.addOnIdleListener(this);
-
         jwPlayerView.addOnLevelsChangedListener(this);
         jwPlayerView.addOnLevelsListener(this);
-
         jwPlayerView.addOnMetaListener(this);
         jwPlayerView.addOnMuteListener(this);
-
         jwPlayerView.addOnPauseListener(this);
         jwPlayerView.addOnPlayListener(this);
         jwPlayerView.addOnPlaylistCompleteListener(this);
         jwPlayerView.addOnPlaylistItemListener(this);
         jwPlayerView.addOnPlaylistListener(this);
-
-        jwPlayerView.addOnReadyListener(this);
-
+        jwPlayerView.addOnReadyListener(this);;
+        jwPlayerView.addOnRelatedOpenListener(this);
+        jwPlayerView.addOnRelatedPlayListener(this);
+        jwPlayerView.addOnRelatedCloseListener(this);
         jwPlayerView.addOnSeekListener(this);
         jwPlayerView.addOnSeekedListener(this);
         jwPlayerView.addOnSetupErrorListener(this);
-
         jwPlayerView.addOnTimeListener(this);
-
         jwPlayerView.addOnVisualQualityListener(this);
 
     }
@@ -149,6 +157,29 @@ public class JWEventHandler implements
         Log.i("JWEVENTHANDLER",s);
     }
 
+
+
+    private void adjust(){
+        int currIndex = mPlayer.getPlaylistIndex();
+        int index = currIndex!= 0? currIndex - 1:currIndex;
+
+        print(" " + "adjust() - getCurrent Playlist item and remove it from the playlist: " + mPlayer.getPlaylist().get(currIndex).getFile() + " Playlist index: " + currIndex);
+        mPlayer.getPlaylist().remove(index);
+
+
+        if(next == playlist.length) next = 0;
+        if(next < playlist.length){
+            mPlayer.getPlaylist().add(new PlaylistItem(playlist[next]));
+            print(" adjust() - adding: " + playlist[next]);
+            next++;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mPlayer.getPlaylist().forEach(e-> print("adjust() ------ " + e.getFile()));
+        }
+
+        mPlayer.load(mPlayer.getPlaylist());
+    }
 
     /**
      * Regular playback events below here
@@ -172,7 +203,7 @@ public class JWEventHandler implements
     @Override
     public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
         updateOutput(" " + "onBeforeComplete()");
-        print(" " + "onBeforeComplete(): " +beforeCompleteEvent);
+        print(" " + "onBeforeComplete(): " + beforeCompleteEvent);
     }
 
 
@@ -245,10 +276,12 @@ public class JWEventHandler implements
         print(" " + "onFullscreen: " + fullscreenEvent.getFullscreen());
     }
 
+
     @Override
     public void onIdle(IdleEvent idleEvent) {
         updateOutput(" " + "onIdle: " + idleEvent.getOldState());
         print(" " + "onIdle: " + idleEvent.getOldState());
+        adjust();
     }
 
     @Override
@@ -285,8 +318,8 @@ public class JWEventHandler implements
 
     @Override
     public void onPlay(PlayEvent playEvent) {
-        updateOutput(" " + "onPlay " + playEvent.getOldState());
-        print(" " + "onPlay " + playEvent.getOldState());
+        updateOutput(" " + "onPlay() " + playEvent.getOldState());
+        print(" " + "onPlay() " + playEvent.getOldState());
     }
 
 
@@ -302,6 +335,7 @@ public class JWEventHandler implements
         print(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
         print(" " + "onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
     }
+
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
         updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
@@ -353,5 +387,37 @@ public class JWEventHandler implements
         boolean isVisible = controlBarVisibilityEvent.isVisible();
         updateOutput("onControlBarVisibilityChanged(): " + isVisible);
         print("onControlBarVisibilityChanged(): " + isVisible);
+    }
+
+
+    @Override
+    public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
+        updateOutput("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        print("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        print("");
+    }
+
+    @Override
+    public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
+        updateOutput("onRelatedOpen()"+
+                "method: "+relatedOpenEvent.getMethod() +
+                "onRelatedOpen url: "+relatedOpenEvent.getUrl());
+        print("onRelatedOpen()" + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            print("onRelatedOpen getitems(): ");
+            relatedOpenEvent.getItems().forEach(e->print(" getitems - " + e + "\r\n"));
+        }
+
+    }
+
+    @Override
+    public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
+        updateOutput("onRelatedPlay(): " +relatedPlayEvent.getItem().getFile());
+        print("onRelatedPlay(): "+
+                "\r\nAuto"+relatedPlayEvent.getAuto() +
+                "\r\nFile:" +relatedPlayEvent.getItem().getFile() +
+                "\r\nPosition: "+relatedPlayEvent.getPosition());
+
     }
 }

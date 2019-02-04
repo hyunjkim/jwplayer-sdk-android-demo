@@ -17,10 +17,12 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
@@ -60,6 +62,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		// Setup JWPlayer
+		setupJWPlayer();
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -71,10 +75,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Instantiate the JW Player Ad event handler class
-		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Setup JWPlayer
-		setupJWPlayer();
+//		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
@@ -82,42 +83,21 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 	private void setupJWPlayer() {
+
 //		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
 		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		// Ima Tag Example
-		ImaAdvertising advertising = getImaAd();
-
-		// Vast tag Example
-//		List<AdBreak> adbreaklist = new ArrayList<>();
-//		String adtag = "";
-//		adbreaklist.add(new AdBreak("pre", AdSource.VAST, adtag));
-//		Advertising advertise = new Advertising(AdSource.VAST,adbreaklist);
 
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
-				.preload(true)
-				.allowCrossProtocolRedirects(true)
-//				.advertising(advertising)
+//				.preload(true)
 				.build();
 
 		mPlayerView.setup(config);
 	}
-
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreakList = new ArrayList<>();
-
-		String imaurl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
-
-		adbreakList.add(new AdBreak("pre", AdSource.IMA, imaurl));
-
-		ImaSdkSettings settings = ImaSdkFactory.getInstance().createImaSdkSettings();
-		settings.setEnableOmidExperimentally(true);
-
-		return new ImaAdvertising(adbreakList, settings);
-	}
-
+	/**
+	 * MediaSource Playlist Example
+	 * */
 	private List<PlaylistItem> createMediaSourcePlaylist() {
 		List<MediaSource> mediaSourceList = new ArrayList<>();
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
@@ -139,20 +119,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		return playlistItemList;
 	}
 
-
+	/*
+	* Create a Playlist Example
+	* */
 	private List<PlaylistItem> createPlaylist() {
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
 				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
 				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
 		};
 
 		for(String each : playlist){
@@ -162,10 +137,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		return playlistItemList;
 	}
 
+
+	/*
+	 * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
+	 */
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// Set fullscreen when the device is rotated to landscape
-		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
+//		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -187,7 +166,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	protected void onDestroy() {
 		// Let JW Player know that the app is being destroyed
 		mPlayerView.onDestroy();
-
 		super.onDestroy();
 	}
 
