@@ -24,7 +24,7 @@ public class MyCastHandler implements
 
     public MyCastHandler(MediaRouteButton castButton, JWPlayerView mPlayerView){
         mCastButton = castButton;
-        defaultColor = mCastButton.getSolidColor();
+        defaultColor = mCastButton.getSolidColor(); // if I want to use chromecast default color
         mPlayer = mPlayerView;
     }
 
@@ -69,8 +69,6 @@ public class MyCastHandler implements
     }
 
     private void invisbile() {
-        print("invisbile - default color: " + defaultColor);
-        mCastButton.setBackgroundColor(defaultColor);
         mCastButton.setVisibility(View.INVISIBLE);
     }
 
