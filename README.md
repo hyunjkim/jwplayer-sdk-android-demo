@@ -30,4 +30,4 @@ The demo application should now build and run. For more information on how to us
 				.build()
 		);
 	}
-  ![alt text](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/jira/v342/sharingpluginevents/v342-relatedplugin.png)
+  ![relatedplugin](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/jira/v342/relatedplugin/v342-relatedplugin.png)
