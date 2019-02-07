@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -82,31 +84,23 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
     private void setupRecyclerView() {
         mRecyclerView = findViewById(R.id.my_recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
-//        createBitmapToDrawable();
         mRecyclerView.setAdapter(new MyRecyclerAdapter(playlistItemList, this));
     }
 
-    private void createBitmapToDrawable() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            playlistItemList.forEach(e -> {
-                InputStream inputStream = null;
-                try {
-                    inputStream = manager.open(e.getImage());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                images.put(e.getMediaId(), new BitmapDrawable(getResources(),bitmap));
-            });
-        }
-    }
-
-
     private void setupJWPlayer() {
+
         playlistItemList = createPlaylist();
+
+        SkinConfig skinConfig = new SkinConfig.Builder()
+                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/smallplayer.css")
+                .name("smallplayer")
+                .build();
 
         PlayerConfig config = new PlayerConfig.Builder()
                 .file(playlistItemList.get(0).getFile())
+                .displayTitle(false)
+                .displayDescription(false)
+                .skinConfig(skinConfig)
                 .build();
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
@@ -119,6 +113,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
         mPlayerView.addOnFullscreenListener(this);
+
     }
 
     @Override
@@ -140,14 +135,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
 
     private List<PlaylistItem> createPlaylist() {
         List<PlaylistItem> playlistItemList = new ArrayList<>();
+        int repeat = 0;
 
         String[] playlist = {
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
                 "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
                 "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
                 "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
@@ -157,12 +147,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
         };
 
         String[] mediaid = {
-                "jumBvHdL",
-                "tkM1zvBq",
-                "RDn7eg0o",
-                "i3q4gcBi",
-                "iLwfYW2S",
-                "8TbJTFy5",
                 "jumBvHdL",
                 "tkM1zvBq",
                 "RDn7eg0o",
@@ -181,6 +165,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
                     .image("https://cdn.jwplayer.com/thumbs/" + mediaid[i] + "-320.jpg")
                     .build();
             playlistItemList.add(playlistItem);
+            if(i == playlist.length-1 && repeat < 3){
+                i = 0;
+                repeat++;
+            }
         }
 
         return playlistItemList;
