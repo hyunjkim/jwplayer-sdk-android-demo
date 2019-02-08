@@ -14,6 +14,9 @@ import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -21,7 +24,6 @@ import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdRules;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
@@ -83,33 +85,27 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	}
 
 
+	/*
+	* Setup JWPlayer
+	* */
 	private void setupJWPlayer() {
 
-		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
-//		List<PlaylistItem> playlistItemList = createPlaylist();
+//		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
+		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		// Ima Tag Example
-		ImaAdvertising imaAdvertising = getImaAd();
-
-		// VAST Tag Example
-		Advertising vastAdvertising = getVastAd();
-
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.url("https://myserver.com/css/mycustomcss.css")
-				.name("mycustomcss")
+		SkinConfig skin = new SkinConfig.Builder()
+				.url("https://www.imhostinthis.com/css/mycustom.css")
+				.name("mycustom")
 				.build();
 
-		PlayerConfig config = new PlayerConfig.Builder()
+		PlayerConfig playerConfigBuilder = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
-				.preload(true)
-				.allowCrossProtocolRedirects(true)
-				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-				.skinConfig(skinConfig)
+				.advertising(getImaAd())  // Ima Ad Example
+//				.advertising(getVastAd()) // Vast Ad Example
 				.build();
 
-		mPlayerView.setup(config);
+		mPlayerView.setup(playerConfigBuilder);
 	}
 
 	/*
@@ -122,7 +118,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		String ad = "";
 		String vpaid = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinearvpaid2js&correlator=";
 
-		AdBreak adbreak = new AdBreak("pre",AdSource.VAST, vpaid);
+		AdBreak adbreak = new AdBreak("pre", AdSource.VAST, ad);
 		adbreaklist.add(adbreak);
 
 //		AdRules adRules = new AdRules.Builder()
@@ -138,10 +134,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 //		vastad.setClient(AdSource.VAST);
 //		vastad.setRequestTimeout(2);
 //		vastad.setSkipOffset(1);
-		vastad.setAdMessage("");
-		vastad.setCueText("");
-		vastad.setSkipMessage("");
-		vastad.setSkipText("");
+//		vastad.setAdMessage("");
+//		vastad.setCueText("");
+//		vastad.setSkipMessage("");
+//		vastad.setSkipText("");
 
 		return vastad;
 	}
@@ -154,7 +150,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		String ad = "";
 
-		AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
+		AdBreak adBreak = new AdBreak("pre", AdSource.IMA, ad);
 
 		adbreaklist.add(adBreak);
 
@@ -182,9 +178,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
 				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
 				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
 				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
@@ -227,7 +220,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// Set fullscreen when the device is rotated to landscape
-//		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
+		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -285,6 +278,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	}
 
 
+	/*
+	* Upper right corner, drop down menu XML
+	* */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
@@ -293,6 +289,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		return true;
 	}
 
+	/*
+	* The items to add to the list on the drop down menu
+	* */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
 import android.util.Log;
@@ -51,7 +51,7 @@ public class JWAdEventHandler implements
     private JWPlayerView mPlayer;
 
 
-    JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
@@ -153,6 +153,7 @@ public class JWAdEventHandler implements
     public void onAdImpression(AdImpressionEvent adImpressionEvent) {
         updateOutput(" " + "onAdImpression: (\r\n" +
                 " Tag" + adImpressionEvent.getTag() + "\r\n" +
+                " Client: " + adImpressionEvent.getClient()+ "\r\n" +
                 " CreativeType: " + adImpressionEvent.getCreativeType()+ "\r\n" +
                 " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
         print(" " + "onAdImpression: (\r\n" +
