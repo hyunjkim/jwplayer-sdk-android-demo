@@ -84,71 +84,20 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 	private void setupJWPlayer() {
 
-		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
-//		List<PlaylistItem> playlistItemList = createPlaylist();
+		List<PlaylistItem> playlistItemList = createPlaylist();
 
-		// Ima Tag Example
-		ImaAdvertising imaAdvertising = getImaAd();
-
-		// VAST Tag Example
-		Advertising vastAdvertising = getVastAd();
-
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.url("https://myserver.com/css/mycustomcss.css")
-				.name("mycustomcss")
+		SkinConfig skin = new SkinConfig.Builder()
+				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/hiding-fullscreen-button.css")
+				.name("hiding-fullscreen-button")
 				.build();
 
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
-				.preload(true)
-				.allowCrossProtocolRedirects(true)
-				.skinConfig(skinConfig)
+				.skinConfig(skin)
 				.build();
 
 		mPlayerView.setup(config);
-	}
-
-	/*
-	 * Vast Setup Example
-	 * */
-
-	private Advertising getVastAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adbreak = new AdBreak("pre",AdSource.VAST, ad);
-
-		adbreaklist.add(adbreak);
-
-		return new Advertising(AdSource.VAST, adbreaklist);
-	}
-
-	/*
-	* IMA Ad Example
-	* */
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
-
-		adbreaklist.add(adBreak);
-
-		ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
-//		imaSettings.setRestrictToCustomPlayer(true);
-//		imaSettings.setPpid("");
-//		imaSettings.setPlayerVersion("");
-//		imaSettings.setPlayerType("");
-//		imaSettings.setMaxRedirects(1);
-//		imaSettings.setLanguage("");
-//		imaSettings.setEnableOmidExperimentally(true);
-//		imaSettings.setDebugMode(true);
-//		imaSettings.setAutoPlayAdBreaks(true);
-
-		return new ImaAdvertising(adbreaklist);
 	}
 
 	/*
@@ -159,11 +108,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 		String[] playlist = {
 				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+				"https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
 				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
 				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
 				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
 				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
@@ -172,30 +119,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem(each));
 		}
-
-		return playlistItemList;
-	}
-
-	/**
-	 * MediaSource Playlist Example
-	 * */
-	private List<PlaylistItem> createMediaSourcePlaylist() {
-		List<MediaSource> mediaSourceList = new ArrayList<>();
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
-
-		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
-				.type(MediaType.HLS)
-				.build();
-		mediaSourceList.add(ms);
-
-		PlaylistItem item = new PlaylistItem.Builder()
-				.sources(mediaSourceList)
-				.build();
-
-		playlistItemList.add(item);
 
 		return playlistItemList;
 	}
@@ -211,6 +134,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		mPlayerView.onStart();
+	}
+
+	@Override
 	protected void onResume() {
 		// Let JW Player know that the app has returned from the background
 		super.onResume();
@@ -222,6 +151,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Let JW Player know that the app is going to the background
 		mPlayerView.onPause();
 		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		mPlayerView.onStop();
+		super.onStop();
 	}
 
 	@Override

@@ -20,6 +20,8 @@ import com.longtailvideo.jwplayer.events.AdScheduleEvent;
 import com.longtailvideo.jwplayer.events.AdSkippedEvent;
 import com.longtailvideo.jwplayer.events.AdStartedEvent;
 import com.longtailvideo.jwplayer.events.AdTimeEvent;
+import com.longtailvideo.jwplayer.events.BeforeCompleteEvent;
+import com.longtailvideo.jwplayer.events.BeforePlayEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 
 import java.text.DateFormat;
@@ -43,7 +45,9 @@ public class JWAdEventHandler implements
         AdvertisingEvents.OnAdScheduleListener,
         AdvertisingEvents.OnAdSkippedListener,
         AdvertisingEvents.OnAdStartedListener,
-        AdvertisingEvents.OnAdTimeListener{
+        AdvertisingEvents.OnAdTimeListener,
+        AdvertisingEvents.OnBeforeCompleteListener,
+        AdvertisingEvents.OnBeforePlayListener {
 
     private TextView mOutput;
     private ScrollView mScroll;
@@ -59,7 +63,6 @@ public class JWAdEventHandler implements
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnAdBreakEndListener(this);
-        jwPlayerView.addOnAdStartedListener(this);
         jwPlayerView.addOnAdClickListener(this);
         jwPlayerView.addOnAdCompanionsListener(this);
         jwPlayerView.addOnAdCompleteListener(this);
@@ -67,11 +70,13 @@ public class JWAdEventHandler implements
         jwPlayerView.addOnAdImpressionListener(this);
         jwPlayerView.addOnAdPauseListener(this);
         jwPlayerView.addOnAdPlayListener(this);
-        jwPlayerView.addOnAdSkippedListener(this);
         jwPlayerView.addOnAdRequestListener(this);
         jwPlayerView.addOnAdScheduleListener(this);
+        jwPlayerView.addOnAdSkippedListener(this);
         jwPlayerView.addOnAdStartedListener(this);
         jwPlayerView.addOnAdTimeListener(this);
+        jwPlayerView.addOnBeforeCompleteListener(this);
+        jwPlayerView.addOnBeforePlayListener(this);
     }
 
     private void updateOutput(String output) {
@@ -198,11 +203,23 @@ public class JWAdEventHandler implements
         }
     }
 
+    @Override
+    public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
+        updateOutput(" " + "onBeforeComplete()");
+        print(" " + "onBeforeComplete(): " +beforeCompleteEvent);
+    }
+
+
+    @Override
+    public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
+        updateOutput(" " + "onBeforePlay()");
+        print(" " + "onBeforePlay()");
+    }
+
     private void printCreatives(List<String> creative) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && creative.size()>0) {
             creative.forEach(each -> print("onAdCompanions-Creative: " + each));
         }
     }
-
 
 }

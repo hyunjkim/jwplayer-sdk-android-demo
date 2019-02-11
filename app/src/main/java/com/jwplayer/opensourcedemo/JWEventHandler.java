@@ -8,8 +8,6 @@ import android.widget.TextView;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
-import com.longtailvideo.jwplayer.events.BeforeCompleteEvent;
-import com.longtailvideo.jwplayer.events.BeforePlayEvent;
 import com.longtailvideo.jwplayer.events.BufferChangeEvent;
 import com.longtailvideo.jwplayer.events.BufferEvent;
 import com.longtailvideo.jwplayer.events.CaptionsChangedEvent;
@@ -32,12 +30,16 @@ import com.longtailvideo.jwplayer.events.PlaylistCompleteEvent;
 import com.longtailvideo.jwplayer.events.PlaylistEvent;
 import com.longtailvideo.jwplayer.events.PlaylistItemEvent;
 import com.longtailvideo.jwplayer.events.ReadyEvent;
+import com.longtailvideo.jwplayer.events.RelatedCloseEvent;
+import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
+import com.longtailvideo.jwplayer.events.RelatedPlayEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
+import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
 import java.text.DateFormat;
@@ -49,38 +51,39 @@ import java.util.Locale;
  * Outputs all JW Player Events to logging, with the exception of time events.
  */
 public class JWEventHandler implements
-        VideoPlayerEvents.OnSetupErrorListener,
-        VideoPlayerEvents.OnPlaylistListener,
-        VideoPlayerEvents.OnPlaylistItemListener,
-        VideoPlayerEvents.OnPlayListener,
-        VideoPlayerEvents.OnPauseListener,
-        VideoPlayerEvents.OnBufferListener,
-        VideoPlayerEvents.OnIdleListener,
-        VideoPlayerEvents.OnErrorListener,
-        VideoPlayerEvents.OnSeekListener,
-        VideoPlayerEvents.OnTimeListener,
-        VideoPlayerEvents.OnFullscreenListener,
-        VideoPlayerEvents.OnAudioTracksListener,
         VideoPlayerEvents.OnAudioTrackChangedListener,
+        VideoPlayerEvents.OnAudioTracksListener,
+        VideoPlayerEvents.OnBufferChangeListener,
+        VideoPlayerEvents.OnBufferListener,
+        VideoPlayerEvents.OnCaptionsChangedListener,
         VideoPlayerEvents.OnCaptionsListListener,
-        VideoPlayerEvents.OnMetaListener,
-        VideoPlayerEvents.OnPlaylistCompleteListener,
         VideoPlayerEvents.OnCompleteListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener,
+        VideoPlayerEvents.OnControlsListener,
+        VideoPlayerEvents.OnDisplayClickListener,
+        VideoPlayerEvents.OnErrorListener,
+        VideoPlayerEvents.OnFirstFrameListener,
+        VideoPlayerEvents.OnFullscreenListener,
+        VideoPlayerEvents.OnIdleListener,
         VideoPlayerEvents.OnLevelsChangedListener,
         VideoPlayerEvents.OnLevelsListener,
-        VideoPlayerEvents.OnCaptionsChangedListener,
-        VideoPlayerEvents.OnControlsListener,
-        VideoPlayerEvents.OnControlBarVisibilityListener,
-        VideoPlayerEvents.OnDisplayClickListener,
+        VideoPlayerEvents.OnMetaListener,
         VideoPlayerEvents.OnMuteListener,
-        VideoPlayerEvents.OnSeekedListener,
-        VideoPlayerEvents.OnVisualQualityListener,
-        VideoPlayerEvents.OnFirstFrameListener,
-        VideoPlayerEvents.OnBufferChangeListener,
+        VideoPlayerEvents.OnPauseListener,
+        VideoPlayerEvents.OnPlayListener,
+        VideoPlayerEvents.OnPlaylistCompleteListener,
+        VideoPlayerEvents.OnPlaylistItemListener,
+        VideoPlayerEvents.OnPlaylistListener,
         VideoPlayerEvents.OnReadyListener,
+        VideoPlayerEvents.OnSeekListener,
+        VideoPlayerEvents.OnSeekedListener,
+        VideoPlayerEvents.OnSetupErrorListener,
+        VideoPlayerEvents.OnTimeListener,
+        VideoPlayerEvents.OnVisualQualityListener,
 
-        AdvertisingEvents.OnBeforeCompleteListener,
-        AdvertisingEvents.OnBeforePlayListener {
+        RelatedPluginEvents.OnRelatedCloseListener,
+        RelatedPluginEvents.OnRelatedOpenListener,
+        RelatedPluginEvents.OnRelatedPlayListener{
 
     private JWPlayerView mPlayer;
     private TextView mOutput;
@@ -95,45 +98,34 @@ public class JWEventHandler implements
         mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
-        jwPlayerView.addOnBeforeCompleteListener(this);
-        jwPlayerView.addOnBeforePlayListener(this);
         jwPlayerView.addOnBufferListener(this);
-
         jwPlayerView.addOnCaptionsListListener(this);
         jwPlayerView.addOnCaptionsChangedListener(this);
         jwPlayerView.addOnCompleteListener(this);
         jwPlayerView.addOnControlBarVisibilityListener(this);
         jwPlayerView.addOnControlsListener(this);
-
         jwPlayerView.addOnDisplayClickListener(this);
-
         jwPlayerView.addOnErrorListener(this);
-
         jwPlayerView.addOnFirstFrameListener(this);
         jwPlayerView.addOnFullscreenListener(this);
-
         jwPlayerView.addOnIdleListener(this);
-
         jwPlayerView.addOnLevelsChangedListener(this);
         jwPlayerView.addOnLevelsListener(this);
-
         jwPlayerView.addOnMetaListener(this);
         jwPlayerView.addOnMuteListener(this);
-
         jwPlayerView.addOnPauseListener(this);
         jwPlayerView.addOnPlayListener(this);
         jwPlayerView.addOnPlaylistCompleteListener(this);
         jwPlayerView.addOnPlaylistItemListener(this);
         jwPlayerView.addOnPlaylistListener(this);
-
         jwPlayerView.addOnReadyListener(this);
-
+        jwPlayerView.addOnRelatedCloseListener(this);
+        jwPlayerView.addOnRelatedOpenListener(this);
+        jwPlayerView.addOnRelatedPlayListener(this);
         jwPlayerView.addOnSeekListener(this);
         jwPlayerView.addOnSeekedListener(this);
         jwPlayerView.addOnSetupErrorListener(this);
-
         jwPlayerView.addOnTimeListener(this);
-
         jwPlayerView.addOnVisualQualityListener(this);
 
     }
@@ -170,25 +162,11 @@ public class JWEventHandler implements
     }
 
     @Override
-    public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
-        updateOutput(" " + "onBeforeComplete()");
-        print(" " + "onBeforeComplete(): " +beforeCompleteEvent);
-    }
-
-
-    @Override
     public void onError(ErrorEvent errorEvent) {
         updateOutput("onError: " + errorEvent.getMessage());
         Exception exception = errorEvent.getException();
         Log.i("JWPLAYER-LOG", "onError: " + errorEvent.getMessage(), exception);
     }
-
-    @Override
-    public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
-        updateOutput(" " + "onBeforePlay()");
-        print(" " + "onBeforePlay()");
-    }
-
     @Override
     public void onAudioTrackChanged(AudioTrackChangedEvent audioTrackChangedEvent) {
         updateOutput(" " + "onAudioTrackChanged: " + audioTrackChangedEvent.getCurrentTrack());
@@ -353,5 +331,37 @@ public class JWEventHandler implements
         boolean isVisible = controlBarVisibilityEvent.isVisible();
         updateOutput("onControlBarVisibilityChanged(): " + isVisible);
         print("onControlBarVisibilityChanged(): " + isVisible);
+    }
+
+
+    @Override
+    public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
+        updateOutput("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        print("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        print("");
+    }
+
+    @Override
+    public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
+        updateOutput("onRelatedOpen()"+
+                "method: "+relatedOpenEvent.getMethod() +
+                "onRelatedOpen url: "+relatedOpenEvent.getUrl());
+        print("onRelatedOpen()" + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            print("onRelatedOpen getitems(): ");
+            relatedOpenEvent.getItems().forEach(e->print(" getitems - " + e + "\r\n"));
+        }
+
+    }
+
+    @Override
+    public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
+        updateOutput("onRelatedPlay(): " +relatedPlayEvent.getItem().getFile());
+        print("onRelatedPlay(): "+
+                "\r\nAuto"+relatedPlayEvent.getAuto() +
+                "\r\nFile:" +relatedPlayEvent.getItem().getFile() +
+                "\r\nPosition: "+relatedPlayEvent.getPosition());
+
     }
 }

@@ -106,9 +106,14 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        mPlayerView.onStart();
+    }
+
+    @Override
     protected void onResume() {
         // Let JW Player know that the app has returned from the background
-        print("onResume()");
         super.onResume();
         mPlayerView.onResume();
     }
@@ -117,8 +122,13 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
     protected void onPause() {
         // Let JW Player know that the app is going to the background
         mPlayerView.onPause();
-        print("onPause()");
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        mPlayerView.onStop();
+        super.onStop();
     }
 
     @Override
