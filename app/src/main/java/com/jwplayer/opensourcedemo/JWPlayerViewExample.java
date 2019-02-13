@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -62,6 +64,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		// Enable WebView debugging
+		// Open your Chrome browser > Remote devices > Dev Tools
+		// This is helpful to test your CSS Skin
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			WebView.setWebContentsDebuggingEnabled(true);
+		}
+
 		// Setup JWPlayer
 		setupJWPlayer();
 
@@ -87,8 +96,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		SkinConfig skin = new SkinConfig.Builder()
-				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/hiding-fullscreen-button.css")
-				.name("hiding-fullscreen-button")
+				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/timeslider.css")
+				.name("timeslider")
 				.build();
 
 		PlayerConfig config = new PlayerConfig.Builder()
