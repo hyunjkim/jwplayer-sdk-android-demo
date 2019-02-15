@@ -1,36 +1,30 @@
 package com.jwplayer.opensourcedemo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
-import com.jwplayer.opensourcedemo.handler.JWAdEventHandler;
-import com.jwplayer.opensourcedemo.handler.JWEventHandler;
 import com.jwplayer.opensourcedemo.handler.KeepScreenOnHandler;
 import com.jwplayer.opensourcedemo.myutil.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdRules;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -38,7 +32,10 @@ import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+		VideoPlayerEvents.OnFullscreenListener,
+		View.OnClickListener,
+		VideoPlayerEvents.OnControlBarVisibilityListener
+{
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -50,12 +47,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CastManager mCastManager;
 
-	/**
-	 * Stored instance of CoordinatorLayout
-	 * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
-	 */
-	private CoordinatorLayout mCoordinatorLayout;
-
+	private AudioManager audioManager;
+	private Button volumnUpBtn, volumnDownBtn;
+	private TextView outputTextView;
+	private ScrollView scrollView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,130 +60,87 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		Logger.newInstance();
 
 		mPlayerView = findViewById(R.id.jwplayer);
-		TextView outputTextView = findViewById(R.id.output);
-		ScrollView scrollView = findViewById(R.id.scroll);
-		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+		outputTextView = findViewById(R.id.output);
+		scrollView = findViewById(R.id.scroll);
+
+		volumnUpBtn = findViewById(R.id.volume_up);
+		volumnDownBtn = findViewById(R.id.volume_down);
+		volumnUpBtn.setOnClickListener(this);
+		volumnDownBtn.setOnClickListener(this);
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
+		}
 
 		// Setup JWPlayer
 		setupJWPlayer();
 
+		outputTextView.setText(Logger.printBuildVersion(mPlayerView.getVersionCode()));
+
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
+		mPlayerView.addOnControlBarVisibilityListener(this);
 
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
-
-		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Instantiate the JW Player Ad event handler class
-		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
+	@Override
+	public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+
+		boolean isControlBarVisibile = controlBarVisibilityEvent.isVisible();
+
+		print(" onControlBarVisibilityChanged(): " + isControlBarVisibile);
+
+		if(isControlBarVisibile){
+			print(" onControlBarVisibilityChanged(): show volumes");
+			volumnUpBtn.setVisibility(View.VISIBLE);
+			volumnDownBtn.setVisibility(View.VISIBLE);
+		} else {
+			print(" onControlBarVisibilityChanged(): hide volumes");
+			volumnUpBtn.setVisibility(View.GONE);
+			volumnDownBtn.setVisibility(View.GONE);
+		}
+
+	}
+
+	private void print(String s){
+		outputTextView.setText(Logger.updateOutput("JWPLAYERVIEWEXAMPLE " +s));
+		scrollView.scrollTo(0, outputTextView.getBottom());
+
+	}
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()){
+			case R.id.volume_up:
+				print("Volume up!");
+				audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+				break;
+			case R.id.volume_down:
+				print("Volume down!");
+				audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+				break;
+		}
+	}
+
 	/*
 	* Setup JW Player
-	* More info for our Player Configurations and other Configurations:
-	* {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-	* 1 - PlayerConfig
-	* 2 - LogoConfig
-	* 3 - PlaybackRateConfig
-	* 4 - CaptionsConfig
-	* 5 - RelatedConfig
-	* 6 - SharingConfig
-	* 7 - SkinConfig
 	* */
 	private void setupJWPlayer() {
 
 		List<PlaylistItem> playlistItemList = createPlaylist();
-//		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
 
-		// Ima Tag Example
-		ImaAdvertising imaAdvertising = getImaAd();
-
-		// VAST Tag Example
-		Advertising vastAdvertising = getVastAd();
-
-		// SkinConifg - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.url("https://myserver.com/css/mycustomcss.css")
-				.name("mycustomcss")
-				.build();
-
-		// More info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
 				.preload(true)
 				.allowCrossProtocolRedirects(true)
-				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-				.skinConfig(skinConfig)
 				.build();
 
 		mPlayerView.setup(config);
-	}
-
-	/*
-	 * Vast Setup Example
-	 * */
-
-	private Advertising getVastAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-		String vpaid = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinearvpaid2js&correlator=";
-
-		AdBreak adbreak = new AdBreak("pre",AdSource.VAST, vpaid);
-		adbreaklist.add(adbreak);
-
-//		AdRules adRules = new AdRules.Builder()
-//				.frequency(1)
-//				.startOn(0)
-//				.startOnSeek(AdRules.RULES_START_ON_SEEK_PRE)
-//				.timeBetweenAds(2)
-//				.build();
-
-		Advertising vastad = new Advertising(AdSource.VAST, adbreaklist);
-//		vastad.setVpaidControls(true);
-//		vastad.setAdRules(adRules);
-//		vastad.setClient(AdSource.VAST);
-//		vastad.setRequestTimeout(2);
-//		vastad.setSkipOffset(1);
-//		vastad.setAdMessage("");
-//		vastad.setCueText("");
-//		vastad.setSkipMessage("");
-//		vastad.setSkipText("");
-
-		return vastad;
-	}
-
-	/*
-	* IMA Ad Example
-	* */
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
-
-		adbreaklist.add(adBreak);
-
-		ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
-//		imaSettings.setRestrictToCustomPlayer(true);
-//		imaSettings.setPpid("");
-//		imaSettings.setPlayerVersion("");
-//		imaSettings.setPlayerType("");
-//		imaSettings.setMaxRedirects(1);
-//		imaSettings.setLanguage("");
-//		imaSettings.setEnableOmidExperimentally(true);
-//		imaSettings.setDebugMode(true);
-//		imaSettings.setAutoPlayAdBreaks(true);
-
-		return new ImaAdvertising(adbreaklist,imaSettings);
 	}
 
 	/*
@@ -211,30 +163,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 			PlaylistItem item = new PlaylistItem(each);
 			playlistItemList.add(item);
 		}
-
-		return playlistItemList;
-	}
-
-	/**
-	 * MediaSource Playlist Example
-	 * */
-	private List<PlaylistItem> createMediaSourcePlaylist() {
-		List<MediaSource> mediaSourceList = new ArrayList<>();
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
-
-		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
-				.type(MediaType.HLS)
-				.build();
-		mediaSourceList.add(ms);
-
-		PlaylistItem item = new PlaylistItem.Builder()
-				.sources(mediaSourceList)
-				.build();
-
-		playlistItemList.add(item);
 
 		return playlistItemList;
 	}
@@ -297,9 +225,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				actionBar.show();
 			}
 		}
-
-		// When going to Fullscreen we want to set fitsSystemWindows="false"
-		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
 	}
 
 
@@ -322,4 +247,5 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				return super.onOptionsItemSelected(item);
 		}
 	}
+
 }
