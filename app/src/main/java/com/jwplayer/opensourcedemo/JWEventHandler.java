@@ -88,52 +88,44 @@ public class JWEventHandler implements
     private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview, String userAgentString) {
+    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
         mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
-        mOutput.setText(outputStringBuilder.append("User-Agent: ").append(userAgentString).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
-        jwPlayerView.addOnBeforeCompleteListener(this);
-        jwPlayerView.addOnBeforePlayListener(this);
-        jwPlayerView.addOnBufferListener(this);
+//        jwPlayerView.addOnBeforeCompleteListener(this);
+//        jwPlayerView.addOnBeforePlayListener(this);
+//        jwPlayerView.addOnBufferListener(this);
 
-        jwPlayerView.addOnCaptionsListListener(this);
-        jwPlayerView.addOnCaptionsChangedListener(this);
-        jwPlayerView.addOnCompleteListener(this);
-        jwPlayerView.addOnControlBarVisibilityListener(this);
-        jwPlayerView.addOnControlsListener(this);
+//        jwPlayerView.addOnCaptionsListListener(this);
+//        jwPlayerView.addOnCaptionsChangedListener(this);
+//        jwPlayerView.addOnCompleteListener(this);
+//        jwPlayerView.addOnControlBarVisibilityListener(this);
+//        jwPlayerView.addOnControlsListener(this);
 
-        jwPlayerView.addOnDisplayClickListener(this);
-
-        jwPlayerView.addOnErrorListener(this);
-
-        jwPlayerView.addOnFirstFrameListener(this);
-        jwPlayerView.addOnFullscreenListener(this);
-
-        jwPlayerView.addOnIdleListener(this);
+//        jwPlayerView.addOnDisplayClickListener(this);
+//        jwPlayerView.addOnErrorListener(this);
+//        jwPlayerView.addOnFirstFrameListener(this);
+//        jwPlayerView.addOnFullscreenListener(this);
+//        jwPlayerView.addOnIdleListener(this);
 
         jwPlayerView.addOnLevelsChangedListener(this);
         jwPlayerView.addOnLevelsListener(this);
-
         jwPlayerView.addOnMetaListener(this);
-        jwPlayerView.addOnMuteListener(this);
 
-        jwPlayerView.addOnPauseListener(this);
-        jwPlayerView.addOnPlayListener(this);
-        jwPlayerView.addOnPlaylistCompleteListener(this);
-        jwPlayerView.addOnPlaylistItemListener(this);
-        jwPlayerView.addOnPlaylistListener(this);
-
-        jwPlayerView.addOnReadyListener(this);
-
-        jwPlayerView.addOnSeekListener(this);
-        jwPlayerView.addOnSeekedListener(this);
-        jwPlayerView.addOnSetupErrorListener(this);
-
-        jwPlayerView.addOnTimeListener(this);
+//        jwPlayerView.addOnMuteListener(this);
+//        jwPlayerView.addOnPauseListener(this);
+//        jwPlayerView.addOnPlayListener(this);
+//        jwPlayerView.addOnPlaylistCompleteListener(this);
+//        jwPlayerView.addOnPlaylistItemListener(this);
+//        jwPlayerView.addOnPlaylistListener(this);
+//        jwPlayerView.addOnReadyListener(this);
+//        jwPlayerView.addOnSeekListener(this);
+//        jwPlayerView.addOnSeekedListener(this);
+//        jwPlayerView.addOnSetupErrorListener(this);
+//        jwPlayerView.addOnTimeListener(this);
 
         jwPlayerView.addOnVisualQualityListener(this);
 

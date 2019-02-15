@@ -42,16 +42,16 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         TextView outputTextView = (TextView)findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        setupJWPlayer();
+
         WebView webView = JWWebView.getWebView(mPlayerView);
         String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
-
-        setupJWPlayer();
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        new JWEventHandler(mPlayerView, outputTextView, scrollView, userAgent);
+        new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Get a reference to the CastManager
         mCastManager = CastManager.getInstance();

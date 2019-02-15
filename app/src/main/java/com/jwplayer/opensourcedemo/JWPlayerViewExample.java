@@ -2,10 +2,12 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +17,10 @@ import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.upstream.Allocator;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -23,7 +29,9 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+import com.longtailvideo.jwplayer.player.ExoPlayerSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +62,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwplayerview);
 
+		// Get a reference to the CastManager
+		mCastManager = CastManager.getInstance();
+
 		mPlayerView = findViewById(R.id.jwplayer);
 		TextView outputTextView = findViewById(R.id.output);
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
-
-		WebView webView = JWWebView.getWebView(mPlayerView);
-		String userAgent = webView.getSettings()!=null? webView.getSettings().getUserAgentString(): "";
 
 		// Setup JWPlayer
 		setupJWPlayer();
@@ -72,50 +80,32 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView, userAgent);
+		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-		// Instantiate the JW Player Ad event handler class
-		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Get a reference to the CastManager
-		mCastManager = CastManager.getInstance();
+//		// Instantiate the JW Player Ad event handler class
+//		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 	}
 
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
-		List<AdBreak> schedule = createAdSchedule();
-
-
-		ImaSdkSettings imaSdkSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
-		// Use the 2-letter ISO 639-1 language code for your desired language
-		imaSdkSettings.setLanguage("KO");
-		ImaAdvertising imaAdvertising = new ImaAdvertising(schedule, imaSdkSettings);
 
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
 				.preload(true)
-//				.advertising(imaAdvertising)
+				.mute(true)
 				.allowCrossProtocolRedirects(true)
 				.build();
 
 		mPlayerView.setup(config);
 	}
 
-	private List<AdBreak> createAdSchedule() {
-		List<AdBreak> schedule = new ArrayList<>();
-		schedule.add(new AdBreak("pre", AdSource.IMA, "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="));
-		return schedule;
-	}
-
 	private List<PlaylistItem> createPlaylist() {
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8"
 		};
 
 		for(String each : playlist){
