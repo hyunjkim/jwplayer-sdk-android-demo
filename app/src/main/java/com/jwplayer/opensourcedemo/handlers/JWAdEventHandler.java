@@ -1,10 +1,11 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.jwplayer.opensourcedemo.JWPlayerViewExample;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AdBreakEndEvent;
 import com.longtailvideo.jwplayer.events.AdBreakStartEvent;
@@ -44,17 +45,13 @@ public class JWAdEventHandler implements
         AdvertisingEvents.OnAdStartedListener,
         AdvertisingEvents.OnAdTimeListener{
 
-    private TextView mOutput;
-    private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
     private JWPlayerView mPlayer;
+    private JWPlayerViewExample jwPlayerViewExample;
 
 
-    JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWAdEventHandler(JWPlayerViewExample jwPlayerViewExample, JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
-        mScroll = scrollview;
-        mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
+        this.jwPlayerViewExample = jwPlayerViewExample;
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnAdBreakEndListener(this);
@@ -74,10 +71,7 @@ public class JWAdEventHandler implements
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
-        mScroll.scrollTo(0, mOutput.getBottom());
+        jwPlayerViewExample.updateText(output);
     }
 
     private void print(String s){

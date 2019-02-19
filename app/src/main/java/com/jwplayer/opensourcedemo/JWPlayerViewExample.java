@@ -2,39 +2,33 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.upstream.Allocator;
+import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.jwauthentication.JWURLSigning;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
-import com.longtailvideo.jwplayer.player.ExoPlayerSettings;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
@@ -56,6 +50,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 
+	private JWURLSigning jwurlSigning;
+
+	private StringBuilder outputStringBuilder;
+
+	private TextView outputTextView;
+
+	private ScrollView scrollView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +67,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mCastManager = CastManager.getInstance();
 
 		mPlayerView = findViewById(R.id.jwplayer);
-		TextView outputTextView = findViewById(R.id.output);
-		ScrollView scrollView = findViewById(R.id.scroll);
+		outputTextView = findViewById(R.id.output);
+		scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+
+		outputStringBuilder = new StringBuilder();
+
+		// Get instance of JWPlayerURlSigning
+		jwurlSigning = new JWURLSigning();
 
 		// Setup JWPlayer
 		setupJWPlayer();
@@ -76,16 +82,27 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
 
+		outputTextView.setText(outputStringBuilder.append("Build version: ").append(mPlayerView.getVersionCode()).append("\r\n"));
+
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		new JWEventHandler(this, mPlayerView, outputTextView, scrollView);
 
 //		// Instantiate the JW Player Ad event handler class
-//		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
+		new JWAdEventHandler(this,mPlayerView, outputTextView, scrollView);
 	}
 
+	/*
+	* Log out player events
+	* */
+	public void updateText(String output) {
+		DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
+		outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
+		outputTextView.setText(outputStringBuilder.toString());
+		scrollView.scrollTo(0, outputTextView.getBottom());
+	}
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
@@ -105,11 +122,20 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
 		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8"
+				"manifests/3yknMpYB.m3u8",
+				"manifests/XA8ohFgC.m3u8",
+				"manifests/UkcjBG8u.m3u8"
 		};
 
 		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
+
+			jwurlSigning.createSignature(each, 50);
+
+			String url = "https://cdn.jwplayer.com" + jwurlSigning.getApiUrlSignature();
+
+			PlaylistItem playlistItem = new PlaylistItem(url);
+
+			playlistItemList.add(playlistItem);
 		}
 
 		return playlistItemList;
@@ -183,17 +209,5 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Register the MediaRouterButton on the JW Player SDK
 		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.switch_to_fragment:
-				Intent i = new Intent(this, JWPlayerFragmentExample.class);
-				startActivity(i);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
 	}
 }

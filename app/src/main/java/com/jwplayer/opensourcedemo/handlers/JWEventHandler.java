@@ -1,10 +1,12 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
+import android.icu.util.TimeUnit;
 import android.os.Build;
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.jwplayer.opensourcedemo.JWPlayerViewExample;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
@@ -83,59 +85,52 @@ public class JWEventHandler implements
         AdvertisingEvents.OnBeforePlayListener {
 
     private JWPlayerView mPlayer;
-    private TextView mOutput;
-    private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
+    private JWPlayerViewExample jwPlayerViewExample;
 
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWEventHandler(JWPlayerViewExample jwPlayerViewExample, JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
-        mScroll = scrollview;
-        mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
+        this.jwPlayerViewExample = jwPlayerViewExample;
 
         // Subscribe to allEventHandler: Player events
-//        jwPlayerView.addOnBeforeCompleteListener(this);
-//        jwPlayerView.addOnBeforePlayListener(this);
-//        jwPlayerView.addOnBufferListener(this);
+        jwPlayerView.addOnBeforeCompleteListener(this);
+        jwPlayerView.addOnBeforePlayListener(this);
+        jwPlayerView.addOnBufferListener(this);
 
-//        jwPlayerView.addOnCaptionsListListener(this);
-//        jwPlayerView.addOnCaptionsChangedListener(this);
-//        jwPlayerView.addOnCompleteListener(this);
-//        jwPlayerView.addOnControlBarVisibilityListener(this);
-//        jwPlayerView.addOnControlsListener(this);
+        jwPlayerView.addOnCaptionsListListener(this);
+        jwPlayerView.addOnCaptionsChangedListener(this);
+        jwPlayerView.addOnCompleteListener(this);
+        jwPlayerView.addOnControlBarVisibilityListener(this);
+        jwPlayerView.addOnControlsListener(this);
 
-//        jwPlayerView.addOnDisplayClickListener(this);
-//        jwPlayerView.addOnErrorListener(this);
-//        jwPlayerView.addOnFirstFrameListener(this);
-//        jwPlayerView.addOnFullscreenListener(this);
-//        jwPlayerView.addOnIdleListener(this);
+        jwPlayerView.addOnDisplayClickListener(this);
+        jwPlayerView.addOnErrorListener(this);
+        jwPlayerView.addOnFirstFrameListener(this);
+        jwPlayerView.addOnFullscreenListener(this);
+        jwPlayerView.addOnIdleListener(this);
 
         jwPlayerView.addOnLevelsChangedListener(this);
         jwPlayerView.addOnLevelsListener(this);
         jwPlayerView.addOnMetaListener(this);
 
-//        jwPlayerView.addOnMuteListener(this);
-//        jwPlayerView.addOnPauseListener(this);
-//        jwPlayerView.addOnPlayListener(this);
-//        jwPlayerView.addOnPlaylistCompleteListener(this);
-//        jwPlayerView.addOnPlaylistItemListener(this);
-//        jwPlayerView.addOnPlaylistListener(this);
-//        jwPlayerView.addOnReadyListener(this);
-//        jwPlayerView.addOnSeekListener(this);
-//        jwPlayerView.addOnSeekedListener(this);
-//        jwPlayerView.addOnSetupErrorListener(this);
-//        jwPlayerView.addOnTimeListener(this);
+        jwPlayerView.addOnMuteListener(this);
+        jwPlayerView.addOnPauseListener(this);
+        jwPlayerView.addOnPlayListener(this);
+        jwPlayerView.addOnPlaylistCompleteListener(this);
+        jwPlayerView.addOnPlaylistItemListener(this);
+        jwPlayerView.addOnPlaylistListener(this);
+        jwPlayerView.addOnReadyListener(this);
+        jwPlayerView.addOnSeekListener(this);
+        jwPlayerView.addOnSeekedListener(this);
+        jwPlayerView.addOnSetupErrorListener(this);
+        jwPlayerView.addOnTimeListener(this);
 
         jwPlayerView.addOnVisualQualityListener(this);
 
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
-        mScroll.scrollTo(0, mOutput.getBottom());
+        jwPlayerViewExample.updateText(output);
     }
 
     private void print(String s){
