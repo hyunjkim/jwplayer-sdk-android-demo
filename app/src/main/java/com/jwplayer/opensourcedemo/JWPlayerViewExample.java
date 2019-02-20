@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -66,6 +68,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			WebView.setWebContentsDebuggingEnabled(true);
+			setUserAgent();
+		}
+
 		// Setup JWPlayer
 		setupJWPlayer();
 
@@ -85,6 +92,19 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mCastManager = CastManager.getInstance();
 	}
 
+	private void setUserAgent() {
+		WebView webView = null;
+		for (int i = 0 ; i < mPlayerView.getChildCount() ; i++) {
+			View v = mPlayerView.getChildAt(i);
+			if (v instanceof WebView) {
+				webView = (WebView)v;
+				break;
+			}
+		}
+		if (webView != null) {
+			webView.getSettings().setUserAgentString("JWPLAYER CUSTOM USER AGENT SETUP");
+		}
+	}
 
 	private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
@@ -100,7 +120,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				.playlist(playlistItemList)
 				.autostart(true)
 				.preload(true)
-//				.advertising(imaAdvertising)
+				.advertising(imaAdvertising)
 				.allowCrossProtocolRedirects(true)
 				.build();
 
@@ -124,7 +144,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
 		Map<String, String> setUserAgent = new HashMap<>();
-		setUserAgent.put("useragent","JW PLAYER - HYUNJOO");
+		setUserAgent.put("useragent","JW PLAYER - TESTING 123 TESTING 123");
 
 		for(String each : playlist){
 			playlistItemList.add(new PlaylistItem.Builder()
