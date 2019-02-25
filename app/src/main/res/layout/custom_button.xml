@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custombutton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/jw_logo_margin"
+    android:background="@drawable/ic_jw_logo_black_24dp"
+    android:contentDescription="@string/jwplayercustombutton"
+    android:visibility="gone">
+</ImageButton>

@@ -1,6 +1,8 @@
 package com.jwplayer.opensourcedemo;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
@@ -10,6 +12,7 @@ import com.longtailvideo.jwplayer.events.BufferEvent;
 import com.longtailvideo.jwplayer.events.CaptionsChangedEvent;
 import com.longtailvideo.jwplayer.events.CaptionsListEvent;
 import com.longtailvideo.jwplayer.events.CompleteEvent;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.ControlsEvent;
 import com.longtailvideo.jwplayer.events.DisplayClickEvent;
 import com.longtailvideo.jwplayer.events.ErrorEvent;
@@ -63,6 +66,7 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnLevelsListener,
         VideoPlayerEvents.OnCaptionsChangedListener,
         VideoPlayerEvents.OnControlsListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener,
         VideoPlayerEvents.OnDisplayClickListener,
         VideoPlayerEvents.OnMuteListener,
         VideoPlayerEvents.OnSeekedListener,
@@ -74,15 +78,18 @@ public class JWEventHandler implements
     private JWPlayerViewExample mPlayerViewExample;
     private JWPlayerFragmentExample mPlayerFragmentExample;
     private JWPlayerView mPlayer;
+    private ImageButton mCustomButton;
 
 
-    JWEventHandler(JWPlayerFragmentExample jwPlayerFragmentExample, JWPlayerView jwPlayerView) {
+    JWEventHandler(JWPlayerFragmentExample jwPlayerFragmentExample, JWPlayerView jwPlayerView, ImageButton customButton) {
+        mCustomButton = customButton;
         mPlayerFragmentExample = jwPlayerFragmentExample;
         mPlayer = jwPlayerView;
         attachListeners();
     }
 
-    JWEventHandler(JWPlayerViewExample jwPlayerViewExample, JWPlayerView jwPlayerView) {
+    JWEventHandler(JWPlayerViewExample jwPlayerViewExample, JWPlayerView jwPlayerView, ImageButton customButton) {
+        mCustomButton = customButton;
         mPlayerViewExample = jwPlayerViewExample;
         mPlayer = jwPlayerView;
         attachListeners();
@@ -107,6 +114,7 @@ public class JWEventHandler implements
         mPlayer.addOnCaptionsChangedListener(this);
         mPlayer.addOnCompleteListener(this);
         mPlayer.addOnControlsListener(this);
+        mPlayer.addOnControlBarVisibilityListener(this);
         mPlayer.addOnDisplayClickListener(this);
         mPlayer.addOnMuteListener(this);
         mPlayer.addOnVisualQualityListener(this);
@@ -324,4 +332,11 @@ public class JWEventHandler implements
         print(" " + "onReady " + readyEvent.getSetupTime());
     }
 
+    @Override
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+        logToPlayer(" " + "onReady " + controlBarVisibilityEvent.isVisible());
+        print(" " + "onReady " + controlBarVisibilityEvent.isVisible());
+        if(controlBarVisibilityEvent.isVisible()) mCustomButton.setVisibility(View.VISIBLE);
+        else mCustomButton.setVisibility(View.GONE);
+    }
 }

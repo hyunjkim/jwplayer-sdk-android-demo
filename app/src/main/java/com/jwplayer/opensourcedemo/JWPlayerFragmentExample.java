@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -54,6 +55,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         outputTextView = (TextView)findViewById(R.id.output);
         scrollView = (ScrollView) findViewById(R.id.scroll);
+        ImageButton mCustomButton = findViewById(R.id.custombutton);
 
         // Setup JWPlayer
         setupJWPlayer();
@@ -65,7 +67,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        new JWEventHandler(this, mPlayerView);
+        new JWEventHandler(this, mPlayerView, mCustomButton);
 
         // Instantiate the JW Player Ad event handler class
         new JWAdEventHandler(this, mPlayerView);

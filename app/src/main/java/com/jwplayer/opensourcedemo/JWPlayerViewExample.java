@@ -6,11 +6,17 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
@@ -41,12 +47,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CastManager mCastManager;
 
-	/**
-	 * Stored instance of CoordinatorLayout
-	 * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
-	 */
-	private CoordinatorLayout mCoordinatorLayout;
-
 	private TextView outputTextView;
 	private ScrollView scrollView;
 	private final StringBuilder outputStringBuilder = new StringBuilder();
@@ -59,7 +59,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mPlayerView = findViewById(R.id.jwplayer);
 		outputTextView = findViewById(R.id.output);
 		scrollView = findViewById(R.id.scroll);
-		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+		ImageButton mCustomButton = findViewById(R.id.custombutton);
 
 		// Setup JWPlayer
 		setupJWPlayer();
@@ -67,14 +67,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Display JWPlayer version
 		logout("Build version: " + mPlayerView.getVersionCode());
 
-		// Handle hiding/showing of ActionBar
+		// My Custom button click listener
+		mCustomButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast toast = Toast.makeText(getApplicationContext(),"Hi, My custom button", Toast.LENGTH_LONG);
+				toast.setGravity(Gravity.CENTER,0,-200);
+				toast.show();
+			}
+		});
+
 		mPlayerView.addOnFullscreenListener(this);
 
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		new JWEventHandler(this,mPlayerView);
+		new JWEventHandler(this,mPlayerView, mCustomButton);
 
 		// Instantiate the JW Player Ad event handler class
 		new JWAdEventHandler(this,mPlayerView);
@@ -84,7 +93,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	}
 
 
-	private void setupJWPlayer() {
+    private void setupJWPlayer() {
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		SkinConfig skinConfig = new SkinConfig.Builder()
@@ -119,6 +128,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		}
 
 		return playlistItemList;
+	}
+
+	public void print(String output){
+	    Log.i("JWEVENTHANDLER", " (JWPLAYERVIEW) " + output);
 	}
 
 	public void logout(String output){
@@ -183,9 +196,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				actionBar.show();
 			}
 		}
-
-		// When going to Fullscreen we want to set fitsSystemWindows="false"
-		mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
 	}
 
 
