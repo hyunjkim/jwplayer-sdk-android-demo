@@ -20,8 +20,12 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
@@ -43,6 +47,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	 */
 	private CoordinatorLayout mCoordinatorLayout;
 
+	private TextView outputTextView;
+	private ScrollView scrollView;
+	private final StringBuilder outputStringBuilder = new StringBuilder();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +57,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		setContentView(R.layout.activity_jwplayerview);
 
 		mPlayerView = findViewById(R.id.jwplayer);
-		TextView outputTextView = findViewById(R.id.output);
-		ScrollView scrollView = findViewById(R.id.scroll);
+		outputTextView = findViewById(R.id.output);
+		scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+		// Setup JWPlayer
+		setupJWPlayer();
+
+		// Display JWPlayer version
+		logout("Build version: " + mPlayerView.getVersionCode());
 
 		// Handle hiding/showing of ActionBar
 		mPlayerView.addOnFullscreenListener(this);
@@ -62,13 +74,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
 		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView);
+		new JWEventHandler(this,mPlayerView);
 
 		// Instantiate the JW Player Ad event handler class
-		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Setup JWPlayer
-		setupJWPlayer();
+		new JWAdEventHandler(this,mPlayerView);
 
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
@@ -112,6 +121,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		return playlistItemList;
 	}
 
+	public void logout(String output){
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+		outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
+		outputTextView.setText(outputStringBuilder.toString());
+		scrollView.scrollTo(0, outputTextView.getBottom());
+	}
+
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// Set fullscreen when the device is rotated to landscape
@@ -137,7 +153,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	protected void onDestroy() {
 		// Let JW Player know that the app is being destroyed
 		mPlayerView.onDestroy();
-
 		super.onDestroy();
 	}
 

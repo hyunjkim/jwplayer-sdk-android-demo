@@ -16,6 +16,11 @@ import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class JWPlayerFragmentExample extends AppCompatActivity {
 
     /**
@@ -38,21 +43,32 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private JWEventHandler mEventHandler;
 
+    private TextView outputTextView;
+    private ScrollView scrollView;
+    private final StringBuilder outputStringBuilder = new StringBuilder();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
-        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
+        outputTextView = (TextView)findViewById(R.id.output);
+        scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        // Setup JWPlayer
         setupJWPlayer();
+
+        // Display JWPlayer version
+        logout("Build version: " + mPlayerView.getVersionCode());
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
+        new JWEventHandler(this, mPlayerView);
+
+        // Instantiate the JW Player Ad event handler class
+        new JWAdEventHandler(this, mPlayerView);
 
         // Get a reference to the CastManager
         mCastManager = CastManager.getInstance();
@@ -77,6 +93,13 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
+    }
+
+    public void logout(String output){
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
+        outputTextView.setText(outputStringBuilder.toString());
+        scrollView.scrollTo(0, outputTextView.getBottom());
     }
 
     @Override
