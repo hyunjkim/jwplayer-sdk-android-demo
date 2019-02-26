@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -32,16 +36,21 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private JWEventHandler mEventHandler;
 
+    private CastContext mCastContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView) findViewById(R.id.output);
+        TextView outputTextView = findViewById(R.id.output);
+        ScrollView scrollview = findViewById(R.id.scrollview);
+        MediaRouteButton mMediaRouteButton = findViewById(R.id.media_route_button);
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
         mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .file("http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4")
+                .autostart(true)
                 .build());
 
         // Attach the Fragment to our layout
@@ -50,6 +59,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         ft.add(R.id.fragment_container, mPlayerFragment);
         ft.commit();
 
+
         // Make sure all the pending fragment transactions have been completed, otherwise
         // mPlayerFragment.getPlayer() may return null
         fm.executePendingTransactions();
@@ -57,11 +67,22 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
 
+        String jwplayerBuildVersion = "JWPlayer Version: " + mPlayerView.getVersionCode();
+        outputTextView.append(jwplayerBuildVersion+"\r\n");
+        outputTextView.append("JWPlayer Fragment Example"+"\r\n");
+
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
+        mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollview);
+
+        // Add my cast button
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
+        mMediaRouteButton.bringToFront();
+        mCastContext = CastContext.getSharedInstance(this);
+        MyCastListener myCastListener = new MyCastListener(mMediaRouteButton, mPlayerView);
+        mCastContext.addCastStateListener(myCastListener);
     }
 
     @Override
@@ -82,8 +103,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
 
         // Register the MediaRouterButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
+//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+//                R.id.media_route_menu_item);
 
         return true;
     }

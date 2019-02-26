@@ -6,13 +6,18 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManager;
+import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
@@ -28,11 +33,6 @@ public class JWPlayerViewExample extends AppCompatActivity
     private JWPlayerView mPlayerView;
 
     /**
-     * An instance of our event handling class
-     */
-    private JWEventHandler mEventHandler;
-
-    /**
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
@@ -43,14 +43,26 @@ public class JWPlayerViewExample extends AppCompatActivity
      */
     private CoordinatorLayout mCoordinatorLayout;
 
+    private CastSession mCastSession;
+    private SessionManager mSessionManager;
+    private final SessionManagerListener mSessionManagerListener = new MySessionManagerListenerImpl();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Get a reference to the CastContext
+        mCastContext = CastContext.getSharedInstance(this);
+
+        // Session Manager Listener
+        mSessionManager = mCastContext.getSessionManager();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
+        ScrollView scrollview = findViewById(R.id.scrollview);
+        MediaRouteButton mMediaRouteButton = findViewById(R.id.media_route_button);
 
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
@@ -61,8 +73,31 @@ public class JWPlayerViewExample extends AppCompatActivity
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
+        new JWEventHandler(mPlayerView, outputTextView, scrollview);
 
+
+        // Setup JWPlayer
+        setupJWPlayer();
+
+        String jwplayerBuildVersion = "JWPlayer Version: " + mPlayerView.getVersionCode();
+        outputTextView.append(jwplayerBuildVersion +"\r\n");
+        outputTextView.append("JWPlayer Activity Example" +"\r\n");
+
+        // Instantiate and Attach Cast State Listener
+
+
+        // Add my Custom cast button
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
+        mMediaRouteButton.bringToFront();
+        mCastContext = CastContext.getSharedInstance(this);
+        MyCastListener myCastListener = new MyCastListener(mMediaRouteButton, mPlayerView);
+        mCastContext.addCastStateListener(myCastListener);
+
+        // Using Default cast button
+//        MyCastListener myCastListener = new MyCastListener(mPlayerView);
+    }
+
+    private void setupJWPlayer() {
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
                 .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
@@ -71,11 +106,8 @@ public class JWPlayerViewExample extends AppCompatActivity
                 .build();
 
         mPlayerView.load(pi);
-
-        // Get a reference to the CastContext
-        mCastContext = CastContext.getSharedInstance(this);
+        mPlayerView.play();
     }
-
 
     @Override
     protected void onStart() {
@@ -85,6 +117,8 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        mCastSession = mSessionManager.getCurrentCastSession();
+        mSessionManager.addSessionManagerListener(mSessionManagerListener);
         super.onResume();
         mPlayerView.onResume();
     }
@@ -93,6 +127,8 @@ public class JWPlayerViewExample extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         mPlayerView.onPause();
+        mSessionManager.removeSessionManagerListener(mSessionManagerListener);
+        mCastSession = null;
     }
 
     @Override
@@ -150,7 +186,6 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Register the MediaRouterButton
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
                 R.id.media_route_menu_item);
-
         return true;
     }
 
@@ -165,4 +200,5 @@ public class JWPlayerViewExample extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }

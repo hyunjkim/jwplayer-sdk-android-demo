@@ -1,6 +1,7 @@
 package com.jwplayer.opensourcedemo;
 
 import android.util.Log;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
@@ -47,7 +48,8 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 /**
  * Outputs all JW Player Events to logging, with the exception of time events.
  */
-public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
+public class JWEventHandler implements
+        VideoPlayerEvents.OnSetupErrorListener,
         VideoPlayerEvents.OnPlaylistListener,
         VideoPlayerEvents.OnPlaylistItemListener,
         VideoPlayerEvents.OnPlayListener,
@@ -87,9 +89,12 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     private String TAG = JWEventHandler.class.getName();
 
     TextView mOutput;
+    ScrollView mScrollView;
 
-    public JWEventHandler(JWPlayerView jwPlayerView, TextView output) {
+    public JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mOutput = output;
+        mScrollView = scrollview;
+
         // Subscribe to all JW Player events
         jwPlayerView.addOnFirstFrameListener(this);
         jwPlayerView.addOnSetupErrorListener(this);
@@ -132,7 +137,8 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     }
 
     private void updateOutput(String output) {
-        mOutput.setText(output);
+        mOutput.append(output+"\r\n");
+        mScrollView.scrollTo(0, mOutput.getBottom());
     }
 
     /**
