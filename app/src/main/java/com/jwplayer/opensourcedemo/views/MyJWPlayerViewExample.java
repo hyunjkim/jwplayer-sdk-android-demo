@@ -77,9 +77,9 @@ public class MyJWPlayerViewExample extends AppCompatActivity implements
         List<PlaylistItem> playlistItemList = createPlaylist();
 
         LogoConfig logoConfig = new LogoConfig.Builder()
-                .file("http://www.mypictures.com/jwplayer.png")
+                .file("http://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg")
                 .link("https://www.jwplayer.com")
-//                .margin(10)
+                .margin(10)
                 .hide(false)
 //				.position(LogoConfig.LOGO_POSITION_BOTTOM_RIGHT)
 //				.position(LogoConfig.LOGO_POSITION_BOTTOM_LEFT)
@@ -91,6 +91,7 @@ public class MyJWPlayerViewExample extends AppCompatActivity implements
         PlayerConfig playerConfig = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .logoConfig(logoConfig)
+                .allowCrossProtocolRedirects(true)
                 .autostart(false)
                 .mute(true)
                 .build();
