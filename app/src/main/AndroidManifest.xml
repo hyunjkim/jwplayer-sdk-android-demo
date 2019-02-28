@@ -31,6 +31,10 @@
         <meta-data
             android:name="JW_LICENSE_KEY"
             android:value="@string/mylicensekey" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="0ef7f5b00f51a4a374a9d2df1dde50e534d94e1c" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

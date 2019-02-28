@@ -229,8 +229,7 @@ public class JWAdEventHandler implements
 
     @Override
     public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
-        updateOutput(" " + "onBeforePlay()");
+        updateOutput(" " + "onBeforePlay)" );
         print(" " + "onBeforePlay(): " + beforePlayEvent);
     }
-
 }

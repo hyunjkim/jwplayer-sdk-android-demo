@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import com.jwplayer.opensourcedemo.myutil.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
 import com.longtailvideo.jwplayer.events.BufferChangeEvent;
@@ -156,8 +158,11 @@ public class JWEventHandler implements
 
     @Override
     public void onError(ErrorEvent errorEvent) {
-        updateOutput(" onError: " + errorEvent.getMessage());
         Exception exception = errorEvent.getException();
+        updateOutput(" onError: " + errorEvent.getMessage());
+        if (exception != null) {
+            updateOutput(" onError Exception: " + exception.getMessage());
+        }
         Log.i("JWPLAYER-LOG", "onError: " + errorEvent.getMessage(), exception);
     }
 
@@ -171,6 +176,22 @@ public class JWEventHandler implements
     public void onBuffer(BufferEvent bufferEvent) {
         updateOutput(" " + "onBuffer() " + bufferEvent.getOldState());
         print(" " + "onBuffer() " + bufferEvent.getOldState());
+
+        PlayerConfig config = mPlayer.getConfig();
+
+        String event = "  onIdle() ";
+        String type = mPlayer.getPlaylistItem(mPlayer.getPlaylistIndex()).getSources().get(0).getType().toString();
+
+        print(event+ " HYUNJOO------------------------ " + "MEDIATYPE: " + type);
+
+        if(type.equals("MP3")){
+            print(event+" HYUNJOO------------------------set to stormtrooper");
+            config.setSkinConfig(getSkin("stormtrooper"));
+        } else {
+            print(event+" HYUNJOO------------------------set to bekle");
+            config.setSkinConfig(getSkin("bekle"));
+        }
+
     }
 
     @Override
@@ -274,8 +295,15 @@ public class JWEventHandler implements
     @Override
     public void onPlaylistItem(PlaylistItemEvent playlistItemEvent) {
         updateOutput(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
-        print(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
-        print(" " + "onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
+        print(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex() + "\r\n" + "onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
+
+    }
+
+    private SkinConfig getSkin(String skin){
+        return new SkinConfig.Builder()
+                .url("https://ssl.p.jwpcdn.com/player/v/7.2.3/skins/"+skin+".css")
+                .name(skin)
+                .build();
     }
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
