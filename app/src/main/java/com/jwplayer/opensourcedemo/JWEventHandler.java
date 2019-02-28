@@ -93,14 +93,12 @@ public class JWEventHandler implements
     private JWPlayerView mPlayer;
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
     JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnBeforeCompleteListener(this);
@@ -150,9 +148,8 @@ public class JWEventHandler implements
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+        String str = JWPlayerViewExample.getOutput(output);
+        mOutput.setText(str);
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 

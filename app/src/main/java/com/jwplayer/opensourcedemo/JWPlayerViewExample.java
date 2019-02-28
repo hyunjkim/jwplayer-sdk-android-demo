@@ -28,8 +28,12 @@ import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
@@ -52,10 +56,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	private CoordinatorLayout mCoordinatorLayout;
 
 
+	private static StringBuilder outputStringBuilder;
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jwview);
+
+		outputStringBuilder = new StringBuilder();
 
 		mPlayerView = findViewById(R.id.jwplayer);
 		TextView outputTextView = findViewById(R.id.output);
@@ -71,6 +80,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Keep the screen on during playback
 		new KeepScreenOnHandler(mPlayerView, getWindow());
 
+		outputTextView.setText(outputStringBuilder.append("Build version: ").append(mPlayerView.getVersionCode()).append("\r\n"));
+
 		// Instantiate the JW Player event handler class
 		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
@@ -81,29 +92,20 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		mCastManager = CastManager.getInstance();
 	}
 
+	public static String getOutput(String output){
+		DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
+		return outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n").toString();
+	}
 
 	private void setupJWPlayer() {
 
 		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
-//		List<PlaylistItem> playlistItemList = createPlaylist();
-
-		// Ima Tag Example
-		ImaAdvertising imaAdvertising = getImaAd();
-
-		// VAST Tag Example
-		Advertising vastAdvertising = getVastAd();
-
-		SkinConfig skinConfig = new SkinConfig.Builder()
-				.url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/audio.css")
-				.name("audio")
-				.build();
 
 		PlayerConfig config = new PlayerConfig.Builder()
 				.playlist(playlistItemList)
 				.autostart(true)
 				.preload(true)
 				.allowCrossProtocolRedirects(true)
-				.skinConfig(skinConfig)
 				.build();
 
 		mPlayerView.setup(config);
@@ -116,89 +118,22 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<MediaSource> mediaSourceList = new ArrayList<>();
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
+		String mp3 = "http://content.bitsontherun.com/videos/3XnJSIm4-zWfluNSa.mp3";
 
 		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
+				.file(mp3)
 				.type(MediaType.MP3)
 				.build();
 		mediaSourceList.add(ms);
 
 		PlaylistItem item = new PlaylistItem.Builder()
 				.sources(mediaSourceList)
+				.image("https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg")
 				.build();
 
 		playlistItemList.add(item);
 
 		return playlistItemList;
-	}
-
-	/*
-	 * Create a Playlist Example
-	 * */
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-		};
-
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
-		}
-
-		return playlistItemList;
-	}
-
-
-	/*
-	 * Vast Setup Example
-	 * */
-
-	private Advertising getVastAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adbreak = new AdBreak("pre",AdSource.VAST, ad);
-
-		adbreaklist.add(adbreak);
-
-		return new Advertising(AdSource.VAST, adbreaklist);
-	}
-
-	/*
-	* IMA Ad Example
-	* */
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
-
-		adbreaklist.add(adBreak);
-
-		ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
-//		imaSettings.setRestrictToCustomPlayer(true);
-//		imaSettings.setPpid("");
-//		imaSettings.setPlayerVersion("");
-//		imaSettings.setPlayerType("");
-//		imaSettings.setMaxRedirects(1);
-//		imaSettings.setLanguage("");
-//		imaSettings.setEnableOmidExperimentally(true);
-//		imaSettings.setDebugMode(true);
-//		imaSettings.setAutoPlayAdBreaks(true);
-
-		return new ImaAdvertising(adbreaklist);
 	}
 
 	/*
