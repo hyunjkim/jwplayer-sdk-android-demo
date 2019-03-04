@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -13,9 +14,6 @@ import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
-import com.jwplayer.opensourcedemo.handler.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.handler.JWEventHandler;
 import com.jwplayer.opensourcedemo.handler.KeepScreenOnHandler;
 import com.jwplayer.opensourcedemo.myutil.Logger;
@@ -23,15 +21,9 @@ import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdRules;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -39,7 +31,7 @@ import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener {
+		VideoPlayerEvents.OnFullscreenListener{
 
 	/**
 	 * Reference to the {@link JWPlayerView}
@@ -70,7 +62,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		ScrollView scrollView = findViewById(R.id.scroll);
 		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-		WebView wb = new WebView(this);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			WebView.setWebContentsDebuggingEnabled(true);
+		}
 
 		// Setup JWPlayer
 		setupJWPlayer();
@@ -84,35 +78,16 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		// Instantiate the JW Player event handler class
 		new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-		// Instantiate the JW Player Ad event handler class
-		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
 		// Get a reference to the CastManager
 		mCastManager = CastManager.getInstance();
 	}
 
 	/*
 	* Setup JW Player
-	* More info for our Player Configurations and other Configurations:
-	* {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-	* 1 - PlayerConfig
-	* 2 - LogoConfig
-	* 3 - PlaybackRateConfig
-	* 4 - CaptionsConfig
-	* 5 - RelatedConfig
-	* 6 - SharingConfig
-	* 7 - SkinConfig
 	* */
 	private void setupJWPlayer() {
 
 		List<PlaylistItem> playlistItemList = createPlaylist();
-//		List<PlaylistItem> playlistItemList = createMediaSourcePlaylist();
-
-		// Ima Tag Example
-		ImaAdvertising imaAdvertising = getImaAd();
-
-		// VAST Tag Example
-		Advertising vastAdvertising = getVastAd();
 
 		// SkinConifg - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
 		SkinConfig skinConfig = new SkinConfig.Builder()
@@ -126,8 +101,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 				.autostart(true)
 				.preload(true)
 				.allowCrossProtocolRedirects(true)
-				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
 				.skinConfig(skinConfig)
 				.build();
 
@@ -135,68 +108,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 	}
 
 	/*
-	 * Vast Setup Example
+	 * Create a Playlist Example
 	 * */
-
-	private Advertising getVastAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-		String vpaid = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinearvpaid2js&correlator=";
-
-		AdBreak adbreak = new AdBreak("pre", AdSource.VAST, ad);
-		adbreaklist.add(adbreak);
-
-//		AdRules adRules = new AdRules.Builder()
-//				.frequency(1)
-//				.startOn(0)
-//				.startOnSeek(AdRules.RULES_START_ON_SEEK_PRE)
-//				.timeBetweenAds(2)
-//				.build();
-
-		Advertising vastad = new Advertising(AdSource.VAST, adbreaklist);
-//		vastad.setVpaidControls(true);
-//		vastad.setAdRules(adRules);
-//		vastad.setClient(AdSource.VAST);
-//		vastad.setRequestTimeout(2);
-//		vastad.setSkipOffset(1);
-//		vastad.setAdMessage("");
-//		vastad.setCueText("");
-//		vastad.setSkipMessage("");
-//		vastad.setSkipText("");
-
-		return vastad;
-	}
-
-	/*
-	* IMA Ad Example
-	* */
-	private ImaAdvertising getImaAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
-
-		String ad = "";
-
-		AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
-
-		adbreaklist.add(adBreak);
-
-		ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
-//		imaSettings.setRestrictToCustomPlayer(true);
-//		imaSettings.setPpid("");
-//		imaSettings.setPlayerVersion("");
-//		imaSettings.setPlayerType("");
-//		imaSettings.setMaxRedirects(1);
-//		imaSettings.setLanguage("");
-//		imaSettings.setEnableOmidExperimentally(true);
-//		imaSettings.setDebugMode(true);
-//		imaSettings.setAutoPlayAdBreaks(true);
-
-		return new ImaAdvertising(adbreaklist,imaSettings);
-	}
-
-	/*
-	* Create a Playlist Example
-	* */
 	private List<PlaylistItem> createPlaylist() {
 		List<PlaylistItem> playlistItemList = new ArrayList<>();
 
@@ -218,59 +131,44 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		return playlistItemList;
 	}
 
-	/**
-	 * MediaSource Playlist Example
-	 * */
-	private List<PlaylistItem> createMediaSourcePlaylist() {
-		List<MediaSource> mediaSourceList = new ArrayList<>();
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-		String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
-
-		MediaSource ms = new MediaSource.Builder()
-				.file(hls)
-				.type(MediaType.HLS)
-				.build();
-		mediaSourceList.add(ms);
-
-		PlaylistItem item = new PlaylistItem.Builder()
-				.sources(mediaSourceList)
-				.build();
-
-		playlistItemList.add(item);
-
-		return playlistItemList;
-	}
-
 	/*
 	 * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
 	 */
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// Set fullscreen when the device is rotated to landscape
-//		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
+		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
 		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		mPlayerView.onStart();
+	}
+
+	@Override
 	protected void onResume() {
-		// Let JW Player know that the app has returned from the background
 		super.onResume();
 		mPlayerView.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		// Let JW Player know that the app is going to the background
-		mPlayerView.onPause();
 		super.onPause();
+		mPlayerView.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		mPlayerView.onStop();
 	}
 
 	@Override
 	protected void onDestroy() {
-		// Let JW Player know that the app is being destroyed
-		mPlayerView.onDestroy();
 		super.onDestroy();
+		mPlayerView.onDestroy();
 	}
 
 	@Override
