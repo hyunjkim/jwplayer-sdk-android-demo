@@ -40,11 +40,6 @@ import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 /**
  * Outputs all JW Player Events to logging, with the exception of time events.
  */
@@ -85,68 +80,52 @@ public class JWEventHandler implements
     private JWPlayerView mPlayer;
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
     JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnBeforeCompleteListener(this);
         jwPlayerView.addOnBeforePlayListener(this);
         jwPlayerView.addOnBufferListener(this);
-
         jwPlayerView.addOnCaptionsListListener(this);
         jwPlayerView.addOnCaptionsChangedListener(this);
         jwPlayerView.addOnCompleteListener(this);
         jwPlayerView.addOnControlBarVisibilityListener(this);
         jwPlayerView.addOnControlsListener(this);
-
         jwPlayerView.addOnDisplayClickListener(this);
-
         jwPlayerView.addOnErrorListener(this);
-
         jwPlayerView.addOnFirstFrameListener(this);
         jwPlayerView.addOnFullscreenListener(this);
-
         jwPlayerView.addOnIdleListener(this);
-
         jwPlayerView.addOnLevelsChangedListener(this);
         jwPlayerView.addOnLevelsListener(this);
-
         jwPlayerView.addOnMetaListener(this);
         jwPlayerView.addOnMuteListener(this);
-
         jwPlayerView.addOnPauseListener(this);
         jwPlayerView.addOnPlayListener(this);
         jwPlayerView.addOnPlaylistCompleteListener(this);
         jwPlayerView.addOnPlaylistItemListener(this);
         jwPlayerView.addOnPlaylistListener(this);
-
         jwPlayerView.addOnReadyListener(this);
-
         jwPlayerView.addOnSeekListener(this);
         jwPlayerView.addOnSeekedListener(this);
         jwPlayerView.addOnSetupErrorListener(this);
-
         jwPlayerView.addOnTimeListener(this);
-
         jwPlayerView.addOnVisualQualityListener(this);
 
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+        mOutput.setText(Logger.updateOutput(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 
-    private void print(String s){
-        Log.i("JWEVENTHANDLER",s);
+    private void print(String s) {
+        Log.i("JWEVENTHANDLER", s);
     }
 
 
@@ -172,7 +151,7 @@ public class JWEventHandler implements
     @Override
     public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
         updateOutput(" " + "onBeforeComplete()");
-        print(" " + "onBeforeComplete(): " +beforeCompleteEvent);
+        print(" " + "onBeforeComplete(): " + beforeCompleteEvent);
     }
 
 
@@ -211,7 +190,7 @@ public class JWEventHandler implements
     public void onCaptionsList(CaptionsListEvent captionsListEvent) {
         updateOutput(" " + "onCaptionsList()");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            captionsListEvent.getTracks().forEach(e->print("onCaptionsList-"+e.getLabel() +": "+ e.toJson().toString()));
+            captionsListEvent.getTracks().forEach(e -> print("onCaptionsList-" + e.getLabel() + ": " + e.toJson().toString()));
         }
     }
 
@@ -261,7 +240,7 @@ public class JWEventHandler implements
     public void onLevels(LevelsEvent levelsEvent) {
         updateOutput(" " + "onlevelsEvent size: " + levelsEvent.getLevels().size());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            levelsEvent.getLevels().forEach(e-> print("onlevelsEvent-"+e.getLabel()+":" + e.toJson().toString()));
+            levelsEvent.getLevels().forEach(e -> print("onlevelsEvent-" + e.getLabel() + ":" + e.toJson().toString()));
         }
     }
 
@@ -302,6 +281,7 @@ public class JWEventHandler implements
         print(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
         print(" " + "onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
     }
+
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
         updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
@@ -310,7 +290,7 @@ public class JWEventHandler implements
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        updateOutput(" " + "onSeek()"+seekEvent.getPosition());
+        updateOutput(" " + "onSeek()" + seekEvent.getPosition());
         print(" " + "onSeek position: " + seekEvent.getPosition());
         print(" " + "onSeek offset: " + seekEvent.getOffset());
     }
@@ -318,13 +298,13 @@ public class JWEventHandler implements
     @Override
     public void onSeeked(SeekedEvent seekedEvent) {
         updateOutput(" " + "onSeeked() ");
-        print(" " + "onSeeked() "+ seekedEvent.toString());
+        print(" " + "onSeeked() " + seekedEvent.toString());
     }
 
     @Override
     public void onSetupError(SetupErrorEvent setupErrorEvent) {
         updateOutput(" " + "onSetupError " + setupErrorEvent.getMessage());
-        print(" " + "onSetupError "+setupErrorEvent.getMessage());
+        print(" " + "onSetupError " + setupErrorEvent.getMessage());
     }
 
     @Override
@@ -335,7 +315,7 @@ public class JWEventHandler implements
 
     @Override
     public void onVisualQuality(VisualQualityEvent visualQualityEvent) {
-        if(visualQualityEvent.getQualityLevel() != null){
+        if (visualQualityEvent.getQualityLevel() != null) {
             updateOutput(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
             print(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
         }

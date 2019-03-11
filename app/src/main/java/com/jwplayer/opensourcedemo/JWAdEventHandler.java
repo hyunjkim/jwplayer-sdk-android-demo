@@ -46,7 +46,6 @@ public class JWAdEventHandler implements
 
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
     private JWPlayerView mPlayer;
 
 
@@ -54,7 +53,6 @@ public class JWAdEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnAdBreakEndListener(this);
@@ -73,10 +71,9 @@ public class JWAdEventHandler implements
         jwPlayerView.addOnAdTimeListener(this);
     }
 
+
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+        mOutput.setText(Logger.updateOutput(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 

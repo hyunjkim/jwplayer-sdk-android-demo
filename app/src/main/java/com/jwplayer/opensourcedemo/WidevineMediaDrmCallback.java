@@ -32,7 +32,8 @@ public class WidevineMediaDrmCallback implements MediaDrmCallback {
 
     private final Map<String, String> KEY_REQUEST_PROPERTIES = new HashMap<>();
 
-    public WidevineMediaDrmCallback() {
+    WidevineMediaDrmCallback() {
+
         isProviderAvailable = false;
 
         KEY_REQUEST_PROPERTIES.put("name","customData");
@@ -42,7 +43,7 @@ public class WidevineMediaDrmCallback implements MediaDrmCallback {
     }
 
 
-    public WidevineMediaDrmCallback(String contentId, String provider) {
+    WidevineMediaDrmCallback(String contentId, String provider) {
         isProviderAvailable = true;
         String params = "?video_id=" + contentId + "&provider=" + provider;
         defaultUri = WIDEVINE_GTS_DEFAULT_BASE_URI + params;
@@ -57,7 +58,9 @@ public class WidevineMediaDrmCallback implements MediaDrmCallback {
 
     @Override
     public byte[] executeKeyRequest(UUID uuid, ExoMediaDrm.KeyRequest request) throws IOException {
-        String url = request.getDefaultUrl();
+
+        String url = request.getLicenseServerUrl();
+
         if (TextUtils.isEmpty(url)) {
             url = defaultUri;
         }
@@ -76,7 +79,7 @@ public class WidevineMediaDrmCallback implements MediaDrmCallback {
      * @return The response body.
      * @throws IOException If an error occurred making the request.
      */
-    public static byte[] executePost(String url, byte[] data, Map<String, String> requestProperties)
+    private static byte[] executePost(String url, byte[] data, Map<String, String> requestProperties)
             throws IOException {
         HttpURLConnection urlConnection = null;
         try {

@@ -2,7 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
 
-class MyCustomSkin {
+class MySampleSkin {
 
     static SkinConfig getSkinConfig() {
         return new SkinConfig.Builder()
