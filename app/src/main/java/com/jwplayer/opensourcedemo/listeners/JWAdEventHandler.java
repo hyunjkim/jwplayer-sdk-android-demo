@@ -1,11 +1,11 @@
-package com.jwplayer.opensourcedemo.handler;
+package com.jwplayer.opensourcedemo.listeners;
 
 import android.os.Build;
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.jwplayer.opensourcedemo.myutil.Logger;
+import com.jwplayer.opensourcedemo.jwutil.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AdBreakEndEvent;
 import com.longtailvideo.jwplayer.events.AdBreakStartEvent;

@@ -15,8 +15,7 @@
             android:id="@+id/jwplayer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
-        </com.longtailvideo.jwplayer.JWPlayerView>
+            android:layout_weight="1" />
 
         <ScrollView
             android:id="@+id/scroll"

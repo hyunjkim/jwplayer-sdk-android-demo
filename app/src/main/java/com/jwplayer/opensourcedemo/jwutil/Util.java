@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo.myutil;
+package com.jwplayer.opensourcedemo.jwutil;
 
 import java.io.IOException;
 import java.io.InputStream;
