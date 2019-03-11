@@ -82,26 +82,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     private void setupJWPlayer() {
 
-        List<PlaylistItem> playlistItemList = MySamplePlaylist.myCustomPlaylist();
-        List<PlaylistItem>  getSampleDRM = MySamplePlaylist.getSampleDRM();
+        List<PlaylistItem> playlistItemList = MySamplePlaylist.createMediaSourcePlaylist();
 
-        // Ima Tag Example
-        ImaAdvertising imaAdvertising = MySampleAd.getImaAd();
-
-        // VAST Tag Example
-        Advertising vastAdvertising = MySampleAd.getVastAd();
-
-        // SkinConfig Example
-        SkinConfig skinConfig = MySampleSkin.getSkinConfig();
 
         PlayerConfig config = new PlayerConfig.Builder()
-                .playlist(getSampleDRM)
+                .playlist(playlistItemList)
                 .autostart(true)
                 .preload(true)
                 .allowCrossProtocolRedirects(true)
-                .skinConfig(skinConfig)
-//				.advertising(imaAdvertising)
-//				.advertising(vastAdvertising)
                 .build();
 
         mPlayerView.setup(config);
