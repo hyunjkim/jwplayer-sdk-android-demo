@@ -1,9 +1,13 @@
 package com.jwplayer.opensourcedemo;
 
+import android.graphics.Color;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdClickEvent;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdErrorEvent;
@@ -86,10 +90,14 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         AdvertisingEvents.OnBeforeCompleteListener {
     private String TAG = JWEventHandler.class.getName();
 
-    TextView mOutput;
+    private TextView mOutput;
+    private JWPlayerView mPlayerView;
+    private int level = -1;
 
-    public JWEventHandler(JWPlayerView jwPlayerView, TextView output) {
+    JWEventHandler(JWPlayerView jwPlayerView, TextView output) {
         mOutput = output;
+        mPlayerView = jwPlayerView;
+
         // Subscribe to all JW Player events
         jwPlayerView.addOnFirstFrameListener(this);
         jwPlayerView.addOnSetupErrorListener(this);
@@ -139,6 +147,18 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
      * Regular playback events below here
      */
 
+
+    @Override
+    public void onBuffer(BufferEvent bufferEvent) {
+        Log.d(TAG, "onBuffer " + bufferEvent.getOldState());
+        updateOutput("onBuffer()");
+    }
+    @Override
+    public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
+        Log.d(TAG, "firstFrameEvent " + mPlayerView.getState());
+        updateOutput("onFirstFrame()");
+    }
+
     @Override
     public void onAudioTracks(AudioTracksEvent audioTracksEvent) {
         Log.d(TAG, "onAudioTracks");
@@ -152,16 +172,9 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     }
 
     @Override
-    public void onBeforePlay(BeforePlayEvent beforePlayEvent
-    ) {
+    public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
         Log.d(TAG, "onBeforePlay");
         updateOutput("onBeforePlay()");
-    }
-
-    @Override
-    public void onBuffer(BufferEvent bufferEvent) {
-        Log.d(TAG, "onBuffer");
-        updateOutput("onBuffer()");
     }
 
     @Override
@@ -200,9 +213,11 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         updateOutput("onPause()");
     }
 
+
     @Override
     public void onPlay(PlayEvent playEvent) {
-        Log.d(TAG, "onPlay");
+        if (level >= 0)
+            Log.d(TAG, "onPlay - current LABEL: " + mPlayerView.getPlaylistItem().getSources().get(level).getLabel());
         updateOutput("onPlay()");
     }
 
@@ -227,7 +242,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        Log.d(TAG, "onSeek");
+        Log.d(TAG, "onSeek(" + seekEvent.getPosition() + ", " + seekEvent.getOffset() + ")");
         updateOutput("onSeek(" + seekEvent.getPosition() + ", " + seekEvent.getOffset() + ")");
     }
 
@@ -239,7 +254,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onTime(TimeEvent timeEvent) {
-        Log.d(TAG, timeEvent.getDuration() + "  ***  ");
+//        Log.d(TAG, timeEvent.getDuration() + "  ***  ");
     }
 
     @Override
@@ -258,14 +273,15 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onLevelsChanged(LevelsChangedEvent levelsChangedEvent) {
-        Log.d(TAG, "onLevelsChanged");
+        level = levelsChangedEvent.getCurrentQuality();
+        Log.d(TAG, "onLevelsChange(" + levelsChangedEvent.getCurrentQuality() + ")");
         updateOutput("onLevelsChange(" + levelsChangedEvent.getCurrentQuality() + ")");
     }
 
     @Override
     public void onLevels(LevelsEvent levelsEvent) {
         Log.d(TAG, "onLevels");
-        updateOutput("onLevels(List<QualityLevel>)");
+        updateOutput("onLevels(List<QualityLevel>) size: " + levelsEvent.getLevels().size());
     }
 
     @Override
@@ -324,7 +340,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     }
 
     public void onSeeked(SeekedEvent seekedEvent) {
-        Log.d(TAG, "onSeeked");
+        Log.d(TAG, "onSeeked current position: " + seekedEvent.getPosition());
         updateOutput("onSeeked(\"" + "seeked" + "\")");
     }
 
@@ -354,15 +370,9 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     }
 
     @Override
-    public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
-        Log.d(TAG, "firstFrameEvent");
-        updateOutput("onFirstFrame()");
-    }
-
-
-    @Override
     public void onAdSchedule(AdScheduleEvent adScheduleEvent) {
         Log.d(TAG, "onAdSchedule");
         updateOutput("onAdSchedule()");
     }
+
 }

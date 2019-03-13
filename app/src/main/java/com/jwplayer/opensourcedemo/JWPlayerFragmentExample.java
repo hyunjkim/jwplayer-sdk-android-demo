@@ -59,8 +59,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
-        // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
     }
 
     @Override
