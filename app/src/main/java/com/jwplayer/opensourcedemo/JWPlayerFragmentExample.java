@@ -1,11 +1,5 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -16,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
@@ -25,10 +20,7 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class JWPlayerFragmentExample extends AppCompatActivity implements
@@ -52,8 +44,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
 
     private LinearLayout mLinearLayout;
     private List<PlaylistItem> playlistItemList;
-    private HashMap<String,Drawable> images;
-    private AssetManager manager;
     private RecyclerView mRecyclerView;
     private FragmentManager fm;
 
@@ -61,8 +51,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
-
         mLinearLayout = findViewById(R.id.activity_jwplayerfragment);
+        mRecyclerView = findViewById(R.id.my_recycler_view);
 
         // Set up JWPlayerView
         setupJWPlayer();
@@ -80,62 +70,48 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
     }
 
     private void setupRecyclerView() {
-        mRecyclerView = findViewById(R.id.my_recycler_view);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
-//        createBitmapToDrawable();
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mRecyclerView.setAdapter(new MyRecyclerAdapter(playlistItemList, this));
     }
 
-    private void createBitmapToDrawable() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            playlistItemList.forEach(e -> {
-                InputStream inputStream = null;
-                try {
-                    inputStream = manager.open(e.getImage());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                images.put(e.getMediaId(), new BitmapDrawable(getResources(),bitmap));
-            });
-        }
-    }
-
-
     private void setupJWPlayer() {
         playlistItemList = createPlaylist();
+        PlayerConfig config = getJWPlayerConfig(playlistItemList.get(0).getFile());
+        addFragmentBackToStack(config);
+        mPlayerView.addOnFullscreenListener(this);
+    }
 
-        PlayerConfig config = new PlayerConfig.Builder()
-                .file(playlistItemList.get(0).getFile())
+    private PlayerConfig getJWPlayerConfig(String videoURL) {
+        return new PlayerConfig.Builder()
+                .file(videoURL)
+                .autostart(true)
                 .build();
+    }
+
+    @Override
+    public void click(int childAdapterPosition) {
+        String video = playlistItemList.get(childAdapterPosition).getFile();
+        addFragmentBackToStack(getJWPlayerConfig(video));
+    }
+
+    public void addFragmentBackToStack(PlayerConfig config) {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
         mPlayerFragment = JWPlayerSupportFragment
                 .newInstance(config);
 
-        // Attach the Fragment to our layout
-        attachFragment();
-
-        // Get a reference to the JWPlayerView from the fragment
-        mPlayerView = mPlayerFragment.getPlayer();
-        mPlayerView.addOnFullscreenListener(this);
-    }
-
-    @Override
-    public void click(int childAdapterPosition) {
-        mPlayerView.load(playlistItemList.get(childAdapterPosition));
-        mPlayerView.play();
-    }
-
-    public void attachFragment(){
         fm = getSupportFragmentManager();
 
         fm.beginTransaction()
                 .replace(R.id.fragment_container, mPlayerFragment)
+                .addToBackStack(null)
                 .commit();
 
         // Make sure all the pending fragment transactions have been completed, otherwise mPlayerFragment.getPlayer() may return null
         fm.executePendingTransactions();
+
+        // Get a reference to the JWPlayerView from the fragment
+        mPlayerView = mPlayerFragment.getPlayer();
     }
 
     private List<PlaylistItem> createPlaylist() {
@@ -172,9 +148,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
         };
 
         /*
-        * String image file to bitmap to drawable
-        * */
-        for(int i = 0; i < playlist.length; i++){
+         * String image file to bitmap to drawable
+         * */
+        for (int i = 0; i < playlist.length; i++) {
             PlaylistItem playlistItem = new PlaylistItem.Builder()
                     .file(playlist[i])
                     .title(mediaid[i])
@@ -185,6 +161,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
 
         return playlistItemList;
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Exit fullscreen when the user pressed the Back button
@@ -192,6 +169,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
             if (mPlayerView.getFullscreen()) {
                 mPlayerView.setFullscreen(false, true);
                 return false;
+            }
+            if(mPlayerFragment != null){
+                Toast.makeText(this,"mPlayerFragment not empty", Toast.LENGTH_SHORT).show();
             }
         }
         return super.onKeyDown(keyCode, event);
@@ -230,24 +210,34 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        mPlayerView.onStart();
+    }
+
+    @Override
     protected void onResume() {
-        // Let JW Player know that the app has returned from the background
         super.onResume();
         mPlayerView.onResume();
     }
 
     @Override
     protected void onPause() {
-        // Let JW Player know that the app is going to the background
-        mPlayerView.onPause();
         super.onPause();
+        mPlayerView.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPlayerView.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        // Let JW Player know that the app is being destroyed
-        mPlayerView.onDestroy();
         super.onDestroy();
+        mPlayerView.onDestroy();
     }
+
 
 }
