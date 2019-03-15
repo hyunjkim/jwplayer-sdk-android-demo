@@ -14,9 +14,17 @@ import android.widget.TextView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.CaptionsConfig;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
+import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity
@@ -50,8 +58,9 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
-
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+
+        setupJWPlayer();
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -62,17 +71,42 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Instantiate the JW Player event handler class
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
-                .build();
-
-        mPlayerView.load(pi);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
+    }
+
+    private void setupJWPlayer() {
+
+        String mp3 = "http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a";
+        String image="https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg";
+
+        List<PlaylistItem> playlist = new ArrayList<>();
+        List<MediaSource> mediaSources= new ArrayList<>();
+
+        MediaSource ms = new MediaSource.Builder()
+                .file(mp3)
+                .type(MediaType.MP3)
+                .build();
+
+        mediaSources.add(ms);
+
+        // Load a media source
+        PlaylistItem pi = new PlaylistItem.Builder()
+                .title("mp3 autotest Test")
+                .description("A video player testing video.")
+                .sources(mediaSources)
+                .image(image)
+                .build();
+
+        playlist.add(pi);
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlist)
+                .autostart(true)
+                .build();
+
+        mPlayerView.setup(config);
     }
 
 
