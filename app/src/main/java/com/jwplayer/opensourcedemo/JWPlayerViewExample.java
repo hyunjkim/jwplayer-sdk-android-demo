@@ -43,7 +43,6 @@ public class JWPlayerViewExample extends AppCompatActivity
      */
     private CoordinatorLayout mCoordinatorLayout;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
