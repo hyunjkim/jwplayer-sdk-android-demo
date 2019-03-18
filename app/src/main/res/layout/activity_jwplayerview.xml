@@ -1,5 +1,4 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
@@ -10,26 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <RelativeLayout
+
+        <Button
+            android:id="@+id/fastfoward"
+            android:layout_width="45dp"
+            android:layout_height="30dp"
             android:layout_gravity="bottom|center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/volume_up"
-                android:textSize="8sp"
-                android:text="vol +"
-                android:gravity="center"
-                android:layout_width="45dp"
-                android:layout_height="30dp"/>
-            <Button
-                android:id="@+id/volume_down"
-                android:textSize="8sp"
-                android:text="vol -"
-                android:layout_toEndOf="@id/volume_up"
-                android:layout_toRightOf="@id/volume_up"
-                android:layout_width="45dp"
-                android:layout_height="30dp"/>
-        </RelativeLayout>
+            android:gravity="center"
+            android:text="ff"
+            android:textSize="8sp" />
     </com.longtailvideo.jwplayer.JWPlayerView>
 
     <ScrollView
@@ -43,13 +31,13 @@
             android:id="@+id/output"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:textSize="@dimen/myfontsize"
             android:fontFamily="@string/myfontdefault"
-            android:textColor="@color/white" />
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/myfontsize" />
 
     </ScrollView>
 </LinearLayout>

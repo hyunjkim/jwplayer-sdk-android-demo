@@ -22,6 +22,7 @@ import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
@@ -32,7 +33,8 @@ import java.util.List;
 public class JWPlayerViewExample extends AppCompatActivity implements
         VideoPlayerEvents.OnFullscreenListener,
         View.OnClickListener,
-        VideoPlayerEvents.OnControlBarVisibilityListener {
+        VideoPlayerEvents.OnControlBarVisibilityListener,
+        VideoPlayerEvents.OnSeekedListener {
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -44,9 +46,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private CastContext mCastContext;
 
-
-    private AudioManager audioManager;
-    private Button volumnUpBtn, volumnDownBtn;
+    private Button fastForward;
     private TextView outputTextView;
     private ScrollView scrollView;
 
@@ -61,14 +61,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         outputTextView = findViewById(R.id.output);
         scrollView = findViewById(R.id.scroll);
 
-        volumnUpBtn = findViewById(R.id.volume_up);
-        volumnDownBtn = findViewById(R.id.volume_down);
-        volumnUpBtn.setOnClickListener(this);
-        volumnDownBtn.setOnClickListener(this);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
-        }
+        // Fast forward button
+        fastForward = findViewById(R.id.fastfoward);
+        fastForward.setOnClickListener(this);
 
         // Setup JWPlayer
         setupJWPlayer();
@@ -78,6 +73,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
         mPlayerView.addOnControlBarVisibilityListener(this);
+        mPlayerView.addOnSeekedListener(this);
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
@@ -87,8 +83,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     }
 
+
+    @Override
+    public void onSeeked(SeekedEvent seekedEvent) {
+        print("onSeeked "+ seekedEvent.getPosition());
+    }
+
     /*
-    * Whenever the Control Bar is visible, show the volume buttons
+    * Whenever the Control Bar is visible, show the Fast Forward button
     * */
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
@@ -98,30 +100,24 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         print(" onControlBarVisibilityChanged(): " + isControlBarVisibile);
 
         if (isControlBarVisibile) {
-            print(" onControlBarVisibilityChanged(): show volumes");
-            volumnUpBtn.setVisibility(View.VISIBLE);
-            volumnDownBtn.setVisibility(View.VISIBLE);
+            print(" onControlBarVisibilityChanged(): show Fast Forward");
+            fastForward.setVisibility(View.VISIBLE);
         } else {
-            print(" onControlBarVisibilityChanged(): hide volumes");
-            volumnUpBtn.setVisibility(View.GONE);
-            volumnDownBtn.setVisibility(View.GONE);
+            print(" onControlBarVisibilityChanged(): show Fast Forward");
+            fastForward.setVisibility(View.GONE);
         }
 
     }
 
     /*
-    * Volume up & down button controls
+    * Fast foward button
     * */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.volume_up:
-                print("Volume up!");
-                audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
-                break;
-            case R.id.volume_down:
-                print("Volume down!");
-                audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+            case R.id.fastfoward:
+                print("Fast Forward 10 seconds");
+                mPlayerView.seek(mPlayerView.getPosition()+10);
                 break;
         }
     }
@@ -255,5 +251,4 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
-
 }
