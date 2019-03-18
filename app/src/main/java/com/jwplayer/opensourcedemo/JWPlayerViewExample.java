@@ -1,14 +1,11 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,10 +14,11 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 import com.jwplayer.opensourcedemo.handler.KeepScreenOnHandler;
 import com.jwplayer.opensourcedemo.myutil.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
@@ -32,220 +30,230 @@ import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-		VideoPlayerEvents.OnFullscreenListener,
-		View.OnClickListener,
-		VideoPlayerEvents.OnControlBarVisibilityListener
-{
+        VideoPlayerEvents.OnFullscreenListener,
+        View.OnClickListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener {
 
-	/**
-	 * Reference to the {@link JWPlayerView}
-	 */
-	private JWPlayerView mPlayerView;
+    /**
+     * Reference to the {@link JWPlayerView}
+     */
+    private JWPlayerView mPlayerView;
 
-	/**
-	 * Reference to the {@link CastManager}
-	 */
-	private CastManager mCastManager;
+    /**
+     * Reference to the {@link CastContext}
+     */
+    private CastContext mCastContext;
 
-	private AudioManager audioManager;
-	private Button volumnUpBtn, volumnDownBtn;
-	private TextView outputTextView;
-	private ScrollView scrollView;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_jwplayerview);
+    private AudioManager audioManager;
+    private Button volumnUpBtn, volumnDownBtn;
+    private TextView outputTextView;
+    private ScrollView scrollView;
 
-		Logger.newInstance();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView = findViewById(R.id.jwplayer);
-		outputTextView = findViewById(R.id.output);
-		scrollView = findViewById(R.id.scroll);
+        Logger.newInstance();
 
-		volumnUpBtn = findViewById(R.id.volume_up);
-		volumnDownBtn = findViewById(R.id.volume_down);
-		volumnUpBtn.setOnClickListener(this);
-		volumnDownBtn.setOnClickListener(this);
+        mPlayerView = findViewById(R.id.jwplayer);
+        outputTextView = findViewById(R.id.output);
+        scrollView = findViewById(R.id.scroll);
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-			audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
-		}
+        volumnUpBtn = findViewById(R.id.volume_up);
+        volumnDownBtn = findViewById(R.id.volume_down);
+        volumnUpBtn.setOnClickListener(this);
+        volumnDownBtn.setOnClickListener(this);
 
-		// Setup JWPlayer
-		setupJWPlayer();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
+        }
 
-		outputTextView.setText(Logger.printBuildVersion(mPlayerView.getVersionCode()));
+        // Setup JWPlayer
+        setupJWPlayer();
 
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
-		mPlayerView.addOnControlBarVisibilityListener(this);
+        outputTextView.setText(Logger.printBuildVersion(mPlayerView.getVersionCode()));
 
-		// Keep the screen on during playback
-		new KeepScreenOnHandler(mPlayerView, getWindow());
+        // Handle hiding/showing of ActionBar
+        mPlayerView.addOnFullscreenListener(this);
+        mPlayerView.addOnControlBarVisibilityListener(this);
 
-		// Get a reference to the CastManager
-		mCastManager = CastManager.getInstance();
-	}
+        // Keep the screen on during playback
+        new KeepScreenOnHandler(mPlayerView, getWindow());
 
-	@Override
-	public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+        // Get a reference to the CastContext
+        mCastContext = CastContext.getSharedInstance(this);
 
-		boolean isControlBarVisibile = controlBarVisibilityEvent.isVisible();
+    }
 
-		print(" onControlBarVisibilityChanged(): " + isControlBarVisibile);
+    /*
+    * Whenever the Control Bar is visible, show the volume buttons
+    * */
+    @Override
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
 
-		if(isControlBarVisibile){
-			print(" onControlBarVisibilityChanged(): show volumes");
-			volumnUpBtn.setVisibility(View.VISIBLE);
-			volumnDownBtn.setVisibility(View.VISIBLE);
-		} else {
-			print(" onControlBarVisibilityChanged(): hide volumes");
-			volumnUpBtn.setVisibility(View.GONE);
-			volumnDownBtn.setVisibility(View.GONE);
-		}
+        boolean isControlBarVisibile = controlBarVisibilityEvent.isVisible();
 
-	}
+        print(" onControlBarVisibilityChanged(): " + isControlBarVisibile);
 
-	private void print(String s){
-		outputTextView.setText(Logger.updateOutput("JWPLAYERVIEWEXAMPLE " +s));
-		scrollView.scrollTo(0, outputTextView.getBottom());
+        if (isControlBarVisibile) {
+            print(" onControlBarVisibilityChanged(): show volumes");
+            volumnUpBtn.setVisibility(View.VISIBLE);
+            volumnDownBtn.setVisibility(View.VISIBLE);
+        } else {
+            print(" onControlBarVisibilityChanged(): hide volumes");
+            volumnUpBtn.setVisibility(View.GONE);
+            volumnDownBtn.setVisibility(View.GONE);
+        }
 
-	}
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()){
-			case R.id.volume_up:
-				print("Volume up!");
-				audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
-				break;
-			case R.id.volume_down:
-				print("Volume down!");
-				audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
-				break;
-		}
-	}
+    }
 
-	/*
-	* Setup JW Player
-	* */
-	private void setupJWPlayer() {
+    /*
+    * Volume up & down button controls
+    * */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.volume_up:
+                print("Volume up!");
+                audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+                break;
+            case R.id.volume_down:
+                print("Volume down!");
+                audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+                break;
+        }
+    }
 
-		List<PlaylistItem> playlistItemList = createPlaylist();
+    /*
+     * Setup JW Player
+     * */
+    private void setupJWPlayer() {
 
-		PlayerConfig config = new PlayerConfig.Builder()
-				.playlist(playlistItemList)
-				.autostart(true)
-				.preload(true)
-				.allowCrossProtocolRedirects(true)
-				.build();
+        List<PlaylistItem> playlistItemList = createPlaylist();
 
-		mPlayerView.setup(config);
-	}
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlistItemList)
+                .autostart(true)
+                .preload(true)
+                .allowCrossProtocolRedirects(true)
+                .build();
 
-	/*
-	* Create a Playlist Example
-	* */
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
+        mPlayerView.setup(config);
+    }
 
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-		};
+    /*
+     * Create a Playlist Example
+     * */
+    private List<PlaylistItem> createPlaylist() {
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-		for(String each : playlist){
-			PlaylistItem item = new PlaylistItem(each);
-			playlistItemList.add(item);
-		}
+        String[] playlist = {
+                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+        };
 
-		return playlistItemList;
-	}
+        for (String each : playlist) {
+            PlaylistItem item = new PlaylistItem(each);
+            playlistItemList.add(item);
+        }
 
-	/*
-	 * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
-	 */
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// Set fullscreen when the device is rotated to landscape
+        return playlistItemList;
+    }
+
+    private void print(String s) {
+        outputTextView.setText(Logger.updateOutput("JWPLAYERVIEWEXAMPLE " + s));
+        scrollView.scrollTo(0, outputTextView.getBottom());
+
+    }
+    /*
+     * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // Set fullscreen when the device is rotated to landscape
 //		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
-		super.onConfigurationChanged(newConfig);
-	}
+        super.onConfigurationChanged(newConfig);
+    }
 
-	@Override
-	protected void onResume() {
-		// Let JW Player know that the app has returned from the background
-		super.onResume();
-		mPlayerView.onResume();
-	}
+    @Override
+    protected void onResume() {
+        // Let JW Player know that the app has returned from the background
+        super.onResume();
+        mPlayerView.onResume();
+    }
 
-	@Override
-	protected void onPause() {
-		// Let JW Player know that the app is going to the background
-		mPlayerView.onPause();
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        // Let JW Player know that the app is going to the background
+        mPlayerView.onPause();
+        super.onPause();
+    }
 
-	@Override
-	protected void onDestroy() {
-		// Let JW Player know that the app is being destroyed
-		mPlayerView.onDestroy();
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        // Let JW Player know that the app is being destroyed
+        mPlayerView.onDestroy();
+        super.onDestroy();
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Exit fullscreen when the user pressed the Back button
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (mPlayerView.getFullscreen()) {
-				mPlayerView.setFullscreen(false, true);
-				return false;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Exit fullscreen when the user pressed the Back button
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mPlayerView.getFullscreen()) {
+                mPlayerView.setFullscreen(false, true);
+                return false;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	/**
-	 * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
-	 *
-	 * @param fullscreenEvent true if the player is fullscreen
-	 */
-	@Override
-	public void onFullscreen(FullscreenEvent fullscreenEvent) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
-	}
+    /**
+     * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
+     *
+     * @param fullscreenEvent true if the player is fullscreen
+     */
+    @Override
+    public void onFullscreen(FullscreenEvent fullscreenEvent) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            if (fullscreenEvent.getFullscreen()) {
+                actionBar.hide();
+            } else {
+                actionBar.show();
+            }
+        }
+    }
 
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+        // Register the MediaRouterButton on the JW Player SDK
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.switch_to_fragment:
-				Intent i = new Intent(this, JWPlayerFragmentExample.class);
-				startActivity(i);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.switch_to_fragment:
+                Intent i = new Intent(this, JWPlayerFragmentExample.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 }
