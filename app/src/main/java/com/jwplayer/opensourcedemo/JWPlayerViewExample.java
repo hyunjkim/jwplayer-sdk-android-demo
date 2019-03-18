@@ -45,7 +45,7 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     private CastSession mCastSession;
     private SessionManager mSessionManager;
-    private final SessionManagerListener mSessionManagerListener = new MySessionManagerListenerImpl();;
+    private final SessionManagerListener mSessionManagerListener = new MySessionManagerListenerImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,8 +184,8 @@ public class JWPlayerViewExample extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
 
         // Register the MediaRouterButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
+//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+//                R.id.media_route_menu_item);
         return true;
     }
 
