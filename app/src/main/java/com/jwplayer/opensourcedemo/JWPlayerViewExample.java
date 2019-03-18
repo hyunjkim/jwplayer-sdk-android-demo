@@ -78,15 +78,17 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     private void setupJWPlayer() {
 
-        String mp3 = "http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a";
+        String captionVideo = "http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8";
+
+        String hls = "https://tt-streamingendpoint-ttmediaservices01.streaming.mediaservices.windows.net/32b8e553-794a-4706-9b1f-939f866732d2/170520_S1_CapeTown_seg_1.ism/manifest(format=m3u8-aapl-v3)";
         String image="https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg";
 
         List<PlaylistItem> playlist = new ArrayList<>();
         List<MediaSource> mediaSources= new ArrayList<>();
 
         MediaSource ms = new MediaSource.Builder()
-                .file(mp3)
-                .type(MediaType.MP3)
+                .file(captionVideo)
+                .type(MediaType.HLS)
                 .build();
 
         mediaSources.add(ms);
@@ -103,6 +105,7 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlist)
+//                .file(hls)
                 .autostart(true)
                 .build();
 
