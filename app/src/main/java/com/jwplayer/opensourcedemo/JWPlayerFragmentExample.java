@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -20,7 +22,6 @@ import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
@@ -41,8 +42,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
+        TextView outputTextView = (TextView) findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
+        ImageView bufferImage = findViewById(R.id.bufferimage);
 
         setupJWPlayer();
 
@@ -50,22 +52,16 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        new JWEventHandler(mPlayerView, outputTextView, scrollView);
+        new JWEventHandler(mPlayerView, outputTextView, scrollView, bufferImage);
     }
 
     private void setupJWPlayer() {
 
         String url = "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.hostingat123.com/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
-
         PlayerConfig config = new PlayerConfig.Builder()
                 .file(url)
                 .autostart(true)
-                .skinConfig(skinConfig)
                 .build();
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
@@ -124,7 +120,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         // Exit fullscreen when the user pressed the Back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false,true);
+                mPlayerView.setFullscreen(false, true);
                 return false;
             }
         }
@@ -166,7 +162,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
             }
         }
     }
-    void print(String s){
+
+    void print(String s) {
         Log.i("jwsupportfragment", s);
     }
 
