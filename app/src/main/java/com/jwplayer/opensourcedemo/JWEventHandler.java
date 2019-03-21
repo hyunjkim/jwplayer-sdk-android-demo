@@ -1,13 +1,10 @@
 package com.jwplayer.opensourcedemo;
 
-import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdClickEvent;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdErrorEvent;
@@ -40,12 +37,16 @@ import com.longtailvideo.jwplayer.events.PlayEvent;
 import com.longtailvideo.jwplayer.events.PlaylistCompleteEvent;
 import com.longtailvideo.jwplayer.events.PlaylistEvent;
 import com.longtailvideo.jwplayer.events.PlaylistItemEvent;
+import com.longtailvideo.jwplayer.events.RelatedCloseEvent;
+import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
+import com.longtailvideo.jwplayer.events.RelatedPlayEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
 import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
+import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
 /**
@@ -87,12 +88,16 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         AdvertisingEvents.OnAdPlayListener,
         AdvertisingEvents.OnAdScheduleListener,
         AdvertisingEvents.OnBeforePlayListener,
-        AdvertisingEvents.OnBeforeCompleteListener {
+        AdvertisingEvents.OnBeforeCompleteListener,
+
+        RelatedPluginEvents.OnRelatedCloseListener,
+        RelatedPluginEvents.OnRelatedOpenListener,
+        RelatedPluginEvents.OnRelatedPlayListener {
+
     private String TAG = JWEventHandler.class.getName();
 
     private TextView mOutput;
     private JWPlayerView mPlayerView;
-    private int level = -1;
 
     JWEventHandler(JWPlayerView jwPlayerView, TextView output) {
         mOutput = output;
@@ -115,9 +120,9 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         jwPlayerView.addOnLevelsListener(this);
         jwPlayerView.addOnCaptionsListListener(this);
         jwPlayerView.addOnCaptionsChangedListener(this);
-        //  jwPlayerView.addOnRelatedCloseListener(this);
-        //  jwPlayerView.addOnRelatedOpenListener(this);
-        //  jwPlayerView.addOnRelatedPlayListener(this);
+        jwPlayerView.addOnRelatedCloseListener(this);
+        jwPlayerView.addOnRelatedOpenListener(this);
+        jwPlayerView.addOnRelatedPlayListener(this);
         jwPlayerView.addOnControlsListener(this);
         jwPlayerView.addOnDisplayClickListener(this);
         jwPlayerView.addOnMuteListener(this);
@@ -150,42 +155,43 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onBuffer(BufferEvent bufferEvent) {
-        Log.d(TAG, "onBuffer " + bufferEvent.getOldState());
+        print("onBuffer " + bufferEvent.getOldState());
         updateOutput("onBuffer()");
     }
+
     @Override
     public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
-        Log.d(TAG, "firstFrameEvent " + mPlayerView.getState());
+        print("firstFrameEvent " + mPlayerView.getState());
         updateOutput("onFirstFrame()");
     }
 
     @Override
     public void onAudioTracks(AudioTracksEvent audioTracksEvent) {
-        Log.d(TAG, "onAudioTracks");
+        print("onAudioTracks");
         updateOutput("onAudioTracks(List<AudioTrack>)");
     }
 
     @Override
     public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
-        Log.d(TAG, "onBeforeComplete");
+        print("onBeforeComplete");
         updateOutput("onBeforeComplete()");
     }
 
     @Override
     public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
-        Log.d(TAG, "onBeforePlay");
+        print("onBeforePlay");
         updateOutput("onBeforePlay()");
     }
 
     @Override
     public void onCaptionsList(CaptionsListEvent captionsListEvent) {
-        Log.d(TAG, "onCaptionsList");
+        print("onCaptionsList");
         updateOutput("onCaptionsList(List<Caption>)");
     }
 
     @Override
     public void onComplete(CompleteEvent completeEvent) {
-        Log.d(TAG, "onComplete");
+        print("onComplete");
         updateOutput("onComplete()");
     }
 
@@ -197,52 +203,51 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onIdle(IdleEvent idleEvent) {
-        Log.d(TAG, "onIdle");
+        print("onIdle");
         updateOutput("onIdle()");
     }
 
     @Override
     public void onMeta(MetaEvent metaEvent) {
-        Log.d(TAG, "onMeta");
+        print("onMeta");
         updateOutput("onMeta()");
     }
 
     @Override
     public void onPause(PauseEvent pauseEvent) {
-        Log.d(TAG, "onPause");
+        print("onPause");
         updateOutput("onPause()");
     }
 
 
     @Override
     public void onPlay(PlayEvent playEvent) {
-        if (level >= 0)
-            Log.d(TAG, "onPlay - current LABEL: " + mPlayerView.getPlaylistItem().getSources().get(level).getLabel());
+        print("onPlay()");
         updateOutput("onPlay()");
     }
 
     @Override
     public void onPlaylistComplete(PlaylistCompleteEvent playlistCompleteEvent) {
-        Log.d(TAG, "onPlaylistComplete");
+        print("onPlaylistComplete");
         updateOutput("onPlaylistComplete()");
     }
 
     @Override
     public void onPlaylistItem(PlaylistItemEvent playlistItemEvent) {
-        Log.d(TAG, "onPlaylistItem");
+        print("onPlaylistItem");
         updateOutput("onPlaylistItem()");
     }
 
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
-        Log.d(TAG, "onPlaylist");
+        print("onPlaylist");
         updateOutput("onPlaylist()");
     }
 
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        Log.d(TAG, "onSeek(" + seekEvent.getPosition() + ", " + seekEvent.getOffset() + ")");
+        print("onSeek(" + seekEvent.getPosition() + ", " + seekEvent.getOffset() + ")");
         updateOutput("onSeek(" + seekEvent.getPosition() + ", " + seekEvent.getOffset() + ")");
     }
 
@@ -266,27 +271,26 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onError(ErrorEvent errorEvent) {
-        Log.d(TAG, "onError : " + errorEvent);
+        print("onError : " + errorEvent);
         Log.d(TAG, "onError : " + errorEvent.getMessage());
         updateOutput("onError(\"" + errorEvent.getMessage() + "\")");
     }
 
     @Override
     public void onLevelsChanged(LevelsChangedEvent levelsChangedEvent) {
-        level = levelsChangedEvent.getCurrentQuality();
-        Log.d(TAG, "onLevelsChange(" + levelsChangedEvent.getCurrentQuality() + ")");
+        print("onLevelsChange(" + levelsChangedEvent.getCurrentQuality() + ")");
         updateOutput("onLevelsChange(" + levelsChangedEvent.getCurrentQuality() + ")");
     }
 
     @Override
     public void onLevels(LevelsEvent levelsEvent) {
-        Log.d(TAG, "onLevels");
+        print("onLevels");
         updateOutput("onLevels(List<QualityLevel>) size: " + levelsEvent.getLevels().size());
     }
 
     @Override
     public void onAudioTrackChanged(AudioTrackChangedEvent audioTrackChangedEvent) {
-        Log.d(TAG, "onAudioTrackChanged");
+        print("onAudioTrackChanged");
         updateOutput("onAudioTrackChanged(" + audioTrackChangedEvent.getCurrentTrack() + ")");
     }
 
@@ -298,61 +302,61 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onAdClick(AdClickEvent adClickEvent) {
-        Log.d(TAG, "onAdClick");
+        print("onAdClick");
         updateOutput("onAdClick(\"" + adClickEvent.getTag() + "\")");
     }
 
     @Override
     public void onAdComplete(AdCompleteEvent adCompleteEvent) {
-        Log.d(TAG, "onAdComplete");
+        print("onAdComplete");
         updateOutput("onAdComplete(\"" + adCompleteEvent.getTag() + "\")");
     }
 
     @Override
     public void onAdSkipped(AdSkippedEvent adSkippedEvent) {
-        Log.d(TAG, "onAdSkipped");
+        print("onAdSkipped");
         updateOutput("onAdSkipped(\"" + adSkippedEvent.getTag() + "\")");
     }
 
     @Override
     public void onAdImpression(AdImpressionEvent adImpressionEvent) {
-        Log.d(TAG, "onAdImpression");
+        print("onAdImpression");
         updateOutput("onAdImpression(\"" + adImpressionEvent.getTag() + "\", \"" + adImpressionEvent.getCreativeType() + "\", \"" + adImpressionEvent.getAdPosition().name() + "\")");
 
     }
 
     @Override
     public void onAdTime(AdTimeEvent adTimeEvent) {
-        Log.d(TAG, "onAdTime");
+        print("onAdTime");
         // Do nothing - this fires several times per second
     }
 
     @Override
     public void onAdPause(AdPauseEvent adPauseEvent) {
-        Log.d(TAG, "onAdPause");
+        print("onAdPause");
         updateOutput("onAdPause(\"" + adPauseEvent.getTag() + "\", \"" + adPauseEvent.getOldState() + "\")");
     }
 
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
-        Log.d(TAG, "onAdPlay");
+        print("onAdPlay");
         updateOutput("onAdPlay(\"" + adPlayEvent.getTag() + "\", \"" + adPlayEvent.getOldState() + "\")");
     }
 
     public void onSeeked(SeekedEvent seekedEvent) {
-        Log.d(TAG, "onSeeked current position: " + seekedEvent.getPosition());
+        print("onSeeked current position: " + seekedEvent.getPosition());
         updateOutput("onSeeked(\"" + "seeked" + "\")");
     }
 
     @Override
     public void onControls(ControlsEvent controlsEvent) {
-        Log.d(TAG, "onControls");
+        print("onControls");
         updateOutput("onControls(\"" + controlsEvent.getControls() + "\")");
     }
 
     @Override
     public void onDisplayClick(DisplayClickEvent displayClickEvent) {
-        Log.d(TAG, "onDisplayClick");
+        print("onDisplayClick");
         updateOutput("onDisplayClick()");
     }
 
@@ -364,15 +368,47 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onMute(MuteEvent muteEvent) {
-        Log.d(TAG, "onMute");
+        print("onMute");
         updateOutput("onMute()");
 
     }
 
     @Override
     public void onAdSchedule(AdScheduleEvent adScheduleEvent) {
-        Log.d(TAG, "onAdSchedule");
+        print("onAdSchedule");
         updateOutput("onAdSchedule()");
     }
 
+    @Override
+    public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
+        updateOutput("onRelatedClose(): " + relatedCloseEvent.getMethod());
+        print("onRelatedClose(): " + relatedCloseEvent.getMethod());
+    }
+
+    @Override
+    public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
+        updateOutput("onRelatedOpen()" +
+                "method: " + relatedOpenEvent.getMethod() +
+                "onRelatedOpen url: " + relatedOpenEvent.getUrl());
+        print("onRelatedOpen()" + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            print("onRelatedOpen getitems(): ");
+            relatedOpenEvent.getItems().forEach(e -> print(" getitems - " + e + "\r\n"));
+        }
+    }
+
+    @Override
+    public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
+        updateOutput("onRelatedPlay(): " + relatedPlayEvent.getItem().getFile());
+        print("onRelatedPlay(): " +
+                "\r\nAuto" + relatedPlayEvent.getAuto() +
+                "\r\nFile:" + relatedPlayEvent.getItem().getFile() +
+                "\r\nPosition: " + relatedPlayEvent.getPosition());
+
+    }
+
+    private void print(String s) {
+        Log.d("JWPLAYEREVENTHANDLER", s);
+    }
 }
