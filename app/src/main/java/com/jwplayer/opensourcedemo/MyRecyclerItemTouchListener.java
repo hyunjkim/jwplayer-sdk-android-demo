@@ -29,7 +29,7 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
 
                 if (e.getAction() == MotionEvent.ACTION_UP && clicklistener != null) {
                     clicklistener.onItemClick(child, recyclerView.getChildAdapterPosition(child));
-                    Log.i("HYUNJOO", "onSingleTapUp: x - " + e.getX() + "y - " + e.getY());
+                    Log.i("JWEVENTHANDLER", "onSingleTapUp: x - " + e.getX() + "y - " + e.getY());
                 }
                 return true;
             }
@@ -37,7 +37,7 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
             @Override
             public void onLongPress(MotionEvent e) {
 
-                Log.i("HYUNJOO", "onLongPress: x - " + e.getX() + "y - " + e.getY());
+                Log.i("JWEVENTHANDLER", "onLongPress: x - " + e.getX() + "y - " + e.getY());
 
                 View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
 

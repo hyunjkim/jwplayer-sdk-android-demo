@@ -62,7 +62,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                     .into(grid);
             videotitle.setText(playlistItem.getTitle());
             grid.setOnClickListener(view -> {
-                Log.i("HYUNJOO", "Click on grid: " + playlistItem.getTitle() + "position: " + position);
+                Log.i("JWEVENTHANDLER", "Click on grid: " + playlistItem.getTitle() + "position: " + position);
                 Toast.makeText(itemView.getContext(), playlistItem.getTitle(), Toast.LENGTH_SHORT).show();
             });
         }

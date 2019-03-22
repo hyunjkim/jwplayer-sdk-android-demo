@@ -2,7 +2,6 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,8 +45,6 @@ public class VideoDetailFragment extends JWPlayerSupportFragment {
 
 
     private void setupJWPlayerFrag(String file) {
-        Log.i("HYUNJOO", " setupJWPlayerFrag: " + file);
-
         PlayerConfig config = new PlayerConfig.Builder()
                 .file(file)
                 .autostart(true)

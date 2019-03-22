@@ -9,8 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -66,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             // Setup RecyclerView
             setupRecyclerView();
         };
-        handler.postDelayed(runnable,2000);
+        handler.postDelayed(runnable, 2000);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -153,18 +151,6 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.addOnItemTouchListener(myRecyclerItemTouchListener);
         mRecyclerView.setAdapter(new MyRecyclerAdapter(playlistItemList));
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Exit fullscreen when the user pressed the Back button
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            if (mPlayerView.getFullscreen()) {
-//                mPlayerView.setFullscreen(false, true);
-//                return false;
-//            }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
