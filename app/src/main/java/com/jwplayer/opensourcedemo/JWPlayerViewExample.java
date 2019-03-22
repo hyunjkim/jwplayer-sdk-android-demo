@@ -1,8 +1,14 @@
 package com.jwplayer.opensourcedemo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,35 +24,44 @@ import com.jwplayer.opensourcedemo.jwutil.Logger;
 import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
 import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.network.NetworkUtility;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
 
+import static com.jwplayer.opensourcedemo.network.NetworkUtility.networkCheck;
+import static com.jwplayer.opensourcedemo.network.NetworkUtility.refreshDisplay;
+
 public class JWPlayerViewExample extends AppCompatActivity implements
         VideoPlayerEvents.OnFullscreenListener {
 
+    public static String sPref = null;
+
+    // Whether there is a Wi-Fi connection.
+    private static boolean wifiConnected = false;
+
+    // Whether there is a mobile connection.
+    private static boolean mobileConnected = false;
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-
     /**
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
-
     /**
      * Stored instance of CoordinatorLayout
      * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
      */
     private CoordinatorLayout mCoordinatorLayout;
+
+    // The BroadcastReceiver that tracks network connectivity changes.
+    private NetworkUtility receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,65 +75,51 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-        // Setup JWPlayer
-        setupJWPlayer();
+        if(networkCheck(getApplicationContext())){
+            registerBroadcastReceiver();
 
-        // Handle hiding/showing of ActionBar
-        mPlayerView.addOnFullscreenListener(this);
+            // Setup JWPlayer
+            setupJWPlayer();
 
-        // Keep the screen on during playback
-        new KeepScreenOnHandler(mPlayerView, getWindow());
+            // Handle hiding/showing of ActionBar
+            mPlayerView.addOnFullscreenListener(this);
 
-        // Instantiate the JW Player event handler class
-        new JWEventHandler(mPlayerView, outputTextView, scrollView);
+            // Keep the screen on during playback
+            new KeepScreenOnHandler(mPlayerView, getWindow());
 
-        // Instantiate the JW Player Ad event handler class
-        new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
+            // Instantiate the JW Player event handler class
+            new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-        mCastContext = CastContext.getSharedInstance(this);
+            // Instantiate the JW Player Ad event handler class
+            new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
+
+            mCastContext = CastContext.getSharedInstance(this);
+        }
+
     }
 
-    /* Setup JW Player
-     * More info about our Player Configuration and other available Configurations: {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-     * 1 - PlayerConfig
-     * 2 - LogoConfig
-     * 3 - PlaybackRateConfig
-     * 4 - CaptionsConfig
-     * 5 - RelatedConfig
-     * 6 - SharingConfig
-     * 7 - SkinConfig
+    private void registerBroadcastReceiver() {
+        // Registers BroadcastReceiver to track network connection changes.
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        receiver = new NetworkUtility();
+        this.registerReceiver(receiver, filter);
+    }
+
+    /*
+     * Setup JW Player
      */
     private void setupJWPlayer() {
 
         List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
-
-        // Ima Tag Example
-        ImaAdvertising imaAdvertising = SampleAds.getImaAd();
-
-        // VAST Tag Example
-        Advertising vastAdvertising = SampleAds.getVastAd();
-
-        // SkinConifg - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.host.com/css/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
-
-        // More info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .autostart(true)
                 .preload(true)
                 .allowCrossProtocolRedirects(true)
-//				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-                .skinConfig(skinConfig)
                 .build();
 
         mPlayerView.setup(config);
     }
-
 
     /*
      * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
@@ -134,7 +135,35 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mPlayerView.onStart();
+
+        // Gets the user's network preference settings
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Retrieves a string value for the preferences. The second parameter
+        // is the default value to use if a preference value is not found.
+        sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+
+        updateConnectedFlags();
+
+        if (refreshDisplay && mPlayerView != null) {
+            mPlayerView.onStart();
+        }
+    }
+
+    // Checks the network connection and sets the wifiConnected and mobileConnected
+    // variables accordingly.
+    public void updateConnectedFlags() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            wifiConnected = false;
+            mobileConnected = false;
+        }
     }
 
     @Override
@@ -159,6 +188,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mPlayerView.onDestroy();
+        if (receiver != null) {
+            this.unregisterReceiver(receiver);
+        }
     }
 
     @Override
