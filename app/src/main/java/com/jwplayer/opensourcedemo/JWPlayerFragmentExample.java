@@ -12,9 +12,10 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
@@ -28,6 +29,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
         MyClickListener {
 
     /**
+     * Reference to the {@link CastContext}
+     */
+    private CastContext mCastContext;
+    /**
      * A reference to the {@link JWPlayerSupportFragment}.
      */
     private JWPlayerSupportFragment mPlayerFragment;
@@ -36,11 +41,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
      * A reference to the {@link JWPlayerView} used by the JWPlayerSupportFragment.
      */
     private JWPlayerView mPlayerView;
-
-    /**
-     * Reference to the {@link CastManager}
-     */
-    private CastManager mCastManager;
 
     private LinearLayout mLinearLayout;
     private List<PlaylistItem> playlistItemList;
@@ -63,8 +63,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView);
 
-        // Get a reference to the CastManager
-        mCastManager = CastManager.getInstance();
+        // Get a reference to the CastContext
+        mCastContext = CastContext.getSharedInstance(this);
 
         setupRecyclerView();
     }
@@ -94,6 +94,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
         addFragmentBackToStack(getJWPlayerConfig(video));
     }
 
+
+    /*
+     * Add Fragment to the backstack
+     */
     public void addFragmentBackToStack(PlayerConfig config) {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
@@ -170,8 +174,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
                 mPlayerView.setFullscreen(false, true);
                 return false;
             }
-            if(mPlayerFragment != null){
-                Toast.makeText(this,"mPlayerFragment not empty", Toast.LENGTH_SHORT).show();
+            if (mPlayerFragment != null) {
+                Toast.makeText(this, "mPlayerFragment not empty", Toast.LENGTH_SHORT).show();
             }
         }
         return super.onKeyDown(keyCode, event);
@@ -182,7 +186,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
         // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
         return true;
     }
 
