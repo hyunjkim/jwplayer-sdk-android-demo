@@ -14,40 +14,23 @@ The demo application should now build and run. For more information on how to us
 
 [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 
+## Single Activity that can add to the back of the Fragment stack of JWPlayer views whenever a user clicks on a video from the  video list
 
-## [PlaylistItem](https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/playlists/PlaylistItem.html)
+## Credit to: https://medium.com/@harivigneshjayapalan/android-recyclerview-implementing-single-item-click-and-long-press-part-ii-b43ef8cb6ad8
 
-There are two parsejson method:
+## [MyRecyclerItemTouchListener](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/MyRecyclerItemTouchListener.java)
+- Includes an MyClickListener Interface https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/MyRecyclerItemTouchListener.java#L71
 
-- [parseJson(org.json.JSONObject json)](https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/playlists/PlaylistItem.html#parseJson-org.json.JSONObject-)
-- [parseJson(java.lang.String json)](https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/playlists/PlaylistItem.html#parseJson-java.lang.String-)
+## [MyRecyclerAdapter](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/MyRecyclerAdapter.java)
 
+## [VideoDetailFragment](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/VideoDetailFragment.java#L94)
+- This is how the VideoDetailFragment is getting the video file whenever a video is clicked on the list
+- This is how I pass (https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/MainActivity.java#L138)
 
-## [List<PlaylistItem>]()
-
-There are two listFromJson method:
-
-- [listFromJson(org.json.JSONArray json)](https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/playlists/PlaylistItem.html#listFromJson-org.json.JSONArray-)
-- [listFromJson(java.lang.String json)](https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/playlists/PlaylistItem.html#listFromJson-java.lang.String-)
-
-#### Code Example, I use listFromJson(org.json.JSONArray json) API Method: 
-```                   
-                    String mediaId = "jumBvHdL";
-                    String url = "https://cdn.jwplayer.com/v2/media/" + mediaId;
-                    
-                    byte[] response = Util.executePost(url);
-                    String jsonResponse = new String(response, StandardCharsets.UTF_8);
-
-                    // Get the Playlist
-                    JSONArray responseObject = new JSONObject(jsonResponse) // Set to pojo
-                            .getJSONArray("playlist");  // Get the Playlist Object
-
-                    List<PlaylistItem> videoList = PlaylistItem.listFromJson(responseObject);
-
-                    PlayerConfig playerConfig = new PlayerConfig.Builder()
-                            .playlist(videoList)
-                            .autostart(true)
-                            .build();
-
-                    // Setup your player with the config
-                    mPlayerView.setup(playerConfig);```
+## XML Layout
+1) [fragment_videodetailfragment.xml](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/res/layout/fragment_videodetailfragment.xml)
+- This contains the JWPlayerView and EventListener Text Output
+2) [layout_grids.xml](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/res/layout/layout_grids.xml)
+- This is for the recycler view grids
+3) [layout_mainactivity.xml](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/res/layout/layout_mainactivity.xml)
+- This layout contains Fragment Container and RecyclerView
