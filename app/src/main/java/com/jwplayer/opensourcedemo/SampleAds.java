@@ -84,14 +84,19 @@ class SampleAds {
 
         t.start();
 
-        try {
-            t.join();
+        while (t.isAlive()) {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             setupjwplayer.start();
+        }
+        try {
             setupjwplayer.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
     /*
@@ -112,17 +117,17 @@ class SampleAds {
             }
         }
 
+        Advertising vastad = new Advertising(AdSource.VAST, adbreaklist);
+        vastad.setVpaidControls(true);
         AdRules mAdRules = null;
 
         try {
             mAdRules = AdRules.parseJson(adRules);
+            vastad.setAdRules(mAdRules);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Advertising vastad = new Advertising(AdSource.VAST, adbreaklist);
-        vastad.setVpaidControls(true);
-        vastad.setAdRules(mAdRules);
 
         return vastad;
     }

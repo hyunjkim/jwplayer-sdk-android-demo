@@ -3,6 +3,7 @@ package com.jwplayer.opensourcedemo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -62,10 +63,24 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-        SampleAds ads = new SampleAds(this);
+        MyThreadListener listener = this;
 
-//        // Get JSON Advertising Schedule
-        getJSONAdvertising("02U1YHTW");
+        Handler handler = new Handler(getMainLooper());
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                print("onCreate() - setupJWPlayer");
+
+                // Setup JWPlayer
+                new SampleAds(listener);
+
+                // Get JSON Advertising Schedule
+                getJSONAdvertising("02U1YHTW");
+
+            }
+        };
+        handler.post(runnable);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -198,13 +213,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         }
     }
 
-
-    private void print(String s) {
-        Log.i("HYUNJOO", "JSON OBJECT RESPONSE: " + s);
-    }
-
     @Override
     public void setupJWPlayer() {
+        print("Is this setup?");
         List<PlaylistItem> playlistItemList = createPlaylist();
 
         AdvertisingBase advertising = SampleAds.client.contains("ima") ? SampleAds.getImaAd() : SampleAds.getVastAd();
@@ -217,5 +228,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         mPlayerView.setup(playerConfigBuilder);
     }
+
+    private void print(String s) {
+        Log.i("JWPLAYERVIEWEXAMPLE", "JSON OBJECT RESPONSE: " + s);
+    }
+
 
 }
