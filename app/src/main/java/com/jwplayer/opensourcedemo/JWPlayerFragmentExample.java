@@ -14,11 +14,11 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
@@ -36,17 +36,12 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
      */
     private JWPlayerView mPlayerView;
 
-    /**
-     * Reference to the {@link CastManager}
-     */
-    private CastManager mCastManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
+        TextView outputTextView = (TextView) findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
         setupJWPlayer();
@@ -57,8 +52,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Get a reference to the CastManager
-        mCastManager = CastManager.getInstance();
     }
 
     private void setupJWPlayer() {
@@ -132,7 +125,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         // Exit fullscreen when the user pressed the Back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false,true);
+                mPlayerView.setFullscreen(false, true);
                 return false;
             }
         }
@@ -143,8 +136,11 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+
         // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+
         return true;
     }
 
@@ -171,7 +167,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
             }
         }
     }
-    void print(String s){
+
+    void print(String s) {
         Log.i("jwsupportfragment", s);
     }
 
