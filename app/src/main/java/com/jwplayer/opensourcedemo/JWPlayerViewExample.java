@@ -30,8 +30,6 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jwplayer.opensourcedemo.SampleAds.getJSONAdvertising;
-
 
 public class JWPlayerViewExample extends AppCompatActivity implements
         VideoPlayerEvents.OnFullscreenListener, MyThreadListener {
@@ -51,6 +49,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
+
+    private SampleAds mSampleAds;
 
 
     @Override
@@ -73,10 +73,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 print("onCreate() - setupJWPlayer");
 
                 // Setup JWPlayer
-                new SampleAds(listener);
+                mSampleAds = new SampleAds(listener);
 
                 // Get JSON Advertising Schedule
-                getJSONAdvertising("02U1YHTW");
+                mSampleAds.getJSONAdvertising("02U1YHTW");
 
             }
         };
@@ -215,17 +215,19 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     @Override
     public void setupJWPlayer() {
-        print("Is this setup?");
+        print("setupJWPlayer()");
         List<PlaylistItem> playlistItemList = createPlaylist();
-
-        AdvertisingBase advertising = SampleAds.client.contains("ima") ? SampleAds.getImaAd() : SampleAds.getVastAd();
+        AdvertisingBase advertising = null;
 
         PlayerConfig playerConfigBuilder = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .autostart(true)
-                .advertising(advertising) // Ima or Vast Ad Example
                 .build();
 
+        if (mSampleAds != null) {
+            advertising = mSampleAds.getClient().equals("ima") ? mSampleAds.getImaAd() : mSampleAds.getVastAd();
+            playerConfigBuilder.setAdvertising(advertising);
+        }
         mPlayerView.setup(playerConfigBuilder);
     }
 

@@ -23,18 +23,17 @@ import java.util.List;
 
 class SampleAds {
 
-    static String client;
-    private static boolean isFinished = true;
-    private static JSONArray schedule;
-    private static JSONObject adRules;
-    private static List<AdBreak> adbreaklist;
-    private static MyThreadListener mListener;
+    private String client;
+    private JSONArray schedule;
+    private JSONObject adRules;
+    private List<AdBreak> adbreaklist;
+    private MyThreadListener mListener;
 
     SampleAds(MyThreadListener listener) {
         mListener = listener;
     }
 
-    static void getJSONAdvertising(String adscheduleid) {
+    void getJSONAdvertising(String adscheduleid) {
 
         Thread setupjwplayer = new Thread(() -> {
             mListener.setupJWPlayer();
@@ -103,7 +102,7 @@ class SampleAds {
      * Vast Ad Setup Example
      * */
 
-    static Advertising getVastAd() {
+    Advertising getVastAd() {
         adbreaklist = new ArrayList<>();
 
         for (int i = 0; i < schedule.length(); i++) {
@@ -135,7 +134,7 @@ class SampleAds {
     /*
      * IMA Ad Setup Example
      * */
-    static ImaAdvertising getImaAd() {
+    ImaAdvertising getImaAd() {
 
         adbreaklist = new ArrayList<>();
 
@@ -177,7 +176,11 @@ class SampleAds {
     }
 
 
-    private static void print(String s) {
+    private void print(String s) {
         Log.i("SAMPLEADS", "JSON OBJECT RESPONSE: " + s);
+    }
+
+    String getClient() {
+        return client;
     }
 }
