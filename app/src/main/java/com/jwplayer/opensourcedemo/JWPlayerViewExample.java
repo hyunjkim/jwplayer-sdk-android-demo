@@ -14,9 +14,9 @@ import android.widget.TextView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 
 public class JWPlayerViewExample extends AppCompatActivity
@@ -33,16 +33,15 @@ public class JWPlayerViewExample extends AppCompatActivity
     private JWEventHandler mEventHandler;
 
     /**
-     * Reference to the {@link CastContext}
-     */
-    private CastContext mCastContext;
-
-    /**
      * Stored instance of CoordinatorLayout
      * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
      */
     private CoordinatorLayout mCoordinatorLayout;
 
+    /**
+     * Reference to the {@link CastContext}
+     */
+    private CastContext mCastContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +50,10 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
-
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+
+        // Setup JWPlayer
+        setupJWPlayer();
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -63,19 +64,22 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Instantiate the JW Player event handler class
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
-                .build();
-
-        mPlayerView.load(pi);
-
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
     }
 
+    private void setupJWPlayer() {
+
+        // More info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
+        PlayerConfig config = new PlayerConfig.Builder()
+                .file("https://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4")
+                .autostart(true)
+                .preload(true)
+                .allowCrossProtocolRedirects(true)
+                .build();
+
+        mPlayerView.setup(config);
+    }
 
     @Override
     protected void onStart() {

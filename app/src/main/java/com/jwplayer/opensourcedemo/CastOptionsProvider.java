@@ -28,7 +28,7 @@ public class CastOptionsProvider implements OptionsProvider {
                 .setActions(Arrays.asList(
                         MediaIntentReceiver.ACTION_SKIP_NEXT,
                         MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
-                        MediaIntentReceiver.ACTION_STOP_CASTING), new int[]{1, 2})
+                        MediaIntentReceiver.ACTION_STOP_CASTING), new int[]{0, 2})
                 .setTargetActivityClassName(JWPlayerViewExample.class.getName())
                 .build();
 
