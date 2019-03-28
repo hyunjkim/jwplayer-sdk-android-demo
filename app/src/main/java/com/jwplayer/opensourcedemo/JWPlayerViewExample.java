@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -10,52 +11,67 @@ import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
+import static com.google.android.gms.cast.CastStatusCodes.APPLICATION_NOT_FOUND;
+import static com.google.android.gms.cast.CastStatusCodes.APPLICATION_NOT_RUNNING;
+import static com.google.android.gms.cast.CastStatusCodes.AUTHENTICATION_FAILED;
+import static com.google.android.gms.cast.CastStatusCodes.CANCELED;
+import static com.google.android.gms.cast.CastStatusCodes.DEVICE_CONNECTION_SUSPENDED;
+import static com.google.android.gms.cast.CastStatusCodes.ERROR_SERVICE_CREATION_FAILED;
+import static com.google.android.gms.cast.CastStatusCodes.ERROR_SERVICE_DISCONNECTED;
+import static com.google.android.gms.cast.CastStatusCodes.ERROR_STOPPING_SERVICE_FAILED;
+import static com.google.android.gms.cast.CastStatusCodes.FAILED;
+import static com.google.android.gms.cast.CastStatusCodes.INTERNAL_ERROR;
+import static com.google.android.gms.cast.CastStatusCodes.INTERRUPTED;
+import static com.google.android.gms.cast.CastStatusCodes.INVALID_REQUEST;
+import static com.google.android.gms.cast.CastStatusCodes.MESSAGE_SEND_BUFFER_TOO_FULL;
+import static com.google.android.gms.cast.CastStatusCodes.MESSAGE_TOO_LARGE;
+import static com.google.android.gms.cast.CastStatusCodes.NETWORK_ERROR;
+import static com.google.android.gms.cast.CastStatusCodes.NOT_ALLOWED;
+import static com.google.android.gms.cast.CastStatusCodes.REPLACED;
+import static com.google.android.gms.cast.CastStatusCodes.SUCCESS;
+import static com.google.android.gms.cast.CastStatusCodes.TIMEOUT;
+import static com.google.android.gms.cast.CastStatusCodes.UNKNOWN_ERROR;
 
 
 public class JWPlayerViewExample extends AppCompatActivity
         implements VideoPlayerEvents.OnFullscreenListener {
 
+    private final SessionManagerListener<CastSession> mSessionManagerListener = new MySessionManagerListenerImpl();
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-
     /**
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
-
     /**
      * Stored instance of CoordinatorLayout
      * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
      */
     private CoordinatorLayout mCoordinatorLayout;
-
     private CastSession mCastSession;
     private SessionManager mSessionManager;
-    private final SessionManagerListener mSessionManagerListener = new MySessionManagerListenerImpl();
+    private MyCastListener myCastListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // Get a reference to the CastContext
-        mCastContext = CastContext.getSharedInstance(this);
-
-        // Session Manager Listener
-        mSessionManager = mCastContext.getSessionManager();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
@@ -63,8 +79,13 @@ public class JWPlayerViewExample extends AppCompatActivity
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollview = findViewById(R.id.scrollview);
         MediaRouteButton mMediaRouteButton = findViewById(R.id.media_route_button);
-
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+        // Setup JWPlayer
+        setupJWPlayer();
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -75,38 +96,35 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollview);
 
-
-        // Setup JWPlayer
-        setupJWPlayer();
-
         String jwplayerBuildVersion = "JWPlayer Version: " + mPlayerView.getVersionCode();
-        outputTextView.append(jwplayerBuildVersion +"\r\n");
-        outputTextView.append("JWPlayer Activity Example" +"\r\n");
-
-        // Instantiate and Attach Cast State Listener
-
+        outputTextView.append(jwplayerBuildVersion + "\r\n");
+        outputTextView.append("JWPlayer Activity Example" + "\r\n");
 
         // Add my Custom cast button
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
         mMediaRouteButton.bringToFront();
+
+        // Initialize Cast Listener
+        myCastListener = new MyCastListener(mMediaRouteButton, mPlayerView);
+
+        // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
-        MyCastListener myCastListener = new MyCastListener(mMediaRouteButton, mPlayerView);
+
+        // Set my Cast Listener to the Cast Context
         mCastContext.addCastStateListener(myCastListener);
 
-        // Using Default cast button
-//        MyCastListener myCastListener = new MyCastListener(mPlayerView);
+        // Session Manager Listener
+        mSessionManager = mCastContext.getSessionManager();
     }
 
     private void setupJWPlayer() {
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .autostart(true)
                 .build();
 
-        mPlayerView.load(pi);
-        mPlayerView.play();
+        mPlayerView.setup(config);
     }
 
     @Override
@@ -117,18 +135,23 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        mCastSession = mSessionManager.getCurrentCastSession();
-        mSessionManager.addSessionManagerListener(mSessionManagerListener);
+        mCastContext.addCastStateListener(myCastListener);
+        mCastContext.getSessionManager().addSessionManagerListener(
+                mSessionManagerListener, CastSession.class);
+        if (mCastSession == null) {
+            mCastSession = CastContext.getSharedInstance(this).getSessionManager().getCurrentCastSession();
+        }
         super.onResume();
         mPlayerView.onResume();
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
-        mPlayerView.onPause();
-        mSessionManager.removeSessionManagerListener(mSessionManagerListener);
+        mCastContext.removeCastStateListener(myCastListener);
+        mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
         mCastSession = null;
+        mPlayerView.onPause();
+        super.onPause();
     }
 
     @Override
@@ -183,9 +206,9 @@ public class JWPlayerViewExample extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
 
-        // Register the MediaRouterButton
-//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-//                R.id.media_route_menu_item);
+//        // Register the MediaRouterButton
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
         return true;
     }
 
@@ -201,4 +224,149 @@ public class JWPlayerViewExample extends AppCompatActivity
         }
     }
 
+    class MySessionManagerListenerImpl implements SessionManagerListener<CastSession> {
+
+        public void onSessionStarting(CastSession castSession) {
+            print("onSessionStarting - category: " + castSession.getCategory());
+            print("onSessionStarting - Session ID: " + castSession.getSessionId());
+            check("onSessionStarting", castSession);
+        }
+
+        @Override
+        public void onSessionStarted(CastSession castSession, String sessionId) {
+            mCastSession = castSession;
+            print("onSessionStarted Session ID: " + castSession.getSessionId() + " Session ID: " + sessionId);
+            check("onSessionStarted", castSession);
+        }
+
+        @Override
+        public void onSessionStartFailed(CastSession castSession, int error) {
+            print("onSessionStartFailed Session ID: " + castSession.getSessionId());
+            printError("onSessionStartFailed", error);
+            check("onSessionStartFailed", castSession);
+        }
+
+        @Override
+        public void onSessionEnding(CastSession castSession) {
+            print("onSession Ending Session ID: " + castSession.getSessionId());
+            check("onSessionEnding", castSession);
+        }
+
+        @Override
+        public void onSessionEnded(CastSession castSession, int error) {
+            if (castSession == mCastSession) {
+                mCastSession = null;
+            }
+            print("onSession Ended Session ID: " + castSession.getSessionId());
+            printError("onSession Ended", error);
+            check("onSession Ended", castSession);
+        }
+
+        @Override
+        public void onSessionResuming(CastSession castSession, String sessionId) {
+            print("onSession Resuming Session ID: " + castSession.getSessionId() + " Session ID: " + sessionId);
+            check("onSessionResuming", castSession);
+        }
+
+        @Override
+        public void onSessionResumed(CastSession castSession, boolean wasSuspended) {
+            mCastSession = castSession;
+            print("onSession Resumed Session ID: " + castSession.getSessionId() + " wasSuspended: " + wasSuspended);
+            check("onSessionResumed", castSession);
+        }
+
+        @Override
+        public void onSessionResumeFailed(CastSession castSession, int error) {
+            print("onSession Resume Failed Session ID: " + castSession.getSessionId() + " error : " + error);
+            printError("onSessionResumeFailed", error);
+            check("onSessionResumeFailed", castSession);
+        }
+
+        @Override
+        public void onSessionSuspended(CastSession castSession, int reason) {
+            print("onSessionSuspended Session ID: " + castSession.getSessionId() + " reason : " + reason);
+            check("onSessionSuspended", castSession);
+
+        }
+
+        private void printError(String output, int error) {
+
+            switch (error) {
+                case SUCCESS:
+                    print(output + " ERROR CODE: SUCCESS");
+                    break;
+                case APPLICATION_NOT_FOUND:
+                    print(output + " ERROR CODE: APPLICATION_NOT_FOUND");
+                    break;
+                case NETWORK_ERROR:
+                    print(output + " ERROR CODE: NETWORK_ERROR");
+                    break;
+                case TIMEOUT:
+                    print(output + " ERROR CODE: TIMEOUT");
+                    break;
+                case INTERRUPTED:
+                    print(output + " ERROR CODE: INTERRUPTED");
+                    break;
+                case INTERNAL_ERROR:
+                    print(output + " ERROR CODE: INTERNAL_ERROR");
+                    break;
+                case UNKNOWN_ERROR:
+                    print(output + " ERROR CODE: UNKNOWN_ERROR");
+                    break;
+                case AUTHENTICATION_FAILED:
+                    print(output + " ERROR CODE: AUTHENTICATION_FAILED");
+                    break;
+                case INVALID_REQUEST:
+                    print(output + " ERROR CODE: INVALID_REQUEST");
+                    break;
+                case CANCELED:
+                    print(output + " ERROR CODE: CANCELED");
+                    break;
+                case NOT_ALLOWED:
+                    print(output + " ERROR CODE: NOT_ALLOWED");
+                    break;
+                case APPLICATION_NOT_RUNNING:
+                    print(output + " ERROR CODE: APPLICATION_NOT_RUNNING");
+                    break;
+                case MESSAGE_TOO_LARGE:
+                    print(output + " ERROR CODE: MESSAGE_TOO_LARGE");
+                    break;
+                case MESSAGE_SEND_BUFFER_TOO_FULL:
+                    print(output + " ERROR CODE: MESSAGE_SEND_BUFFER_TOO_FULL");
+                    break;
+                case DEVICE_CONNECTION_SUSPENDED:
+                    print(output + " ERROR CODE: DEVICE_CONNECTION_SUSPENDED");
+                    break;
+                case FAILED:
+                    print(output + " ERROR CODE: FAILED");
+                    break;
+                case REPLACED:
+                    print(output + " ERROR CODE: REPLACED");
+                    break;
+                case ERROR_SERVICE_CREATION_FAILED:
+                    print(output + " ERROR CODE: ERROR_SERVICE_CREATION_FAILED");
+                    break;
+                case ERROR_SERVICE_DISCONNECTED:
+                    print(output + " ERROR CODE: ERROR_SERVICE_DISCONNECTED");
+                    break;
+                case ERROR_STOPPING_SERVICE_FAILED:
+                    print(output + " ERROR CODE: ERROR_STOPPING_SERVICE_FAILED");
+                    break;
+            }
+        }
+
+        private void check(String s, CastSession session) {
+            if (session.isConnecting()) print(s + " - session is connecting");
+            if (session.isConnected()) print(s + " - session is connected");
+            if (session.isDisconnecting()) print(s + " - session is disconnecting");
+            if (session.isDisconnected()) print(s + " - session is disconnected");
+            if (session.isResuming()) print(s + " - session is resuming");
+            if (session.isSuspended()) print(s + " - session is suspended");
+        }
+
+        private void print(String output) {
+            String TAG = "MyCast SessionManagerListener";
+            Log.i(TAG, "(CAST) " + output);
+        }
+    }
 }

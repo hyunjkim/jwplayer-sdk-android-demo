@@ -1,4 +1,5 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_jwplayerview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,10 +13,11 @@
 
         <com.longtailvideo.jwplayer.JWPlayerView
             android:id="@+id/jwplayer"
+            app:controller_layout_id="@layout/exo_player_control_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-            <include layout="@layout/custom_mediabutton" />
+            <include layout="@layout/custom_mediabutton"/>
         </com.longtailvideo.jwplayer.JWPlayerView>
 
         <ScrollView

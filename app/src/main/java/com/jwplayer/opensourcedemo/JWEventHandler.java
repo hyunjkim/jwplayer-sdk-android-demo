@@ -245,7 +245,7 @@ public class JWEventHandler implements
 
     @Override
     public void onTime(TimeEvent timeEvent) {
-        Log.d(TAG, timeEvent.getDuration() + "  ***  ");
+//        Log.d(TAG, timeEvent.getDuration() + "  ***  ");
     }
 
     @Override
