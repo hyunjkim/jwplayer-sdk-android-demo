@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlaybackRateConfig;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -54,6 +56,9 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+
+        setupJWPlayer();
+
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
@@ -63,17 +68,26 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Instantiate the JW Player event handler class
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
-                .build();
-
-        mPlayerView.load(pi);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
+    }
+
+    private void setupJWPlayer() {
+        float[] playbackRates = new float[]{0.5f, 1f, 2f};
+
+        // To setup custom playback rates
+        PlayerConfig playerConfig = new PlayerConfig.Builder()
+                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .playbackRates(PlaybackRateConfig.Factory.createPlaybackRateConfig(playbackRates))
+                .build();
+
+        // To use default playback rates
+//        PlayerConfig playerConfig = new PlayerConfig.Builder()
+//                .playbackRates(PlaybackRateConfig.Factory.createPlaybackRateConfig(true))
+//                .build();
+
+        mPlayerView.setup(playerConfig);
     }
 
 
