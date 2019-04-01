@@ -16,3 +16,15 @@ For more information on how to use our SDK refer to our developer guide:
 * **Developer Guide:** [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 * **JWPlayer Java Docs:** https://developer.jwplayer.com/sdk/android/reference/
 * **JWPlayer Demo** https://github.com/jwplayer/jwplayer-sdk-android-demo
+
+# Example for this branch:
+```@Override
+    public void onLevels(LevelsEvent levelsEvent) {
+        int index = 0;
+        for (QualityLevel each : levelsEvent.getLevels()) {
+            if (each.getLabel().contains("720")) {
+                mPlayer.setCurrentQuality(index);
+            }
+            index++;
+        }
+    }```
