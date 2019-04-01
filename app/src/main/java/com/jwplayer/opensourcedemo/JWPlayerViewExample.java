@@ -109,12 +109,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      * Setup JW Player
      */
     private void setupJWPlayer() {
-
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
+        String bipbop = "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
+        String alaska = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
         PlayerConfig config = new PlayerConfig.Builder()
-                .playlist(playlistItemList)
+                .file(bipbop)
                 .autostart(true)
                 .preload(true)
+                .repeat(true)
                 .allowCrossProtocolRedirects(true)
                 .build();
 
