@@ -21,8 +21,7 @@ public class SamplePlaylist {
                 "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
                 "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
                 "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
+                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4"
         };
 
         for(String each : playlist){
@@ -40,7 +39,7 @@ public class SamplePlaylist {
         List<MediaSource> mediaSourceList = new ArrayList<>();
         List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-        String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
+        String hls = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
         MediaSource ms = new MediaSource.Builder()
                 .file(hls)

@@ -1,10 +1,11 @@
-package com.jwplayer.opensourcedemo.listeners;
+package com.jwplayer.opensourcedemo.Listeners;
 
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.jwplayer.opensourcedemo.jwutil.Logger;
+import com.jwplayer.opensourcedemo.MyUtility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
@@ -79,9 +80,10 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnReadyListener,
         RelatedPluginEvents.OnRelatedCloseListener,
         RelatedPluginEvents.OnRelatedOpenListener,
-        RelatedPluginEvents.OnRelatedPlayListener{
+        RelatedPluginEvents.OnRelatedPlayListener {
 
     private JWPlayerView mPlayer;
+    private int currentQuality = -1;
     private TextView mOutput;
     private ScrollView mScroll;
 
@@ -89,10 +91,14 @@ public class JWEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(Logger.printBuildVersion(mPlayer.getVersionCode()));
-
         // Subscribe to allEventHandler: Player events
         mPlayer.addOnBufferListener(this);
+        mPlayer.addOnLevelsChangedListener(this);
+        mPlayer.addOnLevelsListener(this);
+        mPlayer.addOnVisualQualityListener(this);
+        mPlayer.addOnMetaListener(this);
+        mPlayer.addOnPlayListener(this);
+        mPlayer.addOnTimeListener(this);
         mPlayer.addOnCaptionsListListener(this);
         mPlayer.addOnCaptionsChangedListener(this);
         mPlayer.addOnCompleteListener(this);
@@ -103,12 +109,8 @@ public class JWEventHandler implements
         mPlayer.addOnFirstFrameListener(this);
         mPlayer.addOnFullscreenListener(this);
         mPlayer.addOnIdleListener(this);
-        mPlayer.addOnLevelsChangedListener(this);
-        mPlayer.addOnLevelsListener(this);
-        mPlayer.addOnMetaListener(this);
         mPlayer.addOnMuteListener(this);
         mPlayer.addOnPauseListener(this);
-        mPlayer.addOnPlayListener(this);
         mPlayer.addOnPlaylistCompleteListener(this);
         mPlayer.addOnPlaylistItemListener(this);
         mPlayer.addOnPlaylistListener(this);
@@ -119,20 +121,22 @@ public class JWEventHandler implements
         mPlayer.addOnSeekListener(this);
         mPlayer.addOnSeekedListener(this);
         mPlayer.addOnSetupErrorListener(this);
-        mPlayer.addOnTimeListener(this);
-        mPlayer.addOnVisualQualityListener(this);
-
     }
 
+    /*
+     * Print Logs in UI
+     * */
     private void updateOutput(String output) {
         mOutput.setText(Logger.updateOutput(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 
-    private void print(String s){
-        Log.i("JWEVENTHANDLER",s);
+    /*
+     * Print Logs in Terminal
+     * */
+    private void print(String s) {
+        Log.i("JWEVENTHANDLER", s);
     }
-
 
     /**
      * Regular playback events below here
@@ -182,8 +186,8 @@ public class JWEventHandler implements
     public void onCaptionsList(CaptionsListEvent captionsListEvent) {
         updateOutput(" " + "onCaptionsList()");
 
-        for(Caption each : captionsListEvent.getTracks()){
-            print("  onCaptionsList()- " + each.getLabel() +": "+ each.toJson().toString());
+        for (Caption each : captionsListEvent.getTracks()) {
+            print("  onCaptionsList()- " + each.getLabel() + ": " + each.toJson().toString());
         }
     }
 
@@ -225,17 +229,30 @@ public class JWEventHandler implements
 
     @Override
     public void onLevelsChanged(LevelsChangedEvent levelsChangedEvent) {
-        updateOutput(" " + "onLevelsChanged: " + levelsChangedEvent.getCurrentQuality());
-        print(" " + "onLevelsChanged:" + levelsChangedEvent.getCurrentQuality());
+        updateOutput(" " + "onLevelsChanged Current Quality: " + levelsChangedEvent.getCurrentQuality());
+        print(" " + "onLevelsChanged Current Quality: " + levelsChangedEvent.getCurrentQuality());
     }
 
     @Override
     public void onLevels(LevelsEvent levelsEvent) {
-        updateOutput(" " + "onLevelsEvent size: " + levelsEvent.getLevels().size());
-        print(" " + "onLevelsEvent size: " + levelsEvent.getLevels().size());
 
-        for(QualityLevel each : levelsEvent.getLevels()){
-            print(" onLevelsEvent - " + each.toJson().toString());
+        int levelSize = levelsEvent.getLevels().size();
+        int currQuality = mPlayer.getCurrentQuality();
+
+        updateOutput(" " + "onLevelsEvent size: " + levelSize);
+        updateOutput(" onLevelsEvent Current Quality: " + currQuality);
+        print(" " + "onLevelsEvent size: " + levelSize);
+        print(" onLevelsEvent Current Quality: " + currQuality);
+
+        int index = 0;
+        for (QualityLevel each : levelsEvent.getLevels()) {
+            if (each.getLabel().contains("720")) {
+                Toast.makeText(mPlayer.getContext(), "CHANGE TO 720P", Toast.LENGTH_SHORT).show();
+                print(" onLevelsEvent - " + each.toJson().toString());
+                print(" onLevelsEvent: current quality level index: " + index);
+                mPlayer.setCurrentQuality(index);
+            }
+            index++;
         }
     }
 
@@ -263,7 +280,6 @@ public class JWEventHandler implements
         print(" " + "onPlay " + playEvent.getOldState());
     }
 
-
     @Override
     public void onPlaylistComplete(PlaylistCompleteEvent playlistCompleteEvent) {
         updateOutput(" " + "onPlaylistComplete() ");
@@ -276,6 +292,7 @@ public class JWEventHandler implements
         print(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
         print(" " + "onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
     }
+
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
         updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
@@ -284,7 +301,7 @@ public class JWEventHandler implements
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        updateOutput(" " + "onSeek()"+seekEvent.getPosition());
+        updateOutput(" " + "onSeek()" + seekEvent.getPosition());
         print(" " + "onSeek position: " + seekEvent.getPosition());
         print(" " + "onSeek offset: " + seekEvent.getOffset());
     }
@@ -292,24 +309,25 @@ public class JWEventHandler implements
     @Override
     public void onSeeked(SeekedEvent seekedEvent) {
         updateOutput(" " + "onSeeked() ");
-        print(" " + "onSeeked() "+ seekedEvent.toString());
+        print(" " + "onSeeked() " + seekedEvent.toString());
     }
 
     @Override
     public void onSetupError(SetupErrorEvent setupErrorEvent) {
         updateOutput(" " + "onSetupError " + setupErrorEvent.getMessage());
-        print(" " + "onSetupError "+setupErrorEvent.getMessage());
+        print(" " + "onSetupError " + setupErrorEvent.getMessage());
     }
 
     @Override
     public void onTime(TimeEvent timeEvent) {
 //        updateOutput(" " + "onTime " + timeEvent);
-//        print(" " + "onTime);
+//        print(" " + "onTime ");
     }
 
     @Override
     public void onVisualQuality(VisualQualityEvent visualQualityEvent) {
-        if(visualQualityEvent.getQualityLevel() != null){
+        updateOutput(" " + "onVisualQuality mode: " + visualQualityEvent.getMode());
+        if (visualQualityEvent.getQualityLevel() != null) {
             updateOutput(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
             print(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
         }
@@ -328,37 +346,37 @@ public class JWEventHandler implements
         updateOutput(" onControlBarVisibilityChanged(): " + isVisible + "\r\n");
         print(" onControlBarVisibilityChanged(): " + isVisible + "\r\n");
     }
-                
-                
+
+
     @Override
     public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
-        updateOutput(" onRelatedClose(): "+relatedCloseEvent.getMethod());
-        print(" onRelatedClose(): "+relatedCloseEvent.getMethod());
+        updateOutput(" onRelatedClose(): " + relatedCloseEvent.getMethod());
+        print(" onRelatedClose(): " + relatedCloseEvent.getMethod());
     }
 
     @Override
     public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
-        updateOutput(" onRelatedOpen()"+
-                "method: "+relatedOpenEvent.getMethod() +
-                "onRelatedOpen url: "+relatedOpenEvent.getUrl());
+        updateOutput(" onRelatedOpen()" +
+                "method: " + relatedOpenEvent.getMethod() +
+                "onRelatedOpen url: " + relatedOpenEvent.getUrl());
         print(" onRelatedOpen() - " + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
 
         int item = 0;
-        if(item < relatedOpenEvent.getItems().size()){
-            for(PlaylistItem each : relatedOpenEvent.getItems()){
+        if (item < relatedOpenEvent.getItems().size()) {
+            for (PlaylistItem each : relatedOpenEvent.getItems()) {
                 print(" onRelatedOpen() " + item + ") " + each.toJson().toString());
-                item+=1;
+                item += 1;
             }
         }
     }
 
     @Override
     public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
-        updateOutput(" onRelatedPlay(): " +relatedPlayEvent.getItem().getFile());
-        print(" onRelatedPlay(): "+
-                "\r\nAuto"+relatedPlayEvent.getAuto() +
-                "\r\nFile:" +relatedPlayEvent.getItem().getFile() +
-                "\r\nPosition: "+relatedPlayEvent.getPosition());
+        updateOutput(" onRelatedPlay(): " + relatedPlayEvent.getItem().getFile());
+        print(" onRelatedPlay(): " +
+                "\r\nAuto" + relatedPlayEvent.getAuto() +
+                "\r\nFile:" + relatedPlayEvent.getItem().getFile() +
+                "\r\nPosition: " + relatedPlayEvent.getPosition());
 
     }
 }

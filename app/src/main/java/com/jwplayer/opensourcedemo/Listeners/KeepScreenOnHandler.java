@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo.listeners;
+package com.jwplayer.opensourcedemo.Listeners;
 
 import android.view.Window;
 import android.view.WindowManager;

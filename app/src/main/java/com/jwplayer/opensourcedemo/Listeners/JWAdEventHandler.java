@@ -1,11 +1,11 @@
-package com.jwplayer.opensourcedemo.listeners;
+package com.jwplayer.opensourcedemo.Listeners;
 
 import android.os.Build;
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.jwplayer.opensourcedemo.jwutil.Logger;
+import com.jwplayer.opensourcedemo.MyUtility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AdBreakEndEvent;
 import com.longtailvideo.jwplayer.events.AdBreakStartEvent;
@@ -56,7 +56,6 @@ public class JWAdEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(Logger.printBuildVersion(jwPlayerView.getVersionCode()));
 
         // Subscribe to allEventHandler: Player events
         mPlayer.addOnAdBreakEndListener(this);

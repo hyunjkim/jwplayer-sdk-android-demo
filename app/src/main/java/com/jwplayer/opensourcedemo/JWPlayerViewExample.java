@@ -2,29 +2,28 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
-import com.jwplayer.opensourcedemo.jwutil.Logger;
-import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
-import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
-import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.Listeners.JWEventHandler;
+import com.jwplayer.opensourcedemo.Listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.MyUtility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
@@ -53,15 +52,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
-        Logger.newInstance();
-
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+        // WebView Debugging
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+
         // Setup JWPlayer
         setupJWPlayer();
+
+        // Display JWPlayer version
+        Logger.newStringBuilder();
+        String jwplayerBuildVersion = Logger.updateOutput("Build Version: " + mPlayerView.getVersionCode() + "\r\nJWPlayerView Example");
+        outputTextView.setText(jwplayerBuildVersion);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -72,38 +79,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Instantiate the JW Player Ad event handler class
-        new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /* Setup JW Player
-     * More info about our Player Configuration and other available Configurations: {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-     * 1 - PlayerConfig
-     * 2 - LogoConfig
-     * 3 - PlaybackRateConfig
-     * 4 - CaptionsConfig
-     * 5 - RelatedConfig
-     * 6 - SharingConfig
-     * 7 - SkinConfig
+    /*
+     * Setup JW Player
      */
     private void setupJWPlayer() {
 
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
-
-        // Ima Tag Example
-        ImaAdvertising imaAdvertising = SampleAds.getImaAd();
-
-        // VAST Tag Example
-        Advertising vastAdvertising = SampleAds.getVastAd();
-
-        // SkinConifg - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.host.com/css/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
+        List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
 
         // More info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
         PlayerConfig config = new PlayerConfig.Builder()
@@ -111,14 +95,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .autostart(true)
                 .preload(true)
                 .allowCrossProtocolRedirects(true)
-//				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-                .skinConfig(skinConfig)
                 .build();
-
         mPlayerView.setup(config);
     }
-
 
     /*
      * In landscape mode, set to fullscreen or if the user clicks the fullscreen button

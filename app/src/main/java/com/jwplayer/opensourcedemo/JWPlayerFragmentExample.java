@@ -15,8 +15,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
-import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.Listeners.JWEventHandler;
+import com.jwplayer.opensourcedemo.Listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.MyUtility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -44,7 +45,13 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         TextView outputTextView = (TextView)findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        // Setup JW Player
         setupJWPlayer();
+
+        // Display JWPlayer version
+        Logger.newStringBuilder();
+        String jwplayerBuildVersion = Logger.updateOutput("Build Version: " + mPlayerView.getVersionCode() + "\r\nJWPlayer Fragment Example");
+        outputTextView.setText(jwplayerBuildVersion);
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
@@ -53,6 +60,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
     }
 
+    /*
+    * Setup JW PLayer Example
+    * */
     private void setupJWPlayer() {
 
         String url = "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
