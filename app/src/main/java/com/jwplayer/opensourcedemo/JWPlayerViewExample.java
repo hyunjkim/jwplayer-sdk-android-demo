@@ -6,17 +6,29 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.ads.AdBreak;
+import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.Advertising;
+import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity
@@ -43,6 +55,7 @@ public class JWPlayerViewExample extends AppCompatActivity
      */
     private CoordinatorLayout mCoordinatorLayout;
 
+    private String ad = "vast";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +64,26 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
-
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+        Button adTestButton = findViewById(R.id.ad_test_button);
+
+        adTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (adTestButton.getText().toString().equals("Vast")) {
+                    ad = "vast";
+                    adTestButton.setText(String.format("%s", "Ima"));
+                } else {
+                    ad = "ima";
+                    adTestButton.setText(String.format("%s", "Vast"));
+                }
+                playAd();
+            }
+
+        });
+
+        // Setup JW Player
+        setupJWPlayer();
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -63,17 +94,86 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Instantiate the JW Player event handler class
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
-                .build();
-
-        mPlayerView.load(pi);
-
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
+    }
+
+    private void playAd() {
+        if (mPlayerView != null) {
+            if (mPlayerView.getState().equals(PlayerState.PLAYING)) {
+                mPlayerView.stop();
+            }
+            switch (ad) {
+                case "vast":
+                    mPlayerView.playAd(AdSource.VAST, "https://playertest.longtailvideo.com/vast-30s-ad.xml");
+                    break;
+                default:
+                    mPlayerView.playAd(AdSource.IMA, "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                    break;
+
+            }
+        } else setupJWPlayer();
+    }
+
+    /*
+     * Setup JW Player
+     */
+    private void setupJWPlayer() {
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+        PlaylistItem item = getPlaylistItem();
+        playlistItemList.add(item);
+
+        List<AdBreak> adbreakList = getAdBreakList();
+        Advertising advertising = (ad.equals("ima")) ? getImaAd(adbreakList) : getVASTAd(adbreakList);
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlistItemList)
+                .autostart(true)
+                .preload(true)
+                .build();
+
+        mPlayerView.setup(config);
+    }
+
+    /*
+     * AdBreakList Example
+     */
+    private List<AdBreak> getAdBreakList() {
+        List<AdBreak> adbreakList = new ArrayList<>();
+        adbreakList.add(getAdBreak());
+        return adbreakList;
+    }
+
+    /*
+     * Simple Playlist Item Example
+     */
+    private PlaylistItem getPlaylistItem() {
+        return new PlaylistItem.Builder()
+                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .build();
+    }
+
+    /*
+     * AdBreak Example
+     */
+    private AdBreak getAdBreak() {
+        String jwvasttag = "https://playertest.longtailvideo.com/vast-30s-ad.xml";
+        String ima = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
+        return ad.equals("ima") ? new AdBreak("pre", AdSource.IMA, ima) : new AdBreak("pre", AdSource.VAST, jwvasttag);
+    }
+
+    /*
+     * VAST Ad Example
+     */
+    private Advertising getVASTAd(List<AdBreak> adbreakList) {
+        return new Advertising(AdSource.VAST, adbreakList);
+    }
+
+    /*
+     * IMA Ad Example
+     */
+    private ImaAdvertising getImaAd(List<AdBreak> adbreakList) {
+        return new ImaAdvertising(adbreakList);
     }
 
 
