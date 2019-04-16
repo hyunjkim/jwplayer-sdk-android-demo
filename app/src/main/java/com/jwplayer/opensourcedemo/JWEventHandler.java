@@ -86,10 +86,9 @@ public class JWEventHandler implements
         AdvertisingEvents.OnAdScheduleListener,
         AdvertisingEvents.OnBeforePlayListener,
         AdvertisingEvents.OnBeforeCompleteListener {
-    private String TAG = JWEventHandler.class.getName();
-
     TextView mOutput;
     ScrollView mScrollView;
+    private String TAG = JWEventHandler.class.getName();
 
     public JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mOutput = output;
@@ -137,7 +136,7 @@ public class JWEventHandler implements
     }
 
     private void updateOutput(String output) {
-        mOutput.append(output+"\r\n");
+        mOutput.setText(Logger.updateOutput(output));
         mScrollView.scrollTo(0, mOutput.getBottom());
     }
 

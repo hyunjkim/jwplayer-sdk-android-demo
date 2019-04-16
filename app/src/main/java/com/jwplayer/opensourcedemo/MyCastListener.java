@@ -20,11 +20,11 @@ public class MyCastListener implements
         CastStateListener,
         VideoPlayerEvents.OnControlBarVisibilityListener{
 
-    private MediaRouteButton mbutton;
+    private MediaRouteButton mCastButton;
     private boolean isCastAvailable = false;
 
     MyCastListener(MediaRouteButton mMediaRouteButton, JWPlayerView jwPlayerView) {
-        mbutton = mMediaRouteButton;
+        mCastButton = mMediaRouteButton;
         jwPlayerView.addOnControlBarVisibilityListener(this);
     }
 
@@ -59,13 +59,13 @@ public class MyCastListener implements
 
     private void showCastButton() {
         print("show cast button");
-        mbutton.setVisibility(View.VISIBLE);
-        mbutton.setBackgroundColor(Color.WHITE);
+        mCastButton.setVisibility(View.VISIBLE);
+        mCastButton.setBackgroundColor(Color.WHITE);
     }
 
     private void hideCastButton() {
         print("hide cast button");
-        mbutton.setVisibility(View.GONE);
+        mCastButton.setVisibility(View.GONE);
     }
 
     private void print(String s) {
@@ -73,9 +73,9 @@ public class MyCastListener implements
     }
 
     @Override
-    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if(mbutton != null){
-            if (isCastAvailable && controlBarVisibilityEvent.isVisible()) {
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBar) {
+        if(mCastButton != null){
+            if (isCastAvailable && controlBar.isVisible()) {
                 showCastButton();
             } else {
                 hideCastButton();

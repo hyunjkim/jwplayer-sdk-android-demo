@@ -12,8 +12,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.cast.framework.CastButtonFactory;
@@ -61,11 +63,8 @@ public class JWPlayerViewExample extends AppCompatActivity
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
-    /**
-     * Stored instance of CoordinatorLayout
-     * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
-     */
-    private CoordinatorLayout mCoordinatorLayout;
+
+    private LinearLayout mLinearLayout;
     private CastSession mCastSession;
     private SessionManager mSessionManager;
     private MyCastListener myCastListener;
@@ -75,17 +74,23 @@ public class JWPlayerViewExample extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        mLinearLayout = findViewById(R.id.activity_jwplayerview);
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollview = findViewById(R.id.scrollview);
         MediaRouteButton mMediaRouteButton = findViewById(R.id.media_route_button);
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+
         // Setup JWPlayer
         setupJWPlayer();
+
+        // Print Build Version
+        Logger.newStringBuilder();
+        String jwplayerBuildVersion = Logger.updateOutput("Build Version: " + mPlayerView.getVersionCode() + "\r\nJW Player Activity Example \r\n");
+        outputTextView.setText(jwplayerBuildVersion);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -96,16 +101,13 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollview);
 
-        String jwplayerBuildVersion = "JWPlayer Version: " + mPlayerView.getVersionCode();
-        outputTextView.append(jwplayerBuildVersion + "\r\n");
-        outputTextView.append("JWPlayer Activity Example" + "\r\n");
-
         // Add my Custom cast button
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
-        mMediaRouteButton.bringToFront();
+//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
 
         // Initialize Cast Listener
-        myCastListener = new MyCastListener(mMediaRouteButton, mPlayerView);
+//        myCastListener = new MyCastListener(mMediaRouteButton, mPlayerView);
+
+        myCastListener = new MyCastListener(mPlayerView);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -119,8 +121,11 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     private void setupJWPlayer() {
 
+        String caps = "https://playertest.longtailvideo.com/adaptive/bbcc/output.m3u8";
+        String bipbop = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
+
         PlayerConfig config = new PlayerConfig.Builder()
-                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .file(caps)
                 .autostart(true)
                 .build();
 
@@ -198,7 +203,7 @@ public class JWPlayerViewExample extends AppCompatActivity
         }
 
         // When going to Fullscreen we want to set fitsSystemWindows="false"
-        mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
+        mLinearLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 
 
@@ -207,8 +212,7 @@ public class JWPlayerViewExample extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
 
 //        // Register the MediaRouterButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu, R.id.media_route_menu_item);
         return true;
     }
 
@@ -294,63 +298,83 @@ public class JWPlayerViewExample extends AppCompatActivity
             switch (error) {
                 case SUCCESS:
                     print(output + " ERROR CODE: SUCCESS");
+                    toast("ERROR CODE: SUCCESS");
                     break;
                 case APPLICATION_NOT_FOUND:
                     print(output + " ERROR CODE: APPLICATION_NOT_FOUND");
+                    toast("ERROR CODE: APPLICATION_NOT_FOUND");
                     break;
                 case NETWORK_ERROR:
                     print(output + " ERROR CODE: NETWORK_ERROR");
+                    toast("ERROR CODE: NETWORK_ERROR");
                     break;
                 case TIMEOUT:
                     print(output + " ERROR CODE: TIMEOUT");
+                    toast("ERROR CODE: TIMEOUT");
                     break;
                 case INTERRUPTED:
                     print(output + " ERROR CODE: INTERRUPTED");
+                    toast("ERROR CODE: INTERRUPTED");
                     break;
                 case INTERNAL_ERROR:
                     print(output + " ERROR CODE: INTERNAL_ERROR");
+                    toast("ERROR CODE: INTERNAL_ERROR");
                     break;
                 case UNKNOWN_ERROR:
                     print(output + " ERROR CODE: UNKNOWN_ERROR");
+                    toast("ERROR CODE: UNKNOWN_ERROR");
                     break;
                 case AUTHENTICATION_FAILED:
                     print(output + " ERROR CODE: AUTHENTICATION_FAILED");
+                    toast("ERROR CODE: AUTHENTICATION_FAILED");
                     break;
                 case INVALID_REQUEST:
                     print(output + " ERROR CODE: INVALID_REQUEST");
+                    toast("ERROR CODE: INVALID_REQUEST");
                     break;
                 case CANCELED:
                     print(output + " ERROR CODE: CANCELED");
+                    toast("ERROR CODE: CANCELED");
                     break;
                 case NOT_ALLOWED:
                     print(output + " ERROR CODE: NOT_ALLOWED");
+                    toast("ERROR CODE: NOT_ALLOWED");
                     break;
                 case APPLICATION_NOT_RUNNING:
                     print(output + " ERROR CODE: APPLICATION_NOT_RUNNING");
+                    toast("ERROR CODE: APPLICATION_NOT_RUNNING");
                     break;
                 case MESSAGE_TOO_LARGE:
                     print(output + " ERROR CODE: MESSAGE_TOO_LARGE");
+                    toast("ERROR CODE: MESSAGE_TOO_LARGE");
                     break;
                 case MESSAGE_SEND_BUFFER_TOO_FULL:
                     print(output + " ERROR CODE: MESSAGE_SEND_BUFFER_TOO_FULL");
+                    toast("ERROR CODE: MESSAGE_SEND_BUFFER_TOO_FULL");
                     break;
                 case DEVICE_CONNECTION_SUSPENDED:
                     print(output + " ERROR CODE: DEVICE_CONNECTION_SUSPENDED");
+                    toast("ERROR CODE: DEVICE_CONNECTION_SUSPENDED");
                     break;
                 case FAILED:
                     print(output + " ERROR CODE: FAILED");
+                    toast("ERROR CODE: FAILED");
                     break;
                 case REPLACED:
                     print(output + " ERROR CODE: REPLACED");
+                    toast("ERROR CODE: REPLACED");
                     break;
                 case ERROR_SERVICE_CREATION_FAILED:
                     print(output + " ERROR CODE: ERROR_SERVICE_CREATION_FAILED");
+                    toast("ERROR CODE: ERROR_SERVICE_CREATION_FAILED");
                     break;
                 case ERROR_SERVICE_DISCONNECTED:
                     print(output + " ERROR CODE: ERROR_SERVICE_DISCONNECTED");
+                    toast("ERROR CODE: ERROR_SERVICE_DISCONNECTED");
                     break;
                 case ERROR_STOPPING_SERVICE_FAILED:
                     print(output + " ERROR CODE: ERROR_STOPPING_SERVICE_FAILED");
+                    toast("ERROR CODE: ERROR_STOPPING_SERVICE_FAILED");
                     break;
             }
         }
@@ -366,7 +390,10 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         private void print(String output) {
             String TAG = "MyCast SessionManagerListener";
-            Log.i(TAG, "(CAST) " + output);
+            Log.i(TAG, "Activity (CAST) " + output);
+        }
+        private void toast(String output) {
+            Toast.makeText(JWPlayerViewExample.this, output, Toast.LENGTH_SHORT).show();
         }
     }
 }
