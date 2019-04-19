@@ -1,14 +1,19 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
@@ -19,49 +24,37 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 
-public class JWPlayerViewExample extends AppCompatActivity
-        implements VideoPlayerEvents.OnFullscreenListener {
-
+public class JWPlayerViewExample extends AppCompatActivity implements
+        VideoPlayerEvents.OnFullscreenListener {
     /**
      * Reference to the {@link JWPlayerView}
      */
-    private JWPlayerView mPlayerView;
-
+//    private JWPlayerView mPlayerView;
+    private MyJWPlayerView mPlayerView;
     /**
      * An instance of our event handling class
      */
     private JWEventHandler mEventHandler;
-
     /**
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
 
-    /**
-     * Stored instance of CoordinatorLayout
-     * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
-     */
-    private CoordinatorLayout mCoordinatorLayout;
-
+    private RecyclerView mRecyclerView;
+    private LinearLayout mParentLinearLayout;
+    private RelativeLayout mRelativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
-        mPlayerView = findViewById(R.id.jwplayer);
+        mParentLinearLayout = findViewById(R.id.linearlayout);
+        mRelativeLayout = findViewById(R.id.relativelayout);
+
         TextView outputTextView = findViewById(R.id.output);
-
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
-
-        // Handle hiding/showing of ActionBar
-        mPlayerView.addOnFullscreenListener(this);
-
-        // Keep the screen on during playback
-        new KeepScreenOnHandler(mPlayerView, getWindow());
-
-        // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
+        mRecyclerView = findViewById(R.id.recyclerview);
+        mPlayerView = findViewById(R.id.jwplayer);
 
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
@@ -71,6 +64,24 @@ public class JWPlayerViewExample extends AppCompatActivity
                 .build();
 
         mPlayerView.load(pi);
+
+        // Setup RecyclerView
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(new MyRecyclerViewAdapter(SamplePlaylist.createPlaylist(), mPlayerView));
+
+        MyGestureListener myGestureListener = new MyGestureListener(mPlayerView, mRelativeLayout, mParentLinearLayout);
+        mPlayerView.addOnGestureListener(getApplicationContext(), myGestureListener);
+        mPlayerView.addOnDragListener(myGestureListener);
+
+        // Handle hiding/showing of ActionBar
+        mPlayerView.addOnFullscreenListener(this);
+
+        // Keep the screen on during playback
+        new KeepScreenOnHandler(mPlayerView, getWindow());
+
+        // Instantiate the JW Player event handler class
+        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -108,6 +119,17 @@ public class JWPlayerViewExample extends AppCompatActivity
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.i("HYUNJOO", "onBackPressed()");
+        super.onBackPressed();
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // Set fullscreen when the device is rotated to landscape
         mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -137,9 +159,8 @@ public class JWPlayerViewExample extends AppCompatActivity
                 actionBar.show();
             }
         }
-
         // When going to Fullscreen we want to set fitsSystemWindows="false"
-        mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
+        mParentLinearLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 
 
@@ -157,12 +178,9 @@ public class JWPlayerViewExample extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.switch_to_fragment:
-                Intent i = new Intent(this, JWPlayerFragmentExample.class);
-                startActivity(i);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }

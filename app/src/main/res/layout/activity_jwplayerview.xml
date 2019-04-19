@@ -1,36 +1,39 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_jwplayerview"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="@color/gray"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.jwplayer.opensourcedemo.MyJWPlayerView
+        android:id="@+id/jwplayer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/gray"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:tag="jwplayerview"/>
 
-        <com.longtailvideo.jwplayer.JWPlayerView
-            android:id="@+id/jwplayer"
+    <RelativeLayout
+        android:id="@+id/relativelayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/output"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="JWPLAYER ANDROID SDK DEMO"
+            android:padding="16dp" />
 
-        <RelativeLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="match_parent"
+            android:layout_below="@id/output"
+            android:background="@color/white"
+            android:scrollbars="vertical" />
+    </RelativeLayout>
+</LinearLayout>
 
-            <TextView
-                android:id="@+id/output"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
-                android:paddingTop="16dp"
-                android:textColor="@color/white" />
-
-        </RelativeLayout>
-    </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
