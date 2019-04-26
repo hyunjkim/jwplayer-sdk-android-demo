@@ -1,10 +1,10 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.samples;
 
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
 
-class MySampleSkin {
+public class MySampleSkin {
 
-    static SkinConfig getSkinConfig() {
+    public static SkinConfig getSkinConfig() {
         return new SkinConfig.Builder()
                 .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/showcontrolsalways.css")
                 .name("showcontrolsalways")

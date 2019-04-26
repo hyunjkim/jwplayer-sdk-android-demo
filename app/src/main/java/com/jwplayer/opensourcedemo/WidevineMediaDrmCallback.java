@@ -32,7 +32,7 @@ public class WidevineMediaDrmCallback implements MediaDrmCallback {
 
     private final Map<String, String> KEY_REQUEST_PROPERTIES = new HashMap<>();
 
-    WidevineMediaDrmCallback() {
+    public WidevineMediaDrmCallback() {
 
         isProviderAvailable = false;
 
@@ -43,7 +43,7 @@ public class WidevineMediaDrmCallback implements MediaDrmCallback {
     }
 
 
-    WidevineMediaDrmCallback(String contentId, String provider) {
+    public WidevineMediaDrmCallback(String contentId, String provider) {
         isProviderAvailable = true;
         String params = "?video_id=" + contentId + "&provider=" + provider;
         defaultUri = WIDEVINE_GTS_DEFAULT_BASE_URI + params;

@@ -1,25 +1,25 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.myutilities;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-class Logger {
+public class Logger {
 
     private static StringBuilder outputStringBuilder;
 
-    Logger(){
+    public Logger(){
         outputStringBuilder =  new StringBuilder();
     }
 
-    static String updateOutput(String output) {
+     public static String updateOutput(String output) {
         DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
         outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
         return outputStringBuilder.toString();
     }
 
-    static String printBuildVersion(String jwPlayerVersion) {
+    public static String printBuildVersion(String jwPlayerVersion) {
         return outputStringBuilder.append("Build version: ").append(jwPlayerVersion).append("\r\n").toString();
     }
 }

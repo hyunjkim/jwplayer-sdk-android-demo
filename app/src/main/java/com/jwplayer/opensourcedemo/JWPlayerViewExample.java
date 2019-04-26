@@ -16,6 +16,13 @@ import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.myutilities.Logger;
+import com.jwplayer.opensourcedemo.samples.MySampleAd;
+import com.jwplayer.opensourcedemo.samples.MySamplePlaylist;
+import com.jwplayer.opensourcedemo.samples.MySampleSkin;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
@@ -100,7 +107,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .preload(true)
                 .allowCrossProtocolRedirects(true)
                 .skinConfig(skinConfig)
-//				.advertising(imaAdvertising)
+				.advertising(imaAdvertising)
 //				.advertising(vastAdvertising)
                 .build();
 

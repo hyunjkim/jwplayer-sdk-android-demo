@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.samples;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
@@ -10,7 +10,7 @@ import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import java.util.ArrayList;
 import java.util.List;
 
-class MySampleAd {
+public class MySampleAd {
 
     private static String adtag = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
 
@@ -19,7 +19,7 @@ class MySampleAd {
      * @link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/ads/Advertising.html
      * */
 
-    static Advertising getVastAd() {
+    public static Advertising getVastAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
         AdBreak adbreak = new AdBreak("pre", AdSource.VAST, adtag);
@@ -51,7 +51,7 @@ class MySampleAd {
      * IMA Ad Setup Example
      * @link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/ads/ImaAdvertising.html
      * */
-    static ImaAdvertising getImaAd() {
+    public static ImaAdvertising getImaAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
         AdBreak adBreak = new AdBreak("pre", AdSource.IMA, adtag);

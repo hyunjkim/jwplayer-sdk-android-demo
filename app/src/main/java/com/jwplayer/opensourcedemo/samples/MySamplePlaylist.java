@@ -1,5 +1,6 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.samples;
 
+import com.jwplayer.opensourcedemo.WidevineMediaDrmCallback;
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -7,10 +8,10 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
-class MySamplePlaylist {
+public class MySamplePlaylist {
 
 
-    static List<PlaylistItem> getSampleDRM() {
+    public static List<PlaylistItem> getSampleDRM() {
 
         String drm = "https://d2jl6e4h8300i8.cloudfront.net/drm/dash/netflix_meridian/mbr/stream.mpd";
 
@@ -27,7 +28,7 @@ class MySamplePlaylist {
     }
 
 
-    static List<PlaylistItem> myCustomPlaylist() {
+    public static List<PlaylistItem> myCustomPlaylist() {
 
 
         String nonDRM = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
@@ -79,7 +80,7 @@ class MySamplePlaylist {
     /**
      * MediaSource Playlist Example
      */
-    static List<PlaylistItem> createMediaSourcePlaylist() {
+    public static List<PlaylistItem> createMediaSourcePlaylist() {
         List<MediaSource> mediaSourceList = new ArrayList<>();
         List<PlaylistItem> playlistItemList = new ArrayList<>();
 
