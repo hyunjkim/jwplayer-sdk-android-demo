@@ -11,74 +11,74 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
 
 public class JWPlayerFragmentExample extends AppCompatActivity {
-
     /**
      * A reference to the {@link JWPlayerSupportFragment}.
      */
     private JWPlayerSupportFragment mPlayerFragment;
-
     /**
      * A reference to the {@link JWPlayerView} used by the JWPlayerSupportFragment.
      */
     private JWPlayerView mPlayerView;
-
     /**
-     * Reference to the {@link CastManager}
+     * Reference to the {@link CastContext}
      */
-    private CastManager mCastManager;
-
+    private CastContext mCastContext;
     /**
      * An instance of our event handling class
      */
     private JWEventHandler mEventHandler;
-
     private TextView outputTextView;
     private ScrollView scrollView;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        outputTextView = (TextView)findViewById(R.id.output);
+        outputTextView = (TextView) findViewById(R.id.output);
         scrollView = (ScrollView) findViewById(R.id.scroll);
+
 
         // Setup JWPlayer
         setupJWPlayer();
 
         // Display JWPlayer version
-        logout("Build version: " + mPlayerView.getVersionCode());
+        Logger.newStringBuilder();
+        String jwplayerBuildVersion = Logger.updateOutput("Build Version: " + mPlayerView.getVersionCode() + "\r\nJWPlayer Fragment Example");
+        outputTextView.setText(jwplayerBuildVersion);
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        new JWEventHandler(this, mPlayerView);
+        new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Instantiate the JW Player Ad event handler class
-        new JWAdEventHandler(this, mPlayerView);
+        new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Get a reference to the CastManager
-        mCastManager = CastManager.getInstance();
+        // Get a reference to the CastContext
+        mCastContext = CastContext.getSharedInstance(this);
     }
 
     private void setupJWPlayer() {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
+        SkinConfig skinConfig = new SkinConfig.Builder()
+                .name("bekle")
+                .url("https://ssl.p.jwpcdn.com/player/v/7.2.3/skins/bekle.css")
+                .build();
+
         mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
                 .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .skinConfig(skinConfig)
                 .build());
 
         // Attach the Fragment to our layout
@@ -93,13 +93,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
-    }
-
-    public void logout(String output){
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        outputTextView.setText(outputStringBuilder.toString());
-        scrollView.scrollTo(0, outputTextView.getBottom());
     }
 
     @Override
@@ -118,8 +111,11 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+
         // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+
         return true;
     }
 
