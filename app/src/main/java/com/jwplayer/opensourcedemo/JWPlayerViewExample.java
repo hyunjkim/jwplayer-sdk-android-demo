@@ -25,6 +25,7 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
+import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
@@ -99,7 +100,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // VAST Tag Example
         Advertising vastAdvertising = SampleAds.getVastAd();
 
-        // SkinConifg - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
+        // VMAP Tag Example
+        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("ima");
+
+        // Skin Config - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
         SkinConfig skinConfig = new SkinConfig.Builder()
                 .url("https://www.host.com/css/mycustomcss.css")
                 .name("mycustomcss")
@@ -110,9 +114,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .playlist(playlistItemList)
                 .autostart(true)
                 .preload(true)
+                .mute(true)
                 .allowCrossProtocolRedirects(true)
 //				.advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
+//				.advertising(vmapAdvertising)
                 .skinConfig(skinConfig)
                 .build();
 

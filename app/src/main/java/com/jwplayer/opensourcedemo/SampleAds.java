@@ -6,12 +6,13 @@ import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
+import com.longtailvideo.jwplayer.media.ads.ImaVMAPAdvertising;
+import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SampleAds {
-
     /*
      * Vast Setup Example
      * */
@@ -47,12 +48,20 @@ public class SampleAds {
     }
 
     /*
+     * VAST VMAP Ad Example
+     * {For more info: https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/vast/#vmap-advertising}
+     * */
+    static VMAPAdvertising vastVMAP(){
+        return new VMAPAdvertising(AdSource.VAST,"https://playertest.longtailvideo.com/adtags/vmap2.xml");
+    }
+
+    /*
      * IMA Ad Example
      * */
-    public static ImaAdvertising getImaAd(){
+    static ImaAdvertising getImaAd(){
         List<AdBreak> adbreaklist = new ArrayList<>();
 
-        String ad = "";
+        String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
 
         AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
         adbreaklist.add(adBreak);
@@ -69,5 +78,19 @@ public class SampleAds {
 //		imaSettings.setAutoPlayAdBreaks(true);
 
         return new ImaAdvertising(adbreaklist,imaSettings);
+    }
+
+    /*
+     * IMA VMAP Ad Example
+     * {For more info: https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/google-ima/#vmap-advertising}
+     * */
+    static ImaVMAPAdvertising imaVMAP(){
+        String pre = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=";
+
+        return new ImaVMAPAdvertising(pre);
+    }
+
+    public static VMAPAdvertising getVMAP(String client){
+        return client.equals("ima")? imaVMAP() : vastVMAP();
     }
 }
