@@ -191,7 +191,7 @@ public class JWEventHandler implements
     public void onCaptionsList(CaptionsListEvent captionsListEvent) {
         updateOutput(" " + "onCaptionsList()");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            captionsListEvent.getTracks().forEach(e -> print("onCaptionsList-" + e.getLabel() + ": " + e.toJson().toString()));
+//            captionsListEvent.getTracks().forEach(e -> print("onCaptionsList-" + e.getLabel() + ": " + e.toJson().toString()));
         }
     }
 
@@ -241,7 +241,7 @@ public class JWEventHandler implements
     public void onLevels(LevelsEvent levelsEvent) {
         updateOutput(" " + "onlevelsEvent size: " + levelsEvent.getLevels().size());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            levelsEvent.getLevels().forEach(e -> print("onlevelsEvent-" + e.getLabel() + ":" + e.toJson().toString()));
+//            levelsEvent.getLevels().forEach(e -> print("onlevelsEvent-" + e.getLabel() + ":" + e.toJson().toString()));
         }
     }
 
