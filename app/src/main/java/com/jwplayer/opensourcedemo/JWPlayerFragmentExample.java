@@ -1,7 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -10,18 +9,16 @@ import android.support.v7.app.MediaRouteButton;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.jwplayer.opensourcedemo.handlers.CustomCastStateListener;
 import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
-import com.jwplayer.opensourcedemo.handlers.JWCastHandler;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 
 public class JWPlayerFragmentExample extends AppCompatActivity {
@@ -36,13 +33,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private JWPlayerView mPlayerView;
 
-    /**
-     * Reference to the {@link CastManager}
-     */
-    private CastManager mCastManager;
-    private JWCastHandler mCastHandler;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +40,12 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
+        MediaRouteButton mChromecastbtn = findViewById(R.id.fragment_chromecast_btn);
 
+        // Instantiate CastStateListener
+        CustomCastStateListener customCastStateListener = new CustomCastStateListener(mChromecastbtn);
+
+        // Setup JW PlayerView
         setupJWPlayer();
 
         // Keep the screen on during playback
@@ -62,22 +57,18 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Instantiate the JW Player Adevent handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Get a reference to the CastManager
-        MediaRouteButton mChromecastbtn = findViewById(R.id.fragment_chromecast_btn);
+        // Handle hiding/showing the MediaRouteButton
+        mPlayerView.addOnControlBarVisibilityListener(customCastStateListener);
 
-        // My Custom Cast Button
-        mCastManager.addMediaRouterButton(mChromecastbtn);
-        mCastHandler = new JWCastHandler(mChromecastbtn);
-        mCastManager.addDeviceListener(mCastHandler);
-        mCastManager.addConnectionListener(mCastHandler);
-        mPlayerView.addOnControlBarVisibilityListener(mCastHandler);
+        // Setup MediaRouteButton
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(),mChromecastbtn);
     }
 
     private void setupJWPlayer() {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
         mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
                 .build());
 
         // Attach the Fragment to our layout
@@ -111,6 +102,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         super.onCreateOptionsMenu(menu);
         // Inflate the menu
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+
+//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+//                R.id.media_route_menu_item);
+
         return true;
     }
 
