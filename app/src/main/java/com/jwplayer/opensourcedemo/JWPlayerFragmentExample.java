@@ -1,27 +1,32 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.MediaRouteButton;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.jwplayer.opensourcedemo.handlers.CustomCastStateListener;
 import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.myutility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
-public class JWPlayerFragmentExample extends AppCompatActivity {
+public class JWPlayerFragmentExample extends AppCompatActivity{
 
     /**
      * A reference to the {@link JWPlayerSupportFragment}.
@@ -33,17 +38,19 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
      */
     private JWPlayerView mPlayerView;
 
+    private LinearLayout mLinearLayout;
+
+    private Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
+        mToolbar = findViewById(R.id.my_toolbar);
+        mLinearLayout = findViewById(R.id.linear_layout);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
-        MediaRouteButton mChromecastbtn = findViewById(R.id.fragment_chromecast_btn);
-
-        // Instantiate CastStateListener
-        CustomCastStateListener customCastStateListener = new CustomCastStateListener(mChromecastbtn);
 
         // Setup JW PlayerView
         setupJWPlayer();
@@ -56,14 +63,27 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Instantiate the JW Player Adevent handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
-        // Handle hiding/showing the MediaRouteButton
-        mPlayerView.addOnControlBarVisibilityListener(customCastStateListener);
-
-        // Setup MediaRouteButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(),mChromecastbtn);
     }
 
+    /*
+     * Custom ToolBar
+     *
+     * More info: https://github.com/googlecast/CastVideos-android/blob/master/src/com/google/sample/cast/refplayer/VideoBrowserActivity.java#L125
+     */
+    private void setupActionBar() {
+        Logger.logEvent("FRAGMENTEXAMPLE - setupActionBar");
+        setSupportActionBar(mToolbar);
+
+        // Do not display the Default App Name Title
+        if (getSupportActionBar() != null && !mPlayerView.getFullscreen()) {
+            getSupportActionBar().show();
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
+
+    /*
+     * Setup JWPlayer
+     */
     private void setupJWPlayer() {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
@@ -83,6 +103,19 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Get a reference to the JWPlayerView from the fragment
         mPlayerView = mPlayerFragment.getPlayer();
+
+        // setup Action Bar
+        setupActionBar();
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // Set fullscreen when the device is rotated to landscape
+        Logger.logEvent("FRAGMENTEXAMPLE - onConfigurationChanged()");
+        mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
+        setupActionBar();
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -103,21 +136,19 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Inflate the menu
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
 
-//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-//                R.id.media_route_menu_item);
-
+        // Register the MediaRouterButton
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.switch_to_view:
-                Intent i = new Intent(this, JWPlayerViewExample.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.switch_to_view) {
+            Intent i = new Intent(this, JWPlayerViewExample.class);
+            startActivity(i);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 }

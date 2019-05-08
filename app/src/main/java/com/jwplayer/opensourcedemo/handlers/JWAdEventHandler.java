@@ -1,11 +1,10 @@
 package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
-import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.jwplayer.opensourcedemo.myUtil.LogUtil;
+import com.jwplayer.opensourcedemo.myutility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AdBreakEndEvent;
 import com.longtailvideo.jwplayer.events.AdBreakStartEvent;
@@ -52,7 +51,6 @@ public class JWAdEventHandler implements
 
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
     private JWPlayerView mPlayer;
 
 
@@ -76,90 +74,94 @@ public class JWAdEventHandler implements
         jwPlayerView.addOnAdScheduleListener(this);
         jwPlayerView.addOnAdStartedListener(this);
         jwPlayerView.addOnAdTimeListener(this);
-
         jwPlayerView.addOnBeforeCompleteListener(this);
         jwPlayerView.addOnBeforePlayListener(this);
     }
 
-    private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+    /*
+    * Generate Log Line
+    */
+    private void generateLogLine(String output) {
+        mOutput.setText(Logger.log(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 
     @Override
     public void onAdBreakEnd(AdBreakEndEvent adBreakEndEvent) {
-        updateOutput(" " + "AdBreakEndEvent " + adBreakEndEvent.getAdPosition());
-        LogUtil.logAd("" + "AdBreakEndEvent " + adBreakEndEvent.getAdPosition());
+        generateLogLine("AdBreakEndEvent " + adBreakEndEvent.getAdPosition());
+        Logger.logAd("AdBreakEndEvent Ad Position: " + adBreakEndEvent.getAdPosition());
     }
 
     @Override
     public void onAdBreakStart(AdBreakStartEvent adBreakStartEvent) {
-        updateOutput(" " + "AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
-        LogUtil.logAd("" + "AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
+        generateLogLine("AdBreakStartEvent " + adBreakStartEvent.getAdPosition());
+        Logger.logAd("AdBreakStartEvent Ad Position: " + adBreakStartEvent.getAdPosition());
     }
 
     @Override
     public void onAdSchedule(AdScheduleEvent adScheduleEvent) {
-        updateOutput(" " + "onAdSchedule " + adScheduleEvent.getTag());
-        LogUtil.logAd("" + "onAdSchedule " + adScheduleEvent.getClient());
-        LogUtil.logAd("" + "onAdSchedule " + adScheduleEvent.getTag());
+        generateLogLine("onAdSchedule " + adScheduleEvent.getTag());
+        Logger.logAd("onAdSchedule: "+
+                "\r\n\tclient: "+ adScheduleEvent.getClient() +
+                "\r\n\ttag:" + adScheduleEvent.getTag());
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            adScheduleEvent.getVmapAdBreaks().forEach(e->LogUtil.logAd(("onAdSchedule-vmap ad break:" +e.toJson().toString())));
+            adScheduleEvent.getVmapAdBreaks().forEach(e-> Logger.logAd(("onAdSchedule - VMAP Ad break: " + e.toJson().toString())));
         }
     }
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        updateOutput(" " + "adErrorEvent: " + adErrorEvent.getMessage());
-        LogUtil.logAd("" + "adErrorEvent message: " + adErrorEvent.getMessage());
-        LogUtil.logAd("" + "adErrorEvent tag: " + adErrorEvent.getTag());
+        generateLogLine("adErrorEvent: " + adErrorEvent.getMessage());
+        Logger.logAd("adErrorEvent message: " + adErrorEvent.getMessage());
+        Logger.logAd("adErrorEvent tag: " + adErrorEvent.getTag());
     }
 
     @Override
     public void onAdStarted(AdStartedEvent adStartedEvent) {
 
-        updateOutput(" " + "adStartedEvent " + adStartedEvent.getCreativeType());
-        LogUtil.logAd("" + "adStartedEvent " + adStartedEvent.getTag());
+        generateLogLine("adStartedEvent: " + adStartedEvent.getCreativeType());
+        Logger.logAd("adStartedEvent: " + adStartedEvent.getTag());
     }
 
     @Override
     public void onAdRequest(AdRequestEvent adRequestEvent) {
-        updateOutput(" " + "onAdRequest " + adRequestEvent.getTag());
-        LogUtil.logAd("" + "onAdRequest tag: " + adRequestEvent.getTag());
-        LogUtil.logAd("" + "onAdRequest position: " + adRequestEvent.getAdPosition());
-        LogUtil.logAd("" + "onAdRequest client: " + adRequestEvent.getClient());
-        LogUtil.logAd("" + "onAdRequest offset: " + adRequestEvent.getOffset());
+        generateLogLine("onAdRequest: " + adRequestEvent.getTag());
+        Logger.logAd("onAdRequest tag: " + adRequestEvent.getTag());
+        Logger.logAd("onAdRequest position: " + adRequestEvent.getAdPosition());
+        Logger.logAd("onAdRequest client: " + adRequestEvent.getClient());
+        Logger.logAd("onAdRequest offset: " + adRequestEvent.getOffset());
     }
 
 
     @Override
     public void onAdClick(AdClickEvent adClickEvent) {
-        updateOutput(" " + "onAdClick(\"" + adClickEvent.getTag() + ")\r\n");
-        LogUtil.logAd("" + "onAdClick");
+        generateLogLine("onAdClick(\"" + adClickEvent.getTag() + ")");
+        Logger.logAd("nAdClick" + adClickEvent.getTag());
     }
 
     @Override
     public void onAdComplete(AdCompleteEvent adCompleteEvent) {
-        updateOutput(" " + "onAdComplete(\"" + adCompleteEvent.getTag() + ")\r\n");
-        LogUtil.logAd("" + "onAdComplete");
+        generateLogLine("onAdComplete(" + adCompleteEvent.getTag() + ")");
+        Logger.logAd("onAdComplete tag: " + adCompleteEvent.getTag());
     }
 
     @Override
     public void onAdSkipped(AdSkippedEvent adSkippedEvent) {
-        updateOutput(" " + "onAdSkipped(\"" + adSkippedEvent.getTag() + ")\r\n");
-        LogUtil.logAd("" + "onAdSkipped");
+        generateLogLine("onAdSkipped(" + adSkippedEvent.getTag() + ")");
+        Logger.logAd("onAdSkipped tag: " + adSkippedEvent.getTag());
     }
 
     @Override
     public void onAdImpression(AdImpressionEvent adImpressionEvent) {
-        updateOutput(" " + "onAdImpression(\"" + adImpressionEvent.getTag() + "\r\n" +
-                " Video Type: " + adImpressionEvent.getCreativeType()+ "\r\n" +
-                " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
-        LogUtil.logAd("" + "onAdImpression(\"" + adImpressionEvent.getTag() + "\r\n" +
-                " Video Type: " + adImpressionEvent.getCreativeType()+ "\r\n" +
-                " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
+        generateLogLine("onAdImpression(" +
+                "\r\ntag: " + adImpressionEvent.getTag() +
+                "\r\nAd Position: " + adImpressionEvent.getAdPosition().name() + ")");
+        Logger.logAd("onAdImpression(" +
+                "\r\ntag: " + adImpressionEvent.getTag() +
+                "\r\nClient: " + adImpressionEvent.getClient() +
+                "\r\nAd Position: " + adImpressionEvent.getAdPosition().name() +
+                "\r\nCreative Type: " + adImpressionEvent.getCreativeType());
     }
 
     @Override
@@ -169,24 +171,24 @@ public class JWAdEventHandler implements
 
     @Override
     public void onAdPause(AdPauseEvent adPauseEvent) {
-        updateOutput(" " + "onAdPause(\"" + adPauseEvent.getTag() + "\", \"" + adPauseEvent.getOldState() + "\")\n");
-        LogUtil.logAd("" + "onAdPause" + adPauseEvent.getTag() + " " + adPauseEvent.getOldState());
+        generateLogLine("onAdPause(" + adPauseEvent.getTag() + "\", \"" + adPauseEvent.getOldState() + ")");
+        Logger.logAd("onAdPause: " + adPauseEvent.getTag() + " " + adPauseEvent.getOldState());
     }
 
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
-        updateOutput(" " + "onAdPlay(\"" + adPlayEvent.getTag() + "\", \"" + adPlayEvent.getOldState() + ")\r\n");
-        LogUtil.logAd("" + "onAdPlay" + adPlayEvent.getTag() + " " + adPlayEvent.getOldState());
+        generateLogLine("onAdPlay(" + adPlayEvent.getTag() + "\", \"" + adPlayEvent.getOldState() + ")");
+        Logger.logAd("onAdPlay: " + adPlayEvent.getTag() + " " + adPlayEvent.getOldState());
     }
 
     @Override
     public void onAdCompanions(AdCompanionsEvent adCompanionsEvent) {
-        updateOutput(" " + "onAdCompanions  tag:" + adCompanionsEvent.getTag());
+        generateLogLine("onAdCompanions  tag:" + adCompanionsEvent.getTag());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             adCompanionsEvent
                     .getCompanions()
                     .forEach(e->{
-                        LogUtil.logAd("onAdCompanions-" + e.getResource()+ "\n");
+                        Logger.logAd("onAdCompanions- " + e.getResource());
                         printCreatives(e.getCreativeViews());
                     });
         }
@@ -194,20 +196,20 @@ public class JWAdEventHandler implements
 
     private void printCreatives(List<String> creative) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && creative.size()>0) {
-            creative.forEach(each -> LogUtil.logAd("onAdCompanions-Creative: " + each));
+            creative.forEach(each -> Logger.logAd("onAdCompanions-Creative: " + each));
         }
     }
 
     @Override
     public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
-        updateOutput(" " + "onBeforeComplete()");
-        LogUtil.logAd(" " + "onBeforeComplete(): " +beforeCompleteEvent);
+        generateLogLine("onBeforeComplete()");
+        Logger.logAd("onBeforeComplete(): " +beforeCompleteEvent);
     }
 
 
     @Override
     public void onBeforePlay(BeforePlayEvent beforePlayEvent) {
-        updateOutput(" " + "onBeforePlay()");
-        LogUtil.logAd(" " + "onBeforePlay()");
+        generateLogLine("onBeforePlay()");
+        Logger.logAd("onBeforePlay()");
     }
 }

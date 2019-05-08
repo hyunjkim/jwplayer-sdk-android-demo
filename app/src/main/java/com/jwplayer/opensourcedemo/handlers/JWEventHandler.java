@@ -1,16 +1,13 @@
 package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
-import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.jwplayer.opensourcedemo.myUtil.LogUtil;
+import com.jwplayer.opensourcedemo.myutility.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
-import com.longtailvideo.jwplayer.events.BeforeCompleteEvent;
-import com.longtailvideo.jwplayer.events.BeforePlayEvent;
 import com.longtailvideo.jwplayer.events.BufferChangeEvent;
 import com.longtailvideo.jwplayer.events.BufferEvent;
 import com.longtailvideo.jwplayer.events.CaptionsChangedEvent;
@@ -38,7 +35,6 @@ import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
-import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
 import java.text.DateFormat;
@@ -90,7 +86,6 @@ public class JWEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnBufferListener(this);
@@ -122,10 +117,8 @@ public class JWEventHandler implements
 
     }
 
-    private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+    private void generateLogLine(String output) {
+        mOutput.setText(Logger.log(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 
@@ -136,189 +129,192 @@ public class JWEventHandler implements
 
     @Override
     public void onAudioTracks(AudioTracksEvent audioTracksEvent) {
-        updateOutput(" " + "onAudioTracks " + audioTracksEvent.getLevels());
-        LogUtil.logEvent("onAudioTracks " + audioTracksEvent);
+        generateLogLine("onAudioTracks size: " + audioTracksEvent.getLevels().size());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            audioTracksEvent.getLevels().forEach(e-> Logger.logEvent("onAudioTracks - " + e.getName() +": " +  e.toJson().toString()));
+        }
     }
 
     public void onBufferChange(BufferChangeEvent bufferChangeEvent) {
-        updateOutput(" " + "onBufferChangeEvent\r\n" +
-                " position=" + bufferChangeEvent.getPosition() + "\r\n" +
-                " duration=" + bufferChangeEvent.getDuration());
-        LogUtil.logEvent("onBufferChangeEvent\r\n" +
-                " position=" + bufferChangeEvent.getPosition() + "\r\n" +
-                " duration=" + bufferChangeEvent.getDuration());
+        generateLogLine("onBufferChange: " +
+               "\r\n\tposition=" + bufferChangeEvent.getPosition() +
+                "\r\n\tduration=" + bufferChangeEvent.getDuration());
+        Logger.logEvent("onBufferChange: " +
+               "\r\n\tposition=" + bufferChangeEvent.getPosition() +
+                "\r\n\tduration=" + bufferChangeEvent.getDuration());
     }
 
     @Override
     public void onError(ErrorEvent errorEvent) {
-        updateOutput("onError: " + errorEvent.getMessage());
+        generateLogLine("onError: " + errorEvent.getMessage());
         Exception exception = errorEvent.getException();
-        LogUtil.logError("onError: " + errorEvent.getMessage(), exception);
+        Logger.logError("onError: " + errorEvent.getMessage(), exception);
     }
 
     @Override
     public void onAudioTrackChanged(AudioTrackChangedEvent audioTrackChangedEvent) {
-        updateOutput(" " + "onAudioTrackChanged: " + audioTrackChangedEvent.getCurrentTrack());
-        LogUtil.logEvent("onAudioTrackChanged: " + audioTrackChangedEvent.getCurrentTrack());
+        generateLogLine("onAudioTrackChanged: " + audioTrackChangedEvent.getCurrentTrack());
+        Logger.logEvent("onAudioTrackChanged: " + audioTrackChangedEvent.getCurrentTrack());
     }
 
     @Override
     public void onBuffer(BufferEvent bufferEvent) {
-        updateOutput(" " + "onBuffer() " + bufferEvent.getOldState());
-        LogUtil.logEvent("onBuffer() " + bufferEvent.getOldState());
+        generateLogLine("onBuffer: " + bufferEvent.getOldState());
+        Logger.logEvent("onBuffer: " + bufferEvent.getOldState());
     }
 
     @Override
     public void onCaptionsChanged(CaptionsChangedEvent captionsChangedEvent) {
-        updateOutput(" " + "onCaptionsChanged(): " + captionsChangedEvent.getCurrentTrack());
-        LogUtil.logEvent("onCaptionsChanged(): " + captionsChangedEvent.getCurrentTrack());
+        generateLogLine("onCaptionsChanged: " + captionsChangedEvent.getCurrentTrack());
+        Logger.logEvent("onCaptionsChanged: " + captionsChangedEvent.getCurrentTrack());
     }
 
     @Override
     public void onCaptionsList(CaptionsListEvent captionsListEvent) {
-        updateOutput(" " + "onCaptionsList()");
+        generateLogLine("onCaptionsList size: " + captionsListEvent.getTracks().size());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            captionsListEvent.getTracks().forEach(e->LogUtil.logEvent("onCaptionsList-"+e.getLabel() +": "+ e.toJson().toString()));
+            captionsListEvent.getTracks().forEach(e-> Logger.logEvent("onCaptionsList - " + e.getLabel() +": " +  e.toJson().toString()));
         }
     }
 
     @Override
     public void onComplete(CompleteEvent completeEvent) {
-        updateOutput(" " + "onComplete()");
-        LogUtil.logEvent("onComplete()" + completeEvent);
+        generateLogLine("onComplete()");
+        Logger.logEvent("onComplete()");
     }
 
     @Override
     public void onControls(ControlsEvent controlsEvent) {
-        updateOutput(" " + "onControls(): " + controlsEvent.getControls());
-        LogUtil.logEvent("onControls(): " + controlsEvent.getControls());
+        generateLogLine("onControls: " + controlsEvent.getControls());
+        Logger.logEvent("onControls: " + controlsEvent.getControls());
     }
 
     @Override
     public void onDisplayClick(DisplayClickEvent displayClickEvent) {
-        updateOutput(" " + "onDisplayClick()");
-        LogUtil.logEvent("onDisplayClick()");
+        generateLogLine("onDisplayClick()");
+        Logger.logEvent("onDisplayClick()");
     }
 
     @Override
     public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
-        updateOutput(" " + "onFirstFrame: " + firstFrameEvent.getLoadTime());
-        LogUtil.logEvent("onFirstFrame: " + firstFrameEvent.getLoadTime());
+        generateLogLine("onFirstFrame: " + firstFrameEvent.getLoadTime());
+        Logger.logEvent("onFirstFrame: " + firstFrameEvent.getLoadTime());
     }
 
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
-        updateOutput(" " + "onFullscreen: " + fullscreenEvent.getFullscreen());
-        LogUtil.logEvent("onFullscreen: " + fullscreenEvent.getFullscreen());
+        generateLogLine("onFullscreen: " + fullscreenEvent.getFullscreen());
+        Logger.logEvent("onFullscreen: " + fullscreenEvent.getFullscreen());
     }
 
     @Override
     public void onIdle(IdleEvent idleEvent) {
-        updateOutput(" " + "onIdle: " + idleEvent.getOldState());
-        LogUtil.logEvent("onIdle: " + idleEvent.getOldState());
+        generateLogLine("onIdle: " + idleEvent.getOldState());
+        Logger.logEvent("onIdle: " + idleEvent.getOldState());
     }
 
     @Override
     public void onLevelsChanged(LevelsChangedEvent levelsChangedEvent) {
-        updateOutput(" " + "onLevelsChanged: " + levelsChangedEvent.getCurrentQuality());
-        LogUtil.logEvent("onLevelsChanged:" + levelsChangedEvent.getCurrentQuality());
+        generateLogLine("onLevelsChanged: " + levelsChangedEvent.getCurrentQuality());
+        Logger.logEvent("onLevelsChanged:" + levelsChangedEvent.getCurrentQuality());
     }
 
     @Override
     public void onLevels(LevelsEvent levelsEvent) {
-        updateOutput(" " + "onlevelsEvent size: " + levelsEvent.getLevels().size());
+        generateLogLine("onlevelsEvent size: " + levelsEvent.getLevels().size());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            levelsEvent.getLevels().forEach(e-> LogUtil.logEvent("onlevelsEvent-"+e.getLabel()+":" + e.toJson().toString()));
+            levelsEvent.getLevels().forEach(e-> Logger.logEvent("onlevelsEvent-" + e.getLabel()+":" + e.toJson().toString()));
         }
     }
 
     @Override
     public void onMeta(MetaEvent metaEvent) {
-//        updateOutput(" " + "metaEvent " + metaEvent.getMetadata().toJson());
-        LogUtil.logEvent("onMeta " + metaEvent.getMetadata().toJson());
+//        generateLogLine(metaEvent: " + metaEvent.getMetadata().toJson());
+        Logger.logEvent("onMeta: " + metaEvent.getMetadata().toJson());
     }
 
     @Override
     public void onMute(MuteEvent muteEvent) {
-        updateOutput(" " + "onMute " + muteEvent.getMute());
-        LogUtil.logEvent("onMute " + muteEvent.getMute());
+        generateLogLine("onMute: " + muteEvent.getMute());
+        Logger.logEvent("onMute: " + muteEvent.getMute());
     }
 
     @Override
     public void onPause(PauseEvent pauseEvent) {
-        updateOutput(" " + "onPause " + pauseEvent.getOldState());
-        LogUtil.logEvent("onPause " + pauseEvent.getOldState());
+        generateLogLine("onPause: " + pauseEvent.getOldState());
+        Logger.logEvent("onPause: " + pauseEvent.getOldState());
     }
 
     @Override
     public void onPlay(PlayEvent playEvent) {
-        updateOutput(" " + "onPlay " + playEvent.getOldState());
-        LogUtil.logEvent("onPlay " + playEvent.getOldState());
+        generateLogLine("onPlay: " + playEvent.getOldState());
+        Logger.logEvent("onPlay: " + playEvent.getOldState());
     }
 
 
     @Override
     public void onPlaylistComplete(PlaylistCompleteEvent playlistCompleteEvent) {
-        updateOutput(" " + "onPlaylistComplete() ");
-        LogUtil.logEvent("onPlaylistComplete() ");
+        generateLogLine("onPlaylistComplete()");
+        Logger.logEvent("onPlaylistComplete() ");
     }
 
     @Override
     public void onPlaylistItem(PlaylistItemEvent playlistItemEvent) {
-        updateOutput(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
-        LogUtil.logEvent("onPlaylistItem index: " + playlistItemEvent.getIndex());
-        LogUtil.logEvent("onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
+        generateLogLine("onPlaylistItem index: " + playlistItemEvent.getIndex());
+        Logger.logEvent("onPlaylistItem: " +
+                "\r\n\tindex: " + playlistItemEvent.getIndex() +
+                "\r\n\tfile: " + playlistItemEvent.getPlaylistItem().getFile());
     }
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
-        updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
-        LogUtil.logEvent("onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
+        generateLogLine("onPlaylist(): " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
+        Logger.logEvent("onPlaylist(): " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
     }
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        updateOutput(" " + "onSeek()"+seekEvent.getPosition());
-        LogUtil.logEvent("onSeek position: " + seekEvent.getPosition());
-        LogUtil.logEvent("onSeek offset: " + seekEvent.getOffset());
+        generateLogLine("onSeek: " + seekEvent.getPosition());
+        Logger.logEvent("onSeek position: " + seekEvent.getPosition());
+        Logger.logEvent("onSeek offset: " + seekEvent.getOffset());
     }
 
     @Override
     public void onSeeked(SeekedEvent seekedEvent) {
-        updateOutput(" " + "onSeeked() ");
-        LogUtil.logEvent("onSeeked() "+ seekedEvent.toString());
+        generateLogLine("onSeeked position: " + seekedEvent.getPosition());
+        Logger.logEvent("onSeeked position: " + seekedEvent.getPosition());
     }
 
     @Override
     public void onSetupError(SetupErrorEvent setupErrorEvent) {
-        updateOutput(" " + "onSetupError " + setupErrorEvent.getMessage());
-        LogUtil.logEvent("onSetupError "+setupErrorEvent.getMessage());
+        generateLogLine("onSetupError: " + setupErrorEvent.getMessage());
+        Logger.logEvent("onSetupError: " + setupErrorEvent.getMessage());
     }
 
     @Override
     public void onTime(TimeEvent timeEvent) {
-//        updateOutput(" " + "onTime " + timeEvent);
-//        LogUtil.logEven"onTime);
+//        generateLogLine("onTime: " + timeEvent);
+//        Logger.logEvent("onTime: " + timeEvent);
     }
 
     @Override
     public void onVisualQuality(VisualQualityEvent visualQualityEvent) {
         if(visualQualityEvent.getQualityLevel() != null){
-            updateOutput(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
-            LogUtil.logEvent("onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
+            generateLogLine("onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
+            Logger.logEvent("onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
         }
     }
 
     @Override
     public void onReady(ReadyEvent readyEvent) {
-        updateOutput(" " + "onReady " + readyEvent.getSetupTime());
-        LogUtil.logEvent("onReady " + readyEvent.getSetupTime());
+        generateLogLine("onReady: " + readyEvent.getSetupTime());
+        Logger.logEvent("onReady: " + readyEvent.getSetupTime());
     }
 
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
         boolean isVisible = controlBarVisibilityEvent.isVisible();
-        updateOutput("onControlBarVisibilityChanged(): " + isVisible);
-        LogUtil.logEvent("onControlBarVisibilityChanged(): " + isVisible);
+        generateLogLine("onControlBarVisibilityChanged: " + isVisible);
+        Logger.logEvent("onControlBarVisibilityChanged: " + isVisible);
     }
 }
