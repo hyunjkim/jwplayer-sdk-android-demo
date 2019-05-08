@@ -15,7 +15,7 @@ public class Logger {
 
     public static String log(String s){
        if(sb == null) sb = new StringBuilder();
-       sb.append(dateFormat.format(new Date())).append(s).append("\r\n");
+       sb.append(dateFormat.format(new Date())).append(" ").append(s).append("\r\n");
        return sb.toString();
     }
 
