@@ -116,7 +116,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Instantiate the CastStateListener - https://github.com/googlecast/CastVideos-android/blob/master/src/com/google/sample/cast/refplayer/VideoBrowserActivity.java#L114
         mCastStateListener = newState -> {
             if (newState != CastState.NO_DEVICES_AVAILABLE) {
-                Log.i("HYUNJOO", "mCastStateListener ");
+                Logger.logEvent("mCastStateListener ");
                 showIntroductoryOverlay();
             }
         };
@@ -146,10 +146,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     private void setupJWPlayerPlaylistItem() {
         String bipbop = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
-        String mp4 = "https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4";
 
         PlaylistItem video = new PlaylistItem.Builder()
-                .file(mp4)
+                .file(bipbop)
                 .build();
 
         mPlayerView.load(video);
@@ -177,7 +176,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // Set fullscreen when the device is rotated to landscape
-        Log.i("HYUNJOO", "onConfigurationChanged()");
+        Logger.logEvent("onConfigurationChanged()");
         mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
         invalidateOptionsMenu();
         super.onConfigurationChanged(newConfig);
