@@ -9,14 +9,14 @@ public class Logger {
 
     private static StringBuilder outputStringBuilder;
     private static boolean printedVersion = false;
+    private static DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
 
     public static void newInstance(){
         outputStringBuilder = new StringBuilder();
     }
 
     public static String updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
+        outputStringBuilder.append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
         return outputStringBuilder.toString();
     }
 
