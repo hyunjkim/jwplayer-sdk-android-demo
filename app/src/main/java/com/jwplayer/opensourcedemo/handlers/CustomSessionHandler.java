@@ -31,15 +31,15 @@ public class CustomSessionHandler implements SessionManagerListener<CastSession>
 
         }
         validateMenuListener.callInvalidateOptionMenu(); // displays the options on the menu
-        Logger.log("onSessionEnded: " + session.getApplicationStatus());
+        Logger.logCastSession("onSessionEnded: " + session.getApplicationStatus());
     }
 
     @Override
     public void onSessionResumed(CastSession session, boolean wasSuspended) {
         mCastSession = session;
-        mCastSessionListener.castSessionInformation(mCastSession);
+        mCastSessionListener.castSessionInformation(mCastSession); // passing the session to the my session listener
         validateMenuListener.callInvalidateOptionMenu(); // displays the options on the menu
-        Logger.log("onSessionResumed: " + session.getApplicationStatus());
+        Logger.logCastSession("onSessionResumed: " + session.getApplicationStatus());
     }
 
     @Override
@@ -47,36 +47,42 @@ public class CustomSessionHandler implements SessionManagerListener<CastSession>
         mCastSession = session;
         mCastSessionListener.castSessionInformation(mCastSession);
         validateMenuListener.callInvalidateOptionMenu(); // displays the options on the menu
-        Logger.log("onSessionStarted: " + session.getApplicationStatus());
+        Logger.logCastSession("onSessionStarted: " + session.getApplicationStatus() + " session id: "+ sessionId);
     }
 
     @Override
     public void onSessionStarting(CastSession castSession) {
-        Logger.logCastSession("onSessionStarting: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
+        Logger.logCastSession("onSessionStarting: "+ "Application Status: " + castSession.getApplicationStatus());
+//        Logger.logCastSession("onSessionStarting: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
     }
 
     @Override
     public void onSessionStartFailed(CastSession castSession, int i) {
-        Logger.logCastSession("onSessionStartFailed: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
+        Logger.logCastSession("onSessionStartFailed: "+ "Application Status: " + castSession.getApplicationStatus());
+//        Logger.logCastSession("onSessionStartFailed: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
     }
 
     @Override
     public void onSessionEnding(CastSession castSession) {
-        Logger.logCastSession("onSessionEnding: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
+        Logger.logCastSession("onSessionEnding: "+ "Application Status: " + castSession.getApplicationStatus());
+//        Logger.logCastSession("onSessionEnding: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
     }
 
     @Override
     public void onSessionResuming(CastSession castSession, String s) {
-        Logger.logCastSession("onSessionResuming: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
+        Logger.logCastSession("onSessionResuming: "+ "Application Status: " + castSession.getApplicationStatus());
+//        Logger.logCastSession("onSessionResuming: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
     }
 
     @Override
     public void onSessionResumeFailed(CastSession castSession, int i) {
-        Logger.logCastSession("onSessionResumeFailed: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
+        Logger.logCastSession("onSessionResumeFailed: "+ "Application Status: " + castSession.getApplicationStatus());
+//        Logger.logCastSession("onSessionResumeFailed: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
     }
 
     @Override
     public void onSessionSuspended(CastSession castSession, int i) {
-        Logger.logCastSession("onSessionSuspended: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
+        Logger.logCastSession("onSessionSuspended: "+ "Application Status: " + castSession.getApplicationStatus());
+//        Logger.logCastSession("onSessionSuspended: "+ castSession.getApplicationMetadata().toString()+"\r\n Application Status: "+castSession.getApplicationStatus());
     }
 }

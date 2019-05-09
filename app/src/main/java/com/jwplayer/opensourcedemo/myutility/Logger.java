@@ -14,8 +14,8 @@ public class Logger {
     private static DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
 
     public static String log(String s){
-       if(sb == null) sb = new StringBuilder();
-       sb.append(dateFormat.format(new Date())).append(" ").append(s).append("\r\n");
+        if(sb == null) sb = new StringBuilder();
+        sb.append(dateFormat.format(new Date())).append(" ").append(s).append("\r\n");
        return sb.toString();
     }
 
@@ -33,5 +33,9 @@ public class Logger {
 
     public static void logAd(String s) {
         Log.i(TAG, "- (ADEVENT) - " + s + "\r\n");
+    }
+
+    public static void refresh() {
+        sb = new StringBuilder();
     }
 }

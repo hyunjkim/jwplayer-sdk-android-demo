@@ -55,6 +55,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity{
         // Setup JW PlayerView
         setupJWPlayer();
 
+        // Display JWPlayer Version
+        Logger.refresh();
+        outputTextView.setText(Logger.log(mPlayerView.getVersionCode() + "JWPLAYERFRAGMENT"));
+
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
@@ -64,23 +68,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity{
         // Instantiate the JW Player Adevent handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
     }
-
-    /*
-     * Custom ToolBar
-     *
-     * More info: https://github.com/googlecast/CastVideos-android/blob/master/src/com/google/sample/cast/refplayer/VideoBrowserActivity.java#L125
-     */
-    private void setupActionBar() {
-        Logger.logEvent("FRAGMENTEXAMPLE - setupActionBar");
-        setSupportActionBar(mToolbar);
-
-        // Do not display the Default App Name Title
-        if (getSupportActionBar() != null && !mPlayerView.getFullscreen()) {
-            getSupportActionBar().show();
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-    }
-
     /*
      * Setup JWPlayer
      */
@@ -108,6 +95,21 @@ public class JWPlayerFragmentExample extends AppCompatActivity{
         setupActionBar();
     }
 
+    /*
+     * Custom ToolBar
+     *
+     * More info: https://github.com/googlecast/CastVideos-android/blob/master/src/com/google/sample/cast/refplayer/VideoBrowserActivity.java#L125
+     */
+    private void setupActionBar() {
+        Logger.logEvent("FRAGMENTEXAMPLE - setupActionBar");
+        setSupportActionBar(mToolbar);
+
+        // Do not display the Default App Name Title
+        if (getSupportActionBar() != null && !mPlayerView.getFullscreen()) {
+            getSupportActionBar().show();
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

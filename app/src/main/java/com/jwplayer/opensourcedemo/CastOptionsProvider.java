@@ -34,7 +34,6 @@ public class CastOptionsProvider implements OptionsProvider {
 
         final CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setNotificationOptions(notificationOptions)
-                .setExpandedControllerActivityClassName(JWPlayerViewExample.class.getName())
                 .build();
 
         return new CastOptions.Builder()
