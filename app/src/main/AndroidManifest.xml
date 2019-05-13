@@ -21,15 +21,16 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
         </activity>
 
+
+        <!--TODO Add this if you are using Chromecast -->
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="com.jwplayer.opensourcedemo.CastOptionsProvider" />
+
         <!--TODO Add this if you are using AAR & Maven imports-->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-        <!--TODO Add this to use Cast-->
-        <meta-data
-            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.jwplayer.opensourcedemo.CastOptionsProvider" />
 
         <!--TODO Set your license key-->
         <meta-data

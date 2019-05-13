@@ -10,8 +10,6 @@ import com.google.android.gms.cast.framework.media.CastMediaOptions;
 import com.google.android.gms.cast.framework.media.MediaIntentReceiver;
 import com.google.android.gms.cast.framework.media.NotificationOptions;
 
-import com.google.android.gms.cast.framework.OptionsProvider;
-
 import java.util.Arrays;
 import java.util.List;
 

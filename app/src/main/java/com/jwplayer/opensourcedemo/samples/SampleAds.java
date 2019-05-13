@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.samples;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
@@ -17,7 +17,7 @@ public class SampleAds {
      * Vast Setup Example
      * */
 
-    public static Advertising getVastAd(){
+    public static Advertising getVastAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
         String ad = "";
@@ -51,19 +51,19 @@ public class SampleAds {
      * VAST VMAP Ad Example
      * {For more info: https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/vast/#vmap-advertising}
      * */
-    static VMAPAdvertising vastVMAP(){
-        return new VMAPAdvertising(AdSource.VAST,"https://playertest.longtailvideo.com/adtags/vmap2.xml");
+    public static VMAPAdvertising vastVMAP() {
+        return new VMAPAdvertising(AdSource.VAST, "https://playertest.longtailvideo.com/adtags/vmap2.xml");
     }
 
     /*
      * IMA Ad Example
      * */
-    static ImaAdvertising getImaAd(){
+    public static ImaAdvertising getImaAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
         String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
 
-        AdBreak adBreak = new AdBreak("pre", AdSource.IMA,ad);
+        AdBreak adBreak = new AdBreak("pre", AdSource.IMA, ad);
         adbreaklist.add(adBreak);
 
         ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
@@ -77,20 +77,20 @@ public class SampleAds {
 //		imaSettings.setDebugMode(true);
 //		imaSettings.setAutoPlayAdBreaks(true);
 
-        return new ImaAdvertising(adbreaklist,imaSettings);
+        return new ImaAdvertising(adbreaklist, imaSettings);
     }
 
     /*
      * IMA VMAP Ad Example
      * {For more info: https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/google-ima/#vmap-advertising}
      * */
-    static ImaVMAPAdvertising imaVMAP(){
+    public static ImaVMAPAdvertising imaVMAP() {
         String pre = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=";
 
         return new ImaVMAPAdvertising(pre);
     }
 
-    public static VMAPAdvertising getVMAP(String client){
-        return client.equals("ima")? imaVMAP() : vastVMAP();
+    public static VMAPAdvertising getVMAP(String client) {
+        return client.equals("ima") ? imaVMAP() : vastVMAP();
     }
 }

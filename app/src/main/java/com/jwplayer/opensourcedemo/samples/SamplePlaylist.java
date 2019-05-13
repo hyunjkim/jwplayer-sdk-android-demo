@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.samples;
 
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
@@ -25,7 +25,7 @@ public class SamplePlaylist {
                 "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
         };
 
-        for(String each : playlist){
+        for (String each : playlist) {
             PlaylistItem item = new PlaylistItem(each);
             playlistItemList.add(item);
         }
@@ -35,9 +35,9 @@ public class SamplePlaylist {
 
     /**
      * MediaSource Playlist Example
-     *
+     * <p>
      * Adaptive Streaming for more info: https://support.jwplayer.com/articles/adaptive-streaming-reference
-     * */
+     */
     public static List<PlaylistItem> createMediaSourcePlaylist() {
         List<MediaSource> mediaSourceList = new ArrayList<>();
         List<PlaylistItem> playlistItemList = new ArrayList<>();

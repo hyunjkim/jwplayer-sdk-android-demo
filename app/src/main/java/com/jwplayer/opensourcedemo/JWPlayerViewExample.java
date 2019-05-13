@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -18,8 +17,9 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.jwplayer.opensourcedemo.jwutil.Logger;
 import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
-import com.jwplayer.opensourcedemo.listeners.JWWebViewListener;
 import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.samples.SampleAds;
+import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
@@ -63,6 +63,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         // Setup JWPlayer
         setupJWPlayer();
+
+        // Print JWPlayer Version
+        outputTextView.setText(Logger.printBuildVersion(mPlayerView.getVersionCode()));
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -116,7 +119,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .preload(true)
                 .mute(true)
                 .allowCrossProtocolRedirects(true)
-//				.advertising(vastAdvertising)
+                .advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
 //				.advertising(vmapAdvertising)
                 .skinConfig(skinConfig)
