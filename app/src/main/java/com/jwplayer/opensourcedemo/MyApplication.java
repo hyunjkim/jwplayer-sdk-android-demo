@@ -1,16 +1,13 @@
 package com.jwplayer.opensourcedemo;
 
-import android.support.multidex.MultiDex;
-import android.support.multidex.MultiDexApplication;
+import android.app.Application;
 
 import com.longtailvideo.jwplayer.cast.CastManager;
 
-public class MyApplication extends MultiDexApplication {
+public class MyApplication extends Application {
 
     @Override
     public void onCreate() {
-        super.onCreate();
-        MultiDex.install(this);
         /*
          * We need to initialize singletons in the global application object to prevent issues
          * with garbage collection.
