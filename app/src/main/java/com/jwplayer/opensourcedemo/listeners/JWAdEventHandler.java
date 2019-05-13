@@ -78,7 +78,7 @@ public class JWAdEventHandler implements
     }
 
     private void updateOutput(String output) {
-        String adOutput = Logger.updateOutput(output);
+        String adOutput = Logger.generateLogLine(output);
         mOutput.setText(adOutput);
         mScroll.scrollTo(0, mOutput.getBottom());
     }
