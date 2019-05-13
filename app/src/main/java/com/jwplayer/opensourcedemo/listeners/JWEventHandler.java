@@ -125,7 +125,7 @@ public class JWEventHandler implements
     }
 
     private void updateOutput(String output) {
-        mOutput.setText(Logger.updateOutput(output));
+        mOutput.setText(Logger.generateLogLine(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 

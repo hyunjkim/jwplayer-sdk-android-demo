@@ -11,11 +11,8 @@ public class Logger {
     private static boolean printedVersion = false;
     private static DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
 
-    public static void newInstance(){
-        outputStringBuilder = new StringBuilder();
-    }
-
-    public static String updateOutput(String output) {
+    public static String generateLogLine(String output) {
+        if(outputStringBuilder == null) outputStringBuilder = new StringBuilder();
         outputStringBuilder.append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
         return outputStringBuilder.toString();
     }
