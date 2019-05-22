@@ -1,4 +1,4 @@
-#JW Player SDK for Android Open Source Demo
+# Additional JW Player SDK for Android Open Source Demo
 
 This application contains an example implementation of the JW Player SDK for Android using SharingPlugin Feature.
 
@@ -19,9 +19,10 @@ For more information on how to use our SDK refer to our developer guide:
         List<PlaylistItem> playlistItemList = createPlaylist();
 
         SharingConfig sharingConfig = new SharingConfig.Builder()
-            .heading("Youtube")
-            .link("https://www.youtube.com/watch?v=BGtROJeMPeE")
-            .build();
+                .heading("League Of Legends Video")
+                .code("Embed Code")
+                .link("https://www.youtube.com/watch?v=BGtROJeMPeE")
+                .build();
 
         mPlayerView.setup(new PlayerConfig.Builder()
             .playlist(playlistItemList)
@@ -34,5 +35,4 @@ For more information on how to use our SDK refer to our developer guide:
       }
 ```
 
-![text](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/jira/v342/sharingpluginevents/v342-sharing1.png)
-![text](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/jira/v342/sharingpluginevents/v342sharing2.png)
+![text](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/github/v352-sharingconfig.png) ![text](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/github/v352-sharingconfig2.png)
