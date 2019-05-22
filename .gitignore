@@ -9,7 +9,7 @@ app/src/main/res/values/secrets.xml
 .gradle/
 
 # User-specific configurations
-*.idea
+.idea
 .idea/assetWizardSettings.xml
 .idea/caches/
 .idea/codeStyles/

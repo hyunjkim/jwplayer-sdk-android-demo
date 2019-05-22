@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -32,114 +31,108 @@ import java.util.List;
 
 public class JWPlayerViewExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
-	/**
-	 * Reference to the {@link JWPlayerView}
-	 */
-	private JWPlayerView mPlayerView;
+    /**
+     * Reference to the {@link JWPlayerView}
+     */
+    private JWPlayerView mPlayerView;
 
-	/**
-	 * Reference to the {@link CastManager}
-	 */
-	private CastManager mCastManager;
+    /**
+     * Reference to the {@link CastManager}
+     */
+    private CastManager mCastManager;
 
-	/**
-	 * Stored instance of CoordinatorLayout
-	 * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
-	 */
-	private CoordinatorLayout mCoordinatorLayout;
-
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_jwplayerview);
-
-		mPlayerView = findViewById(R.id.jwplayer);
-		TextView outputTextView = findViewById(R.id.output);
-		ScrollView scrollView = findViewById(R.id.scroll);
-		mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
-
-		// Setup JWPlayer
-		setupJWPlayer();
-
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
-
-		// Keep the screen on during playback
-		new KeepScreenOnHandler(mPlayerView, getWindow());
-
-		// Instantiate the JW Player event handler class
-		new JWEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Instantiate the JW Player Ad event handler class
-		new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
-		// Get a reference to the CastManager
-		mCastManager = CastManager.getInstance();
-	}
+    /**
+     * Stored instance of CoordinatorLayout
+     * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
+     */
+    private CoordinatorLayout mCoordinatorLayout;
 
 
-	private void setupJWPlayer() {
-		List<PlaylistItem> playlistItemList = createPlaylist();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView.setup(new PlayerConfig.Builder()
-				.playlist(playlistItemList)
-				.advertising(getVastAd())
-				.autostart(true)
-				.mute(true)
-				.build()
-		);
-	}
+        mPlayerView = findViewById(R.id.jwplayer);
+        TextView outputTextView = findViewById(R.id.output);
+        ScrollView scrollView = findViewById(R.id.scroll);
+        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-	private List<PlaylistItem> createPlaylist() {
-		List<PlaylistItem> playlistItemList = new ArrayList<>();
+        // Handle hiding/showing of ActionBar
+        mPlayerView.addOnFullscreenListener(this);
 
-		String[] playlist = {
-				"https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-				"http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-				"http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-				"http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-		};
+        // Setup JWPlayer
+        setupJWPlayer();
 
-		for(String each : playlist){
-			playlistItemList.add(new PlaylistItem(each));
-		}
+        // Keep the screen on during playback
+        new KeepScreenOnHandler(mPlayerView, getWindow());
 
-		return playlistItemList;
-	}
+        // Instantiate the JW Player event handler class
+        new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-	/*
-	 * Vast Setup Example
-	 * */
-	public Advertising getVastAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
+        // Instantiate the JW Player Ad event handler class
+        new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
-		String adurl = "";
-		Ad ad = new Ad(AdSource.VAST, adurl);
-		AdBreak adBreak = new AdBreak("pre", ad);
-		adbreaklist.add(adBreak);
-		return new Advertising(AdSource.VAST,adbreaklist);
-	}
+        // Get a reference to the CastManager
+        mCastManager = CastManager.getInstance();
+    }
 
 
-	/*
-	 * Ima Setup Example
-	 * */
-	public ImaAdvertising getIMAAd(){
-		List<AdBreak> adbreaklist = new ArrayList<>();
+    private void setupJWPlayer() {
 
-		String customerAd1 = "";
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-		Ad ad1 = new Ad(AdSource.IMA, customerAd1);
+        String[] playlist = {
+                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
+                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+        };
 
-		AdBreak adBreak = new AdBreak("pre", ad1);
+        for (String each : playlist) {
+            playlistItemList.add(new PlaylistItem(each));
+        }
+        mPlayerView.setup(new PlayerConfig.Builder()
+                .playlist(playlistItemList)
+                .advertising(getVastAd())
+                .autostart(true)
+                .mute(true)
+                .build()
+        );
+    }
 
-		adbreaklist.add(adBreak);
+    /*
+     * Vast Setup Example
+     * */
+    public Advertising getVastAd() {
+        List<AdBreak> adbreaklist = new ArrayList<>();
 
-		ImaSdkSettings imaSetting = ImaSdkFactory.getInstance().createImaSdkSettings();
+        String adurl = "";
+        Ad ad = new Ad(AdSource.VAST, adurl);
+        AdBreak adBreak = new AdBreak("pre", ad);
+        adbreaklist.add(adBreak);
+        return new Advertising(AdSource.VAST, adbreaklist);
+    }
+
+
+    /*
+     * Ima Setup Example
+     * */
+    public ImaAdvertising getIMAAd() {
+        List<AdBreak> adbreaklist = new ArrayList<>();
+
+        String customerAd1 = "";
+
+        Ad ad1 = new Ad(AdSource.IMA, customerAd1);
+
+        AdBreak adBreak = new AdBreak("pre", ad1);
+
+        adbreaklist.add(adBreak);
+
+        ImaSdkSettings imaSetting = ImaSdkFactory.getInstance().createImaSdkSettings();
 //		imaSetting.setAutoPlayAdBreaks(true);
 //		imaSetting.setDebugMode(true);
 //		imaSetting.setRestrictToCustomPlayer(true);
@@ -149,86 +142,86 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
 //		imaSetting.setPlayerVersion("");
 //		imaSetting.setPpid("");
 
-		return new ImaAdvertising(adbreaklist, imaSetting);
-	}
+        return new ImaAdvertising(adbreaklist, imaSetting);
+    }
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// Set fullscreen when the devi2ce is rotated to landscape
-		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
-		super.onConfigurationChanged(newConfig);
-	}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // Set fullscreen when the devi2ce is rotated to landscape
+        mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
+        super.onConfigurationChanged(newConfig);
+    }
 
-	@Override
-	protected void onResume() {
-		// Let JW Player know that the app has returned from the background
-		super.onResume();
-		mPlayerView.onResume();
-	}
+    @Override
+    protected void onResume() {
+        // Let JW Player know that the app has returned from the background
+        super.onResume();
+        mPlayerView.onResume();
+    }
 
-	@Override
-	protected void onPause() {
-		// Let JW Player know that the app is going to the background
-		mPlayerView.onPause();
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        // Let JW Player know that the app is going to the background
+        mPlayerView.onPause();
+        super.onPause();
+    }
 
-	@Override
-	protected void onDestroy() {
-		// Let JW Player know that the app is being destroyed
-		mPlayerView.onDestroy();
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        // Let JW Player know that the app is being destroyed
+        mPlayerView.onDestroy();
+        super.onDestroy();
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Exit fullscreen when the user pressed the Back button
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (mPlayerView.getFullscreen()) {
-				mPlayerView.setFullscreen(false, true);
-				return false;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Exit fullscreen when the user pressed the Back button
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mPlayerView.getFullscreen()) {
+                mPlayerView.setFullscreen(false, true);
+                return false;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	/**
-	 * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
-	 *
-	 * @param fullscreen true if the player is fullscreen
-	 */
-	@Override
-	public void onFullscreen(boolean fullscreen) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreen) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
+    /**
+     * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
+     *
+     * @param fullscreen true if the player is fullscreen
+     */
+    @Override
+    public void onFullscreen(boolean fullscreen) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            if (fullscreen) {
+                actionBar.hide();
+            } else {
+                actionBar.show();
+            }
+        }
 
-		// When going to Fullscreen we want to set fitsSystemWindows="false"
-		mCoordinatorLayout.setFitsSystemWindows(!fullscreen);
-	}
+        // When going to Fullscreen we want to set fitsSystemWindows="false"
+        mCoordinatorLayout.setFitsSystemWindows(!fullscreen);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-		// Register the MediaRouterButton on the JW Player SDK
-		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+        // Register the MediaRouterButton on the JW Player SDK
+        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.switch_to_fragment:
-				Intent i = new Intent(this, JWPlayerFragmentExample.class);
-				startActivity(i);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.switch_to_fragment:
+                Intent i = new Intent(this, JWPlayerFragmentExample.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
