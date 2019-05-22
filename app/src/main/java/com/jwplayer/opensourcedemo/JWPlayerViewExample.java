@@ -61,11 +61,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+        // Print JWPlayer Version
+        outputTextView.setText(Logger.generateLogLine("Build version: " + mPlayerView.getVersionCode()));
+
         // Setup JWPlayer
         setupJWPlayer();
-
-        // Print JWPlayer Version
-        outputTextView.setText(Logger.printBuildVersion(mPlayerView.getVersionCode()));
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
