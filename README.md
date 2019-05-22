@@ -1,4 +1,4 @@
-#JW Player SDK for Android Open Source Demo
+# JW Player SDK for Android Open Source Demo
 
 This application contains an example implementation of the JW Player SDK for Android using the RelatedPlugin Feature (Recommendations).
 
