@@ -51,7 +51,6 @@ public class JWAdEventHandler implements
 
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
     private JWPlayerView mPlayer;
 
 
@@ -59,7 +58,6 @@ public class JWAdEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnAdBreakEndListener(this);
@@ -80,14 +78,12 @@ public class JWAdEventHandler implements
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+        mOutput.setText(Logger.generateLogLine(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 
-    private void print(String s){
-        Log.i("JWEVENT", " - (ADEVENT) - "+ s);
+    private void print(String s) {
+        Log.i("JWEVENTHANDLER", " - (ADEVENT) - " + s);
     }
 
     @Override
@@ -108,7 +104,7 @@ public class JWAdEventHandler implements
         print(" " + "onAdSchedule " + adScheduleEvent.getClient());
         print(" " + "onAdSchedule " + adScheduleEvent.getTag());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            adScheduleEvent.getVmapAdBreaks().forEach(e->print("onAdSchedule-vmap ad break:" +e.toJson().toString()));
+            adScheduleEvent.getVmapAdBreaks().forEach(e -> print("onAdSchedule-vmap ad break:" + e.toJson().toString()));
         }
     }
 
@@ -158,18 +154,18 @@ public class JWAdEventHandler implements
     public void onAdImpression(AdImpressionEvent adImpressionEvent) {
         updateOutput(" " + "onAdImpression: (\r\n" +
                 " Tag" + adImpressionEvent.getTag() + "\r\n" +
-                " CreativeType: " + adImpressionEvent.getCreativeType()+ "\r\n" +
+                " CreativeType: " + adImpressionEvent.getCreativeType() + "\r\n" +
                 " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
         print(" " + "onAdImpression: (\r\n" +
                 " Tag: " + adImpressionEvent.getTag() + "\r\n" +
-                " Universal Ad Id Value: " + adImpressionEvent.getUniversalAdIdValue()+ "\r\n" +
-                " Universal Ad Id Registry: " + adImpressionEvent.getUniversalAdIdRegistry()+ "\r\n" +
+                " Universal Ad Id Value: " + adImpressionEvent.getUniversalAdIdValue() + "\r\n" +
+                " Universal Ad Id Registry: " + adImpressionEvent.getUniversalAdIdRegistry() + "\r\n" +
                 " getNonComplianceReasons: " + Arrays.toString(adImpressionEvent.getNonComplianceReasons()) + "\r\n" +
                 " Ad Categories: " + Arrays.toString(adImpressionEvent.getCategories()) + "\r\n" +
-                " Media File: " + adImpressionEvent.getMediaFile()+ "\r\n" +
-                " Vast Version: " + adImpressionEvent.getVastVersion()+ "\r\n" +
-                " Client: " + adImpressionEvent.getClient()+ "\r\n" +
-                " CreativeType: " + adImpressionEvent.getCreativeType()+ "\r\n" +
+                " Media File: " + adImpressionEvent.getMediaFile() + "\r\n" +
+                " Vast Version: " + adImpressionEvent.getVastVersion() + "\r\n" +
+                " Client: " + adImpressionEvent.getClient() + "\r\n" +
+                " CreativeType: " + adImpressionEvent.getCreativeType() + "\r\n" +
                 " Ad Position: " + adImpressionEvent.getAdPosition().name() + ")\r\n");
     }
 
@@ -196,8 +192,8 @@ public class JWAdEventHandler implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             adCompanionsEvent
                     .getCompanions()
-                    .forEach(e->{
-                        print("onAdCompanions-" + e.getResource()+ "\n");
+                    .forEach(e -> {
+                        print("onAdCompanions-" + e.getResource() + "\n");
                         printCreatives(e.getCreativeViews());
                     });
         }
@@ -206,7 +202,7 @@ public class JWAdEventHandler implements
     @Override
     public void onBeforeComplete(BeforeCompleteEvent beforeCompleteEvent) {
         updateOutput(" " + "onBeforeComplete()");
-        print(" " + "onBeforeComplete(): " +beforeCompleteEvent);
+        print(" " + "onBeforeComplete(): " + beforeCompleteEvent);
     }
 
 
@@ -217,7 +213,7 @@ public class JWAdEventHandler implements
     }
 
     private void printCreatives(List<String> creative) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && creative.size()>0) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && creative.size() > 0) {
             creative.forEach(each -> print("onAdCompanions-Creative: " + each));
         }
     }

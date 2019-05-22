@@ -11,9 +11,9 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 
 public class JWPlayerFragmentExample extends AppCompatActivity {
@@ -29,11 +29,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
     private JWPlayerView mPlayerView;
 
     /**
-     * Reference to the {@link CastManager}
-     */
-    private CastManager mCastManager;
-
-    /**
      * An instance of our event handling class
      */
     private JWEventHandler mEventHandler;
@@ -43,9 +38,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
+        TextView outputTextView = (TextView) findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        // Setup JWPlayerView
         setupJWPlayer();
 
         // Keep the screen on during playback
@@ -53,9 +49,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Instantiate the JW Player event handler class
         mEventHandler = new JWEventHandler(mPlayerView, outputTextView, scrollView);
-
-        // Get a reference to the CastManager
-        mCastManager = CastManager.getInstance();
     }
 
     private void setupJWPlayer() {
@@ -95,8 +88,11 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+
         // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+
         return true;
     }
 

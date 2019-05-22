@@ -85,19 +85,17 @@ public class JWEventHandler implements
 
         RelatedPluginEvents.OnRelatedCloseListener,
         RelatedPluginEvents.OnRelatedOpenListener,
-        RelatedPluginEvents.OnRelatedPlayListener{
+        RelatedPluginEvents.OnRelatedPlayListener {
 
     private JWPlayerView mPlayer;
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
     JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to allEventHandler: Player events
         jwPlayerView.addOnBufferListener(this);
@@ -133,14 +131,12 @@ public class JWEventHandler implements
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("KK:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+        mOutput.setText(Logger.generateLogLine(output));
         mScroll.scrollTo(0, mOutput.getBottom());
     }
 
-    private void print(String s){
-        Log.i("JWEVENTHANDLER",s);
+    private void print(String s) {
+        Log.i("JWEVENTHANDLER", s);
     }
 
 
@@ -169,6 +165,7 @@ public class JWEventHandler implements
         Exception exception = errorEvent.getException();
         Log.i("JWPLAYER-LOG", "onError: " + errorEvent.getMessage(), exception);
     }
+
     @Override
     public void onAudioTrackChanged(AudioTrackChangedEvent audioTrackChangedEvent) {
         updateOutput(" " + "onAudioTrackChanged: " + audioTrackChangedEvent.getCurrentTrack());
@@ -191,7 +188,7 @@ public class JWEventHandler implements
     public void onCaptionsList(CaptionsListEvent captionsListEvent) {
         updateOutput(" " + "onCaptionsList()");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            captionsListEvent.getTracks().forEach(e->print("onCaptionsList-"+e.getLabel() +": "+ e.toJson().toString()));
+            captionsListEvent.getTracks().forEach(e -> print("onCaptionsList-" + e.getLabel() + ": " + e.toJson().toString()));
         }
     }
 
@@ -241,7 +238,7 @@ public class JWEventHandler implements
     public void onLevels(LevelsEvent levelsEvent) {
         updateOutput(" " + "onlevelsEvent size: " + levelsEvent.getLevels().size());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            levelsEvent.getLevels().forEach(e-> print("onlevelsEvent-"+e.getLabel()+":" + e.toJson().toString()));
+            levelsEvent.getLevels().forEach(e -> print("onlevelsEvent-" + e.getLabel() + ":" + e.toJson().toString()));
         }
     }
 
@@ -282,6 +279,7 @@ public class JWEventHandler implements
         print(" " + "onPlaylistItem index: " + playlistItemEvent.getIndex());
         print(" " + "onPlaylistItem file: " + playlistItemEvent.getPlaylistItem().getFile());
     }
+
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
         updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
@@ -290,7 +288,7 @@ public class JWEventHandler implements
 
     @Override
     public void onSeek(SeekEvent seekEvent) {
-        updateOutput(" " + "onSeek()"+seekEvent.getPosition());
+        updateOutput(" " + "onSeek()" + seekEvent.getPosition());
         print(" " + "onSeek position: " + seekEvent.getPosition());
         print(" " + "onSeek offset: " + seekEvent.getOffset());
     }
@@ -298,13 +296,13 @@ public class JWEventHandler implements
     @Override
     public void onSeeked(SeekedEvent seekedEvent) {
         updateOutput(" " + "onSeeked() ");
-        print(" " + "onSeeked() "+ seekedEvent.toString());
+        print(" " + "onSeeked() " + seekedEvent.toString());
     }
 
     @Override
     public void onSetupError(SetupErrorEvent setupErrorEvent) {
         updateOutput(" " + "onSetupError " + setupErrorEvent.getMessage());
-        print(" " + "onSetupError "+setupErrorEvent.getMessage());
+        print(" " + "onSetupError " + setupErrorEvent.getMessage());
     }
 
     @Override
@@ -315,7 +313,7 @@ public class JWEventHandler implements
 
     @Override
     public void onVisualQuality(VisualQualityEvent visualQualityEvent) {
-        if(visualQualityEvent.getQualityLevel() != null){
+        if (visualQualityEvent.getQualityLevel() != null) {
             updateOutput(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
             print(" " + "onVisualQuality: " + visualQualityEvent.getQualityLevel().toJson());
         }
@@ -338,32 +336,32 @@ public class JWEventHandler implements
 
     @Override
     public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
-        updateOutput("onRelatedClose(): "+relatedCloseEvent.getMethod());
-        print("onRelatedClose(): "+relatedCloseEvent.getMethod());
+        updateOutput("onRelatedClose(): " + relatedCloseEvent.getMethod());
+        print("onRelatedClose(): " + relatedCloseEvent.getMethod());
         print("");
     }
 
     @Override
     public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
-        updateOutput("onRelatedOpen()"+
-                "method: "+relatedOpenEvent.getMethod() +
-                "onRelatedOpen url: "+relatedOpenEvent.getUrl());
+        updateOutput("onRelatedOpen()" +
+                "method: " + relatedOpenEvent.getMethod() +
+                "onRelatedOpen url: " + relatedOpenEvent.getUrl());
         print("onRelatedOpen()" + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             print("onRelatedOpen getitems(): ");
-            relatedOpenEvent.getItems().forEach(e->print(" getitems - " + e + "\r\n"));
+            relatedOpenEvent.getItems().forEach(e -> print(" getitems - " + e + "\r\n"));
         }
 
     }
 
     @Override
     public void onRelatedPlay(RelatedPlayEvent relatedPlayEvent) {
-        updateOutput("onRelatedPlay(): " +relatedPlayEvent.getItem().getFile());
-        print("onRelatedPlay(): "+
-                "\r\nAuto"+relatedPlayEvent.getAuto() +
-                "\r\nFile:" +relatedPlayEvent.getItem().getFile() +
-                "\r\nPosition: "+relatedPlayEvent.getPosition());
+        updateOutput("onRelatedPlay(): " + relatedPlayEvent.getItem().getFile());
+        print("onRelatedPlay(): " +
+                "\r\nAuto" + relatedPlayEvent.getAuto() +
+                "\r\nFile:" + relatedPlayEvent.getItem().getFile() +
+                "\r\nPosition: " + relatedPlayEvent.getPosition());
 
     }
 }
