@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 ext {
-	jwplayerVersion = '3.5.0'
+	jwplayerVersion = '3.5.2'
+	supportVersion = '28.0.0'
 }
 android {
 	compileSdkVersion 28
@@ -18,34 +19,36 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
-	lintOptions{
+	lintOptions {
 		abortOnError false
 		disable "GoogleAppIndexingWarning"
 	}
 	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
+		sourceCompatibility = '1.8'
+		targetCompatibility = '1.8'
 	}
 }
 
 dependencies {
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	testImplementation 'junit:junit:4.12'
-	implementation('com.android.support:appcompat-v7:28.0.0') {
+	implementation("com.android.support:appcompat-v7:${supportVersion}") {
 		force = true
 	}
-	implementation('com.android.support:design:28.0.0') {
+	implementation("com.android.support:design:${supportVersion}") {
 		force = true
 	}
 
-	implementation 'com.google.code.gson:gson:2.8.5'
 	implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
 	implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
-	implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}" // Only required if using IMA features
-	implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}" // Only required if using FreeWheel
-	implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}" // Only required if using Chromecast
+	implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
+	// Only required if using IMA features
+	implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
+	// Only required if using FreeWheel
+	implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
+	// Only required if using Chromecast
 	// Only required if importing with AAR / JAR
-	//	implementation 'com.google.android.gms:play-services-ads:' // Only required if using IMA features
-	//	implementation 'com.google.ads.interactivemedia.v3:interactivemedia:' // Only required if using IMA features
-	// 	implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1' // Only required if using Chromecast
+	//	implementation 'com.google.android.gms:play-services-ads:'				// Only required if using IMA features
+	//	implementation 'com.google.ads.interactivemedia.v3:interactivemedia:'	// Only required if using IMA features
+	//  implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1' // Only required if using Chromecast
 }

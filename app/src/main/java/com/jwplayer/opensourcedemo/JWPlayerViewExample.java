@@ -50,6 +50,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private CastContext mCastContext;
 
+
     private SampleAds mSampleAds;
 
 
@@ -63,27 +64,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-        MyThreadListener listener = this;
-
-        Handler handler = new Handler(getMainLooper());
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                print("onCreate() - setupJWPlayer");
-
-                // Setup JWPlayer
-                mSampleAds = new SampleAds(listener);
-
-                // Get JSON Advertising Schedule
-                mSampleAds.getJSONAdvertising("02U1YHTW");
-
-            }
-        };
-        handler.post(runnable);
-
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
+
+        // Print JWPlayerVersion
+        outputTextView.setText(JWLogger.generateLogLine("Build Version: " + mPlayerView.getVersionCode()));
+
+        // I need to track the JSON advertising
+        MyThreadListener listener = this;
+
+        // I want to return to the Main thread
+        Handler handler = new Handler(getMainLooper());
+
+        Runnable runnable = () -> {
+            print("onCreate() - setupJWPlayer");
+
+            // I need to know when my SampleAd is ready to setup JWPlayerView
+            mSampleAds = new SampleAds(listener);
+
+            // Get JSON Advertising Schedule
+            mSampleAds.getJSONAdvertising("02U1YHTW");
+
+        };
+        handler.post(runnable);
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
@@ -98,28 +101,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /*
-     * Create a Playlist Example
+    /**
+     * Setup JWPlayerView Example
      * */
-    private List<PlaylistItem> createPlaylist() {
-        List<PlaylistItem> playlistItemList = new ArrayList<>();
+    @Override
+    public void setupJWPlayer() {
+        print("setupJWPlayer()");
 
-        String[] playlist = {
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-        };
+        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
 
-        for (String each : playlist) {
-            playlistItemList.add(new PlaylistItem(each));
+        AdvertisingBase advertising = null;
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlistItemList)
+                .autostart(true)
+                .build();
+
+        // If I get nothing back from the JSONAdvertising method, then I will have fallback
+        if (mSampleAds != null) {
+            advertising = mSampleAds.getClient().equals("ima") ? mSampleAds.getImaAd() : mSampleAds.getVastAd();
+            config.setAdvertising(advertising);
         }
-
-        return playlistItemList;
+        mPlayerView.setup(config);
     }
-
     /*
      * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
      */
@@ -128,6 +132,12 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Set fullscreen when the device is rotated to landscape
         mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPlayerView.onStart();
     }
 
     @Override
@@ -145,11 +155,18 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        mPlayerView.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
         super.onDestroy();
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -213,27 +230,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void setupJWPlayer() {
-        print("setupJWPlayer()");
-        List<PlaylistItem> playlistItemList = createPlaylist();
-        AdvertisingBase advertising = null;
-
-        PlayerConfig playerConfigBuilder = new PlayerConfig.Builder()
-                .playlist(playlistItemList)
-                .autostart(true)
-                .build();
-
-        if (mSampleAds != null) {
-            advertising = mSampleAds.getClient().equals("ima") ? mSampleAds.getImaAd() : mSampleAds.getVastAd();
-            playerConfigBuilder.setAdvertising(advertising);
-        }
-        mPlayerView.setup(playerConfigBuilder);
-    }
-
     private void print(String s) {
         Log.i("JWPLAYERVIEWEXAMPLE", "JSON OBJECT RESPONSE: " + s);
     }
-
 
 }
