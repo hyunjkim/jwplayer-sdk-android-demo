@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.myutilities.Logger;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -44,6 +45,10 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         TextView outputTextView = (TextView) findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        // Print JWPlayer Version
+        outputTextView.append(Logger.updateOutput("JWPlayerFragmentExample \r\nBuild version: " + mPlayerView.getVersionCode()));
+
+        // Setup JWPlayerView with Support Fragments
         setupJWPlayer();
 
         // Keep the screen on during playback

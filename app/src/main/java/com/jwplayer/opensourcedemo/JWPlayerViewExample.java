@@ -59,18 +59,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
             WebView.setWebContentsDebuggingEnabled(true);
         }
 
-        new Logger();
-
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-        // Setup JWPlayer
-        setupJWPlayer();
-
         // Print the current Version of JWPlayer SDK
-        outputTextView.setText(Logger.printBuildVersion(mPlayerView.getVersionCode()));
+        outputTextView.append(Logger.updateOutput("JWPlayerViewExample \r\nBuild version: " + mPlayerView.getVersionCode()));
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -83,6 +78,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         // Instantiate the JW Player Ad event handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
+
+        // Setup JWPlayer
+        setupJWPlayer();
 
         CastContext.getSharedInstance(this);
     }
