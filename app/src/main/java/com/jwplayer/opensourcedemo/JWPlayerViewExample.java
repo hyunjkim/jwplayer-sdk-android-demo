@@ -47,7 +47,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     /**
      * Stored instance of CoordinatorLayout
-     * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
+     * {@link - http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html}
      */
     private CoordinatorLayout mCoordinatorLayout;
 
@@ -62,10 +62,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
         // Print JWPlayer Version
-        outputTextView.setText(Logger.generateLogLine("Build version: " + mPlayerView.getVersionCode()));
-
-        // Setup JWPlayer
-        setupJWPlayer();
+        outputTextView.setText(Logger.generateLogLine("JWPlayerViewExample \r\nBuild version: " + mPlayerView.getVersionCode()));
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -79,11 +76,17 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Instantiate the JW Player Ad event handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
+        // Setup JWPlayer
+        setupJWPlayer();
+
+        // CastContext is lazily initialized when the CastContext.getSharedInstance() is called.
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /* Setup JW Player
-     * More info about our Player Configuration and other available Configurations: {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
+    /** Setup JW Player
+     * More info about our Player Configuration and other available Configurations:
+     * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
+     *
      * 1 - PlayerConfig
      * 2 - LogoConfig
      * 3 - PlaybackRateConfig

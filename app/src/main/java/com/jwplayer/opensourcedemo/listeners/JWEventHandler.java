@@ -38,6 +38,7 @@ import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
+import com.longtailvideo.jwplayer.events.WarningEvent;
 import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.adaptive.QualityLevel;
@@ -77,6 +78,7 @@ public class JWEventHandler implements
         VideoPlayerEvents.OnFirstFrameListener,
         VideoPlayerEvents.OnBufferChangeListener,
         VideoPlayerEvents.OnReadyListener,
+        VideoPlayerEvents.OnWarningListener,
         RelatedPluginEvents.OnRelatedCloseListener,
         RelatedPluginEvents.OnRelatedOpenListener,
         RelatedPluginEvents.OnRelatedPlayListener {
@@ -120,6 +122,7 @@ public class JWEventHandler implements
         mPlayer.addOnSetupErrorListener(this);
         mPlayer.addOnTimeListener(this);
         mPlayer.addOnVisualQualityListener(this);
+        mPlayer.addOnWarningListener(this);
 
     }
 
@@ -360,5 +363,11 @@ public class JWEventHandler implements
                 "\r\nFile:" + relatedPlayEvent.getItem().getFile() +
                 "\r\nPosition: " + relatedPlayEvent.getPosition());
 
+    }
+
+    @Override
+    public void onWarning(WarningEvent warningEvent) {
+        updateOutput(" onWarning() " + warningEvent.getMessage());
+        print(" onWarning() " + warningEvent.getMessage() + "\r\nonWarning() - Exception: \r\n" + warningEvent.getException());
     }
 }
