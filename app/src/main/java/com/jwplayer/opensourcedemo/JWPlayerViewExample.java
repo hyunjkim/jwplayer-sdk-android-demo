@@ -125,7 +125,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
 //				.advertising(vmapAdvertising)
-                .skinConfig(skinConfig)
+//                .skinConfig(skinConfig)
                 .build();
 
         mPlayerView.setup(config);

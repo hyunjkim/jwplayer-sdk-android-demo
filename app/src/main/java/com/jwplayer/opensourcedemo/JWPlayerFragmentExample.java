@@ -40,6 +40,9 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         TextView outputTextView = (TextView) findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        // Setup JWPlayerView
+        setupJWPlayer();
+
         outputTextView.setText(Logger.generateLogLine("JWPlayerFragmentExample \r\nBuild version: " + mPlayerView.getVersionCode()));
 
         // Keep the screen on during playback
@@ -48,8 +51,6 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Setup JWPlayerView
-        setupJWPlayer();
     }
 
     /** Setup JW Player
