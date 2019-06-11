@@ -85,7 +85,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      * */
     private void setupOverlay() {
         List<PlaylistItem> playlistItemList = new ArrayList<>();
-
         String[] playlist = {
                 "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
                 "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
@@ -97,19 +96,28 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         };
 
         for (String each : playlist) {
-            playlistItemList.add(new PlaylistItem(each));
+            playlistItemList.add(new PlaylistItem.Builder()
+                    .file(each)
+                    .title("Hi There: "+playlistItemList.size())
+                    .description("Desc: "+playlistItemList.size())
+                    .build());
         }
         RelatedConfig relatedConfig = new RelatedConfig.Builder()
                 .file("https://content.bitsontherun.com/feeds/482jsTAr.rss")
+                .autoPlayMessage("Next Up: ")
+                .onClick(RelatedConfig.RELATED_ON_CLICK_PLAY)
                 .displayMode(RELATED_DISPLAY_MODE_OVERLAY)
                 .build();
 
         mPlayerView.setup(new PlayerConfig.Builder()
-                .playlist(playlistItemList)
+                .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+//                .playlist(playlistItemList)
                 .relatedConfig(relatedConfig)
                 .allowCrossProtocolRedirects(true)
                 .preload(true)
-                .autostart(true)
+                .displayTitle(true)
+                .displayDescription(true)
+                .autostart(false)
                 .build()
         );
     }

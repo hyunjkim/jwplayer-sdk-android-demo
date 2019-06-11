@@ -338,7 +338,6 @@ public class JWEventHandler implements
     public void onRelatedClose(RelatedCloseEvent relatedCloseEvent) {
         updateOutput("onRelatedClose(): " + relatedCloseEvent.getMethod());
         print("onRelatedClose(): " + relatedCloseEvent.getMethod());
-        print("");
     }
 
     @Override
