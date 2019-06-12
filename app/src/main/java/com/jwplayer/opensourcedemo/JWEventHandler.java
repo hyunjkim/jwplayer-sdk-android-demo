@@ -8,8 +8,6 @@ import android.widget.TextView;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
-import com.longtailvideo.jwplayer.events.BeforeCompleteEvent;
-import com.longtailvideo.jwplayer.events.BeforePlayEvent;
 import com.longtailvideo.jwplayer.events.BufferChangeEvent;
 import com.longtailvideo.jwplayer.events.BufferEvent;
 import com.longtailvideo.jwplayer.events.CaptionsChangedEvent;
@@ -40,14 +38,8 @@ import com.longtailvideo.jwplayer.events.SeekedEvent;
 import com.longtailvideo.jwplayer.events.SetupErrorEvent;
 import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.VisualQualityEvent;
-import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Outputs all JW Player Events to logging, with the exception of time events.
@@ -90,7 +82,6 @@ public class JWEventHandler implements
     private JWPlayerView mPlayer;
     private TextView mOutput;
     private ScrollView mScroll;
-
 
     JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
@@ -138,7 +129,6 @@ public class JWEventHandler implements
     private void print(String s) {
         Log.i("JWEVENTHANDLER", s);
     }
-
 
     /**
      * Regular playback events below here
@@ -282,8 +272,17 @@ public class JWEventHandler implements
 
     @Override
     public void onPlaylist(PlaylistEvent playlistEvent) {
-        updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
-        print(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
+
+        if (!playlistEvent.getPlaylist().isEmpty()) {
+            if(mPlayer.getPlaylistIndex() < playlistEvent.getPlaylist().size()){
+            updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
+                print(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(mPlayer.getPlaylistIndex()).getFile());
+            }
+            else {
+                updateOutput(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(0).getFile());
+                print(" " + "onPlaylist() " + playlistEvent.getPlaylist().get(0).getFile());
+            }
+        }
     }
 
     @Override
@@ -343,9 +342,11 @@ public class JWEventHandler implements
     @Override
     public void onRelatedOpen(RelatedOpenEvent relatedOpenEvent) {
         updateOutput("onRelatedOpen()" +
-                "method: " + relatedOpenEvent.getMethod() +
-                "onRelatedOpen url: " + relatedOpenEvent.getUrl());
-        print("onRelatedOpen()" + "\r\nmethod: " + relatedOpenEvent.getMethod() + "\r\nurl: " + relatedOpenEvent.getUrl());
+                "\r\nmethod: " + relatedOpenEvent.getMethod() +
+                "\nonRelatedOpen url: " + relatedOpenEvent.getUrl());
+        print("onRelatedOpen()" +
+                "\r\nmethod: " + relatedOpenEvent.getMethod() +
+                "\r\nurl: " + relatedOpenEvent.getUrl());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             print("onRelatedOpen getitems(): ");

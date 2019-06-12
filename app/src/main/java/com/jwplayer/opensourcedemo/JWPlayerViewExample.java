@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -9,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -56,7 +60,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
-        // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
         // Log JWPlayerVersion Build number
@@ -87,39 +90,52 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         List<PlaylistItem> playlistItemList = new ArrayList<>();
         String[] playlist = {
                 "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
+                "https://cdn.jwplayer.com/manifests/tkM1zvBq.m3u8",
+                "http://content.jwplatform.com/videos/RDn7eg0o.mp4",
+                "https://content.jwplatform.com/videos/i3q4gcBi.mp4"
         };
 
+        String [] mediaid = {"jumBvHdL","tkM1zvBq","RDn7eg0o","i3q4gcBi"};
+
+        String relatedFile = "https://content.bitsontherun.com/feeds/482jsTAr.rss";
+
         for (String each : playlist) {
-            playlistItemList.add(new PlaylistItem.Builder()
+
+            String id = mediaid[playlistItemList.size()];
+            String image = String.format("https://cdn.jwplayer.com/v2/media/%s/poster.jpg",id);
+
+            PlaylistItem item = new PlaylistItem.Builder()
                     .file(each)
-                    .title("Hi There: "+playlistItemList.size())
-                    .description("Desc: "+playlistItemList.size())
-                    .build());
+                    .image(image)
+                    .title("Hi There: "+ id)
+                    .description("My Description: "+ id)
+                    .recommendations(relatedFile)
+                    .build();
+
+            playlistItemList.add(item);
         }
+
         RelatedConfig relatedConfig = new RelatedConfig.Builder()
-                .file("https://content.bitsontherun.com/feeds/482jsTAr.rss")
-                .autoPlayMessage("Next Up: ")
+                .file(relatedFile)
+                .autoPlayMessage("HYUNJOO Message!")
+                .autoPlayTimer(3)
+                .onComplete(RelatedConfig.RELATED_ON_COMPLETE_AUTOPLAY)
                 .onClick(RelatedConfig.RELATED_ON_CLICK_PLAY)
                 .displayMode(RELATED_DISPLAY_MODE_OVERLAY)
                 .build();
 
-        mPlayerView.setup(new PlayerConfig.Builder()
-                .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
-//                .playlist(playlistItemList)
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlistItemList)
+//                .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
                 .relatedConfig(relatedConfig)
                 .allowCrossProtocolRedirects(true)
                 .preload(true)
                 .displayTitle(true)
                 .displayDescription(true)
                 .autostart(false)
-                .build()
-        );
+                .build();
+
+        mPlayerView.setup(config);
     }
 
     @Override
