@@ -239,7 +239,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onTime(TimeEvent timeEvent) {
-        Log.d(TAG, timeEvent.getDuration() + "  ***  ");
+//        Log.d(TAG, timeEvent.getDuration() + "  ***  ");
     }
 
     @Override
@@ -307,7 +307,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onAdTime(AdTimeEvent adTimeEvent) {
-        Log.d(TAG, "onAdTime");
+//        Log.d(TAG, "onAdTime");
         // Do nothing - this fires several times per second
     }
 

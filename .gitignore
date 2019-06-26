@@ -1,5 +1,11 @@
 .DS_Store
 
+# Android secret license key
+app/src/main/res/values/secrets.xml
+
+# Crashlytics configuations
+com_crashlytics_export_strings.xml
+
 # Built application files
 *.apk
 *.ap_

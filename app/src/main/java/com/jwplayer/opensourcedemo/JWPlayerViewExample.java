@@ -1,19 +1,24 @@
 package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.LogoConfig;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -43,7 +48,6 @@ public class JWPlayerViewExample extends AppCompatActivity
      */
     private CoordinatorLayout mCoordinatorLayout;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,26 +55,68 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
-
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+        Button logoToggle = findViewById(R.id.logotogglebtn);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
-        // Keep the screen on during playback
+        LogoConfig logoConfig = new LogoConfig.Builder()
+                .file("https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg")
+                .build();
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(SamplePlaylist.createPlaylist())
+                .logoConfig(logoConfig)
+                .stretching(PlayerConfig.STRETCHING_EXACT_FIT)
+                .build();
+
+        mPlayerView.setup(config);
+
+        logoToggle.setOnClickListener(v -> {
+            LogoConfig logo = mPlayerView.getConfig().getLogoConfig();
+            if (logoToggle.getText().equals("HIDE LOGO")) {
+                if (logo != null) {
+                    logo.setHide(true);
+                    Log.i("JWEVENT", "---------------------- hide logo - " + logo.getHide());
+                }
+                logoToggle.setText("SHOW LOGO");
+            } else {
+                if (logo != null) {
+                    logo.setHide(false);
+                    Log.i("JWEVENT", "++++++++++++++++++++++ show logo - " + logo.getHide());
+                }
+                logoToggle.setText("HIDE LOGO");
+            }
+            runOnUiThread(() -> {
+                PlayerConfig mConfig = mPlayerView.getConfig();
+                mConfig.setLogoConfig(logo);
+                Log.i("JWEVENT", "Logo Config: " + logo.getHide());
+                double position = 0.0;
+                boolean resume = false;
+
+                if (mPlayerView.getState().equals(PlayerState.PLAYING)) {
+                    resume = true;
+                    position = mPlayerView.getPosition();
+                }
+                mPlayerView.setup(mConfig);
+
+                if (resume) {
+                    mPlayerView.seek(position);
+                    mPlayerView.play();
+                }
+            });
+        });
+
+        // Keep the screen on
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
-
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
-                .build();
-
-        mPlayerView.load(pi);
+        new JWEventHandler(mPlayerView, outputTextView);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -105,26 +151,6 @@ public class JWPlayerViewExample extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         mPlayerView.onDestroy();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        // Set fullscreen when the device is rotated to landscape
-        mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
-                true);
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Exit fullscreen when the user pressed the Back button
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false, true);
-                return false;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -165,4 +191,6 @@ public class JWPlayerViewExample extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }
+

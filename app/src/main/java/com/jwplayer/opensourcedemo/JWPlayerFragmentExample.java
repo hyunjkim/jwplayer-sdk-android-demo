@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.android.gms.cast.framework.CastButtonFactory;
+//import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
@@ -41,7 +41,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
         mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
                 .build());
 
         // Attach the Fragment to our layout
@@ -82,8 +82,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
 
         // Register the MediaRouterButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
+//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+//                R.id.media_route_menu_item);
 
         return true;
     }
