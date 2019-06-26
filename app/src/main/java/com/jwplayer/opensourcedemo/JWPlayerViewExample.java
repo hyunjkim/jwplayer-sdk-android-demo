@@ -96,19 +96,17 @@ public class JWPlayerViewExample extends AppCompatActivity
                 PlayerConfig mConfig = mPlayerView.getConfig();
                 mConfig.setLogoConfig(logo);
                 Log.i("JWEVENT", "Logo Config: " + logo.getHide());
-                double position = 0.0;
+                double position = mPlayerView.getPosition();;
                 boolean resume = false;
-
-                if (mPlayerView.getState().equals(PlayerState.PLAYING)) {
+                int index = mPlayerView.getPlaylistIndex();
+                if (!mPlayerView.getState().equals(PlayerState.COMPLETE)) {
                     resume = true;
-                    position = mPlayerView.getPosition();
                 }
                 mPlayerView.setup(mConfig);
+                mPlayerView.playlistItem(index);
+                mPlayerView.seek(position);
 
-                if (resume) {
-                    mPlayerView.seek(position);
-                    mPlayerView.play();
-                }
+                if(resume) mPlayerView.play();
             });
         });
 
