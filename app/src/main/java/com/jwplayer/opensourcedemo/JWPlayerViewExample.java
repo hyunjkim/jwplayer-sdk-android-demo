@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -18,16 +19,11 @@ import com.jwplayer.opensourcedemo.jwutil.Logger;
 import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
 import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
-import com.jwplayer.opensourcedemo.samples.SampleAds;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
@@ -38,7 +34,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     /**
      * Reference to the {@link JWPlayerView}
      */
-    private JWPlayerView mPlayerView;
+//    private JWPlayerView mPlayerView;
+    private JWPlayerViewDoubleTap mPlayerView;
 
     /**
      * Reference to the {@link CastContext}
@@ -51,20 +48,22 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private CoordinatorLayout mCoordinatorLayout;
 
+    private GestureDetectorCompat mDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
         // Print JWPlayer Version
         outputTextView.setText(Logger.generateLogLine("JWPlayerViewExample \r\nBuild version: " + mPlayerView.getVersionCode()));
 
-        // Handle hiding/showing of ActionBar
+//         Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
         // Keep the screen on during playback
@@ -76,6 +75,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Instantiate the JW Player Ad event handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
+        mPlayerView.addGestureListener(getApplicationContext());
+
         // Setup JWPlayer
         setupJWPlayer();
 
@@ -83,37 +84,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /** Setup JW Player
-     * More info about our Player Configuration and other available Configurations:
-     * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-     *
-     * 1 - PlayerConfig
-     * 2 - LogoConfig
-     * 3 - PlaybackRateConfig
-     * 4 - CaptionsConfig
-     * 5 - RelatedConfig
-     * 6 - SharingConfig
-     * 7 - SkinConfig
-     */
     private void setupJWPlayer() {
 
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
+        String play = "list";
 
-        // Ima Tag Example
-        ImaAdvertising imaAdvertising = SampleAds.getImaAd();
-
-        // VAST Tag Example
-        Advertising vastAdvertising = SampleAds.getVastAd();
-
-        // VMAP Tag Example
-        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("ima");
-
-        // Skin Config - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.host.com/css/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
+        List<PlaylistItem> playlistItemList = play.equals("list") ? SamplePlaylist.createPlaylist() : SamplePlaylist.createMediaSourcePlaylist();
 
         // More info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
         PlayerConfig config = new PlayerConfig.Builder()
@@ -122,15 +97,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .preload(true)
                 .mute(true)
                 .allowCrossProtocolRedirects(true)
-                .advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-//				.advertising(vmapAdvertising)
-//                .skinConfig(skinConfig)
                 .build();
 
         mPlayerView.setup(config);
     }
-
 
     /*
      * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
@@ -141,7 +111,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
         super.onConfigurationChanged(newConfig);
     }
-
 
     @Override
     protected void onStart() {
@@ -172,6 +141,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onDestroy();
         mPlayerView.onDestroy();
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -204,7 +174,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // When going to Fullscreen we want to set fitsSystemWindows="false"
         mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
