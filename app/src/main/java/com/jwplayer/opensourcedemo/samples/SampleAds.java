@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SampleAds {
-    /*
+    /**
      * Vast Setup Example
-     * */
-
+     * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/ads/Advertising.html}
+     */
     public static Advertising getVastAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
@@ -47,17 +47,24 @@ public class SampleAds {
         return vastad;
     }
 
-    /*
+    /**
      * VAST VMAP Ad Example
-     * {For more info: https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/vast/#vmap-advertising}
-     * */
+     * For more info:
+     * {@link - https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/vast/#vmap-advertising}
+     */
     public static VMAPAdvertising vastVMAP() {
-        return new VMAPAdvertising(AdSource.VAST, "https://playertest.longtailvideo.com/adtags/vmap2.xml");
+        String samplevmap = "https://playertest.longtailvideo.com/adtags/vmap2.xml";
+
+        VMAPAdvertising vmap = new VMAPAdvertising(AdSource.VAST, samplevmap);
+        vmap.setVpaidControls(true);
+
+        return vmap;
     }
 
-    /*
+    /**
      * IMA Ad Example
-     * */
+     * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/ads/ImaAdvertising.html}
+     */
     public static ImaAdvertising getImaAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
@@ -80,10 +87,10 @@ public class SampleAds {
         return new ImaAdvertising(adbreaklist, imaSettings);
     }
 
-    /*
+    /**
      * IMA VMAP Ad Example
-     * {For more info: https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/google-ima/#vmap-advertising}
-     * */
+     * {@link - https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/google-ima/#vmap-advertising}
+     */
     public static ImaVMAPAdvertising imaVMAP() {
         String pre = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=";
 

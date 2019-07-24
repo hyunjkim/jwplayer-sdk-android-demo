@@ -83,17 +83,19 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /** Setup JW Player
+    /**
+     * Setup JW Player
+     * <p>
+     * 1 - PlayerConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
+     * 2 - LogoConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/LogoConfig.html
+     * 3 - PlaybackRateConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlaybackRateConfig.html
+     * 4 - CaptionsConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/CaptionsConfig.html
+     * 5 - RelatedConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/RelatedConfig.html
+     * 6 - SharingConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SharingConfig.html
+     * 7 - SkinConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
+     * <p>
      * More info about our Player Configuration and other available Configurations:
      * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-     *
-     * 1 - PlayerConfig
-     * 2 - LogoConfig
-     * 3 - PlaybackRateConfig
-     * 4 - CaptionsConfig
-     * 5 - RelatedConfig
-     * 6 - SharingConfig
-     * 7 - SkinConfig
      */
     private void setupJWPlayer() {
 
@@ -107,25 +109,25 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         Advertising vastAdvertising = SampleAds.getVastAd();
 
         // VMAP Tag Example
-        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("ima");
+        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("vast");
 
-        // Skin Config - more info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
+        // Skin Config
         SkinConfig skinConfig = new SkinConfig.Builder()
                 .url("https://www.host.com/css/mycustomcss.css")
                 .name("mycustomcss")
                 .build();
 
-        // More info: https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
+        // PlayerConfig
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .autostart(true)
                 .preload(true)
                 .mute(true)
                 .allowCrossProtocolRedirects(true)
-                .advertising(vastAdvertising)
+//				.skinConfig(skinConfig)
+//				.advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
 //				.advertising(vmapAdvertising)
-//                .skinConfig(skinConfig)
                 .build();
 
         mPlayerView.setup(config);
