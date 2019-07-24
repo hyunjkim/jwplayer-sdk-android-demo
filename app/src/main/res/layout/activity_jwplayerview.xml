@@ -19,7 +19,7 @@
 
         <Button
             android:id="@+id/ad_button"
-            android:text="PLAY IMA"
+            android:text="PLAY VAST"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

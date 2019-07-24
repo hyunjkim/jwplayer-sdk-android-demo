@@ -11,6 +11,25 @@ import static com.google.android.exoplayer2.util.Util.toByteArray;
 
 public class Util {
 
+    public static byte[] executePost(String requestURL)
+            throws IOException {
+
+        HttpURLConnection urlConnection = null;
+        URL url = new URL(requestURL);
+
+        try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            // Read and return the response body.
+            try (InputStream inputStream = urlConnection.getInputStream()) {
+                return toByteArray(inputStream);
+            }
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+    }
     public static byte[] executePost(String url, byte[] data, Map<String, String> requestProperties)
             throws IOException {
         HttpURLConnection urlConnection = null;

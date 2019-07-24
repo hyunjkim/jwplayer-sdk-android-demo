@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,13 +18,17 @@ import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.jwplayer.opensourcedemo.jwutil.Logger;
 import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
 import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.Advertising;
+import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -59,14 +62,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
-        Logger.newInstance();
-
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
         adButton = findViewById(R.id.ad_button);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
+        outputTextView.setText(Logger.updateOutput("Build version: " + mPlayerView.getVersionCode() + "\r\n"));
 
         // If the player is not null
         // and the player state is playing, idle, or buffering
@@ -78,17 +80,17 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                     mPlayerView.pause();
                 }
                 if (adButton.getText().equals(ima)) {
-                    playAd("");
+                    setupJWPlayer("");
                     adButton.setText(vast);
                 } else {
-                    mPlayerView.playAd(AdSource.VAST, "https://playertest.longtailvideo.com/vpaid2-jwp-30s.xml");
+                    mPlayerView.playAd(AdSource.VAST, "https://playertest.longtailvideo.com/vast-30s-ad.xml");
                     adButton.setText(ima);
                 }
             }
         });
 
         // Setup JWPlayer
-        playAd(null);
+        setupJWPlayer(vast);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -97,7 +99,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
-//        new JWEventHandler(mPlayerView, outputTextView, scrollView);
+        new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Instantiate the JW Player Ad event handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
@@ -105,20 +107,63 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    private void playAd(String client) {
-        PlaylistItem item = new PlaylistItem("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8");
-        if (client != null) {
-            String ad = "https://playertest.longtailvideo.com/vpaid2-jwp-30s.xml";
-            AdBreak adBreak = adButton.getText().equals(ima) ? new AdBreak("pre", AdSource.IMA, ad): new AdBreak("pre", AdSource.VAST, ad);
-            List<AdBreak> adSchedule = new ArrayList<AdBreak>() {
-                {
-                    add(adBreak);
-                }
-            };
+
+     /**
+      * This is an example of how to user the skip message
+      * It can only be used with VAST Ads
+      *
+      * @see Advertising
+      * */
+    private void setupJWPlayer(String client) {
+
+        String vpaid = "https://playertest.longtailvideo.com/vpaid2-jwp-30s.xml";
+        String ad = "https://playertest.longtailvideo.com/vast-30s-ad.xml";
+
+
+        // VAST button clicked
+        if (adButton.getText().equals(vast)) {
+            List<PlaylistItem> playlist = new ArrayList<>();
+            PlaylistItem item = new PlaylistItem("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8");
+
+            List<AdBreak> adSchedule = new ArrayList<AdBreak>() {{
+                add(new AdBreak("pre", AdSource.VAST, ad));
+            }};
+
             item.setAdSchedule(adSchedule);
+
+            Advertising advertising = new Advertising(AdSource.VAST, adSchedule);
+            advertising.setSkipOffset(3);
+            advertising.setSkipMessage("SKIP TEST 123");
+
+            PlayerConfig config = new PlayerConfig.Builder()
+                    .playlist(playlist)
+                    .autostart(true)
+                    .advertising(advertising)
+                    .build();
+
+            mPlayerView.setup(config);
+
         }
-        mPlayerView.load(item);
-        mPlayerView.play();
+
+        // IMA button clicked
+        else {
+            List<PlaylistItem> playlist = new ArrayList<>();
+            List<AdBreak> adSchedule = new ArrayList<>();
+
+            PlaylistItem item = new PlaylistItem("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8");
+            adSchedule.add(new AdBreak("pre", AdSource.IMA, ad));
+            ImaAdvertising advertising = new ImaAdvertising(adSchedule);
+
+            PlayerConfig config = new PlayerConfig.Builder()
+                    .playlist(playlist)
+                    .autostart(true)
+                    .advertising(advertising)
+                    .build();
+
+            mPlayerView.setup(config);
+        }
+
+
     }
 
 
@@ -161,6 +206,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mPlayerView.onDestroy();
+        Logger.reset();
     }
 
     @Override

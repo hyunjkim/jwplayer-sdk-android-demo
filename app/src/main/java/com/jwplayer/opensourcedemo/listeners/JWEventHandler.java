@@ -89,7 +89,6 @@ public class JWEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(Logger.printBuildVersion(mPlayer.getVersionCode()));
 
         // Subscribe to allEventHandler: Player events
         mPlayer.addOnBufferListener(this);

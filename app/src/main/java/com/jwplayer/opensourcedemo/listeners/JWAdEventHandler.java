@@ -56,7 +56,6 @@ public class JWAdEventHandler implements
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(Logger.printBuildVersion(jwPlayerView.getVersionCode()));
 
         // Subscribe to allEventHandler: Player events
         mPlayer.addOnAdBreakEndListener(this);
