@@ -5,7 +5,7 @@ import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.jwplayer.opensourcedemo.JWLogger;
+import com.jwplayer.opensourcedemo.util.JWLogger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;
@@ -44,11 +44,6 @@ import com.longtailvideo.jwplayer.events.VisualQualityEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.RelatedPluginEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Outputs all JW Player Events to logging, with the exception of time events.
@@ -367,7 +362,7 @@ public class JWEventHandler implements
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             print("onRelatedOpen getitems(): ");
-            relatedOpenEvent.getItems().forEach(e->print(" getitems - " + e + "\r\n"));
+            relatedOpenEvent.getItems().forEach(e->print(" getitems - " + e.toJson() + "\r\n"));
         }
 
     }

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

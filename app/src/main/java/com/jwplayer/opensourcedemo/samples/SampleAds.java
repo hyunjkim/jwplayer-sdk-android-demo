@@ -1,10 +1,11 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.samples;
 
 import android.util.Log;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
 import com.jwplayer.opensourcedemo.listener.MyThreadListener;
+import com.jwplayer.opensourcedemo.util.Util;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdRules;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
@@ -21,25 +22,26 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-class SampleAds {
+public class SampleAds {
 
+    private static Thread thread;
     private String client;
     private JSONArray schedule;
     private JSONObject adRules;
     private List<AdBreak> adbreaklist;
     private MyThreadListener mListener;
 
-    SampleAds(MyThreadListener listener) {
+    public SampleAds(MyThreadListener listener) {
         mListener = listener;
     }
 
-    void getJSONAdvertising(String adscheduleid) {
+    public static void stopThreads() {
+        if (thread != null) thread = null;
+    }
 
-        Thread setupjwplayer = new Thread(() -> {
-            mListener.setupJWPlayer();
-        });
+    public void getJSONAdvertising(String adscheduleid) {
 
-        Thread t = new Thread(() -> {
+        thread = new Thread(() -> {
             String json = "https://cdn.jwplayer.com/v2/advertising/schedules/" + adscheduleid + ".json";
 
             try {
@@ -50,7 +52,6 @@ class SampleAds {
                 print(jsonObject.toString());
 
                 Iterator<String> keys = jsonObject.keys();
-
                 while (keys.hasNext()) {
 
                     String key = keys.next();
@@ -81,28 +82,25 @@ class SampleAds {
             }
         });
 
-        t.start();
+        thread.start();
 
-        while (t.isAlive()) {
+        while (thread.isAlive()) {
             try {
-                t.join();
+                print("SampleAds - Thread join() ");
+                thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            setupjwplayer.start();
         }
-        try {
-            setupjwplayer.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        print("SampleAds - setupjwplayer start() ");
+        mListener.setupJWPlayer();
     }
 
     /*
      * Vast Ad Setup Example
      * */
 
-    Advertising getVastAd() {
+    public Advertising getVastAd() {
         adbreaklist = new ArrayList<>();
 
         for (int i = 0; i < schedule.length(); i++) {
@@ -134,7 +132,7 @@ class SampleAds {
     /*
      * IMA Ad Setup Example
      * */
-    ImaAdvertising getImaAd() {
+    public ImaAdvertising getImaAd() {
 
         adbreaklist = new ArrayList<>();
 
@@ -177,10 +175,10 @@ class SampleAds {
 
 
     private void print(String s) {
-        Log.i("SAMPLEADS", "JSON OBJECT RESPONSE: " + s);
+        Log.i("SAMPLEADS", "JSON OBJECT RESPONSE: " + s + "\r\n");
     }
 
-    String getClient() {
+    public String getClient() {
         return client;
     }
 }

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +9,9 @@ import java.util.Map;
 
 import static com.google.android.exoplayer2.util.Util.toByteArray;
 
-class Util {
+public class Util {
 
-    static byte[] executePost(String requestURL)
+    public static byte[] executePost(String requestURL)
             throws IOException {
 
         HttpURLConnection urlConnection = null;

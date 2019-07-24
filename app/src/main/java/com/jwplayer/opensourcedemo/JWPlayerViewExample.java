@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -20,6 +22,9 @@ import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.jwplayer.opensourcedemo.listener.MyThreadListener;
+import com.jwplayer.opensourcedemo.samples.SampleAds;
+import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
+import com.jwplayer.opensourcedemo.util.JWLogger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
@@ -27,12 +32,13 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.AdvertisingBase;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-        VideoPlayerEvents.OnFullscreenListener, MyThreadListener {
+        View.OnClickListener,
+        VideoPlayerEvents.OnFullscreenListener,
+        MyThreadListener {
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -52,7 +58,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
     private SampleAds mSampleAds;
-
+    private SamplePlaylist mSamplePlaylist;
+    private EditText et;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+        et = findViewById(R.id.enter_url);
+        findViewById(R.id.media_btn).setOnClickListener(this);
+        findViewById(R.id.playlist_btn).setOnClickListener(this);
+        findViewById(R.id.ad_btn).setOnClickListener(this);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -73,20 +84,21 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // I need to track the JSON advertising
         MyThreadListener listener = this;
 
-        // I want to return to the Main thread
         Handler handler = new Handler(getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                print("onCreate() - setupJWPlayer");
 
-        Runnable runnable = () -> {
-            print("onCreate() - setupJWPlayer");
+                // I need to know when my SampleAd is ready to setup JWPlayerView
+                mSampleAds = new SampleAds(listener);
+                mSamplePlaylist = new SamplePlaylist(listener);
 
-            // I need to know when my SampleAd is ready to setup JWPlayerView
-            mSampleAds = new SampleAds(listener);
-
-            // Get JSON Advertising Schedule
-            mSampleAds.getJSONAdvertising("02U1YHTW");
-
-        };
-        handler.post(runnable);
+                // Get JSON Advertising Schedule
+                mSampleAds.getJSONAdvertising("02U1YHTW");
+                mSamplePlaylist.getJSONPlaylistItem("jumBvHdL");
+            }
+        });
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
@@ -102,18 +114,49 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     }
 
     /**
+    * When user clicks the button, ID will be passed, Get json response
+    *
+     * @see SamplePlaylist#getJSONPlaylistItem(java.lang.String)
+     * @see SamplePlaylist#getJSONPlaylist(java.lang.String)
+     * @see SampleAds#getJSONAdvertising(java.lang.String)
+    * */
+    @Override
+    public void onClick(View v) {
+        String id = et.getText().toString();
+        if (id.length() > 0) {
+            switch (v.getId()) {
+                case R.id.media_btn:
+                    runOnUiThread(() -> mSamplePlaylist.getJSONPlaylistItem(id));
+                    mSampleAds = null;
+                    break;
+                case R.id.playlist_btn:
+                    runOnUiThread(() -> mSamplePlaylist.getJSONPlaylist(id));
+                    mSampleAds = null;
+                    break;
+                case R.id.ad_btn:
+                    runOnUiThread(() -> mSampleAds.getJSONAdvertising(id));
+                    break;
+            }
+            et.setText("");
+        }
+
+    }
+
+    /**
      * Setup JWPlayerView Example
-     * */
+     */
     @Override
     public void setupJWPlayer() {
+
         print("setupJWPlayer()");
 
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
+        List<PlaylistItem> playlistItemList = SamplePlaylist.getPlaylist();
 
         AdvertisingBase advertising = null;
 
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
+                .allowCrossProtocolRedirects(true)
                 .autostart(true)
                 .build();
 
@@ -123,7 +166,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
             config.setAdvertising(advertising);
         }
         mPlayerView.setup(config);
+
+        SamplePlaylist.stopThreads();
+        SampleAds.stopThreads();
     }
+
     /*
      * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
      */
