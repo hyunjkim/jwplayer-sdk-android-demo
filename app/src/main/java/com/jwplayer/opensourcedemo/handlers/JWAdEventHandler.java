@@ -1,17 +1,11 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.metadata.id3.BinaryFrame;
-import com.google.android.exoplayer2.metadata.id3.GeobFrame;
-import com.google.android.exoplayer2.metadata.id3.Id3Frame;
-import com.google.android.exoplayer2.metadata.id3.PrivFrame;
-import com.google.android.exoplayer2.metadata.id3.TextInformationFrame;
-
+import com.jwplayer.opensourcedemo.utilities.JWLogger;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdClickEvent;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdImpressionEvent;
@@ -19,25 +13,9 @@ import com.longtailvideo.jwplayer.events.AdPauseEvent;
 import com.longtailvideo.jwplayer.events.AdPlayEvent;
 import com.longtailvideo.jwplayer.events.AdSkippedEvent;
 import com.longtailvideo.jwplayer.events.AdTimeEvent;
-import com.longtailvideo.jwplayer.events.ControlsEvent;
-import com.longtailvideo.jwplayer.events.ErrorEvent;
-import com.longtailvideo.jwplayer.events.RelatedCloseEvent;
-import com.longtailvideo.jwplayer.events.RelatedOpenEvent;
-import com.longtailvideo.jwplayer.events.RelatedPlayEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.adaptive.QualityLevel;
 import com.longtailvideo.jwplayer.media.adaptive.VisualQuality;
-import com.longtailvideo.jwplayer.media.audio.AudioTrack;
-import com.longtailvideo.jwplayer.media.captions.Caption;
-import com.longtailvideo.jwplayer.media.meta.Metadata;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Outputs all JW Player Events to logging, with the exception of time events.
@@ -58,13 +36,11 @@ public class JWAdEventHandler implements
 
     private TextView mOutput;
     private ScrollView mScroll;
-    private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
     public JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mScroll = scrollview;
         mOutput = output;
-        mOutput.setText(outputStringBuilder.append("Build version: ").append(jwPlayerView.getVersionCode()).append("\r\n"));
 
         // Subscribe to all JW Player events
         jwPlayerView.addOnVisualQualityListener(this);
@@ -81,12 +57,10 @@ public class JWAdEventHandler implements
     }
 
     private void updateOutput(String output) {
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
-        outputStringBuilder.append("").append(dateFormat.format(new Date())).append(" ").append(output).append("\r\n");
-        mOutput.setText(outputStringBuilder.toString());
+        mOutput.setText(JWLogger.generateLogLine(output));
         mScroll.scrollTo(0, mScroll.getBottom());
-
     }
+
     private void print(String s) {
         Log.i("JWEVENTHANDLER", "(ADEVENT) "+ s);
     }

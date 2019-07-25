@@ -2,31 +2,37 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
+import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.sample.SamplePlaylist;
+import com.jwplayer.opensourcedemo.utilities.JWLogger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
-import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.Ad;
-import com.longtailvideo.jwplayer.media.ads.AdBreak;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
@@ -35,31 +41,37 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-
     /**
      * Reference to the {@link CastManager}
      */
     private CastManager mCastManager;
-
     /**
      * Stored instance of CoordinatorLayout
      * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
      */
     private CoordinatorLayout mCoordinatorLayout;
-
+    private LinearLayout mLinearLayout;
+    private int currentOrientation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+
+        mLinearLayout = findViewById(R.id.linearlayout);
         mPlayerView = findViewById(R.id.jwplayer);
+        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
+
+        outputTextView.setText(JWLogger.generateLogLine("Build version: " + mPlayerView.getVersionCode()));
 
         // Setup JWPlayer
         setupJWPlayer();
@@ -78,76 +90,21 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
     }
 
 
+    /*
+    * Setup JWPlayer
+    * */
     private void setupJWPlayer() {
 
-        List<PlaylistItem> playlistItemList = new ArrayList<>();
+        List<PlaylistItem> mediaSourceExample = SamplePlaylist.getMediaSourceExample();
+        mPlayerView.load(mediaSourceExample);
 
-        String[] playlist = {
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8"
-        };
-
-        for (String each : playlist) {
-            playlistItemList.add(new PlaylistItem(each));
-        }
-        mPlayerView.setup(new PlayerConfig.Builder()
-                .playlist(playlistItemList)
-                .advertising(getVastAd())
-                .autostart(true)
-                .mute(true)
-                .build()
-        );
-    }
-
-    /*
-     * Vast Setup Example
-     * */
-    public Advertising getVastAd() {
-        List<AdBreak> adbreaklist = new ArrayList<>();
-
-        String adurl = "";
-        Ad ad = new Ad(AdSource.VAST, adurl);
-        AdBreak adBreak = new AdBreak("pre", ad);
-        adbreaklist.add(adBreak);
-        return new Advertising(AdSource.VAST, adbreaklist);
-    }
-
-
-    /*
-     * Ima Setup Example
-     * */
-    public ImaAdvertising getIMAAd() {
-        List<AdBreak> adbreaklist = new ArrayList<>();
-
-        String customerAd1 = "";
-
-        Ad ad1 = new Ad(AdSource.IMA, customerAd1);
-
-        AdBreak adBreak = new AdBreak("pre", ad1);
-
-        adbreaklist.add(adBreak);
-
-        ImaSdkSettings imaSetting = ImaSdkFactory.getInstance().createImaSdkSettings();
-//		imaSetting.setAutoPlayAdBreaks(true);
-//		imaSetting.setDebugMode(true);
-//		imaSetting.setRestrictToCustomPlayer(true);
-//		imaSetting.setMaxRedirects(1);
-//		imaSetting.setLanguage("");
-//		imaSetting.setPlayerType("");
-//		imaSetting.setPlayerVersion("");
-//		imaSetting.setPpid("");
-
-        return new ImaAdvertising(adbreaklist, imaSetting);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        // Set fullscreen when the devi2ce is rotated to landscape
+
+        // Set fullscreen when the device is rotated to landscape
+        currentOrientation = newConfig.orientation;
         mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, true);
         super.onConfigurationChanged(newConfig);
     }
@@ -188,21 +145,45 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
     /**
      * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
      *
-     * @param fullscreen true if the player is fullscreen
+     * @param fullscreenEvent true if the player is fullscreen
      */
     @Override
-    public void onFullscreen(boolean fullscreen) {
+    public void onFullscreen(boolean fullscreenEvent) {
+
+        View jwplayer = mLinearLayout.getChildAt(0); // this is technically the FrameLayout within the LinearLayout
+
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
-            if (fullscreen) {
+            if (fullscreenEvent) {
+                if (currentOrientation == SCREEN_ORIENTATION_LANDSCAPE || currentOrientation == SCREEN_ORIENTATION_PORTRAIT) {
+                    setRequestedOrientation(SCREEN_ORIENTATION_LANDSCAPE);
+                }
+                // Hide Action bar
                 actionBar.hide();
+
+                // Maximize Player
+                LinearLayout.LayoutParams toFullscreen = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                jwplayer.setLayoutParams(toFullscreen);
             } else {
+
+                if (currentOrientation == SCREEN_ORIENTATION_LANDSCAPE || currentOrientation == SCREEN_ORIENTATION_USER)
+                setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
+
+                // Show Action bar
                 actionBar.show();
+
+                // Minimize JW Player
+                LinearLayout.LayoutParams toMinimize = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1);
+                jwplayer.setLayoutParams(toMinimize);
             }
         }
 
         // When going to Fullscreen we want to set fitsSystemWindows="false"
-        mCoordinatorLayout.setFitsSystemWindows(!fullscreen);
+        mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent);
+
+        // Reset Orientation settings to user's choice
+        setRequestedOrientation(SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     @Override

@@ -1,11 +1,11 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_jwplayerview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
     <LinearLayout
+        android:id="@+id/linearlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gray"
@@ -15,8 +15,8 @@
             android:id="@+id/jwplayer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
-        </com.longtailvideo.jwplayer.JWPlayerView>
+            android:layout_weight="1"
+            android:tag="jwplayer" />
 
         <ScrollView
             android:id="@+id/scroll"
@@ -29,12 +29,11 @@
                 android:id="@+id/output"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
                 android:paddingStart="16dp"
+                android:paddingLeft="16dp"
                 android:paddingTop="16dp"
+                android:paddingEnd="16dp"
                 android:textColor="@color/white" />
-
         </ScrollView>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
