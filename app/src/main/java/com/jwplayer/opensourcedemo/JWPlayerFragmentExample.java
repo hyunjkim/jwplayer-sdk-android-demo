@@ -11,20 +11,18 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.cast.CastManager;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.fullscreen.DefaultFullscreenHandler;
 
 public class JWPlayerFragmentExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
@@ -38,19 +36,16 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
      */
     private JWPlayerView mPlayerView;
 
-    /**
-     * Reference to the {@link CastManager}
-     */
-    private CastManager mCastManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerfragment);
 
-        TextView outputTextView = (TextView)findViewById(R.id.output);
+        TextView outputTextView = (TextView) findViewById(R.id.output);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
 
+        // Setup JWPlayer
         setupJWPlayer();
 
         // Keep the screen on during playback
@@ -59,10 +54,22 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
-        // Get a reference to the CastManager
-        mCastManager = CastManager.getInstance();
     }
 
+    /**
+     * Setup JW Player
+     * <p>
+     * 1 - PlayerConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html
+     * 2 - LogoConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/LogoConfig.html
+     * 3 - PlaybackRateConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlaybackRateConfig.html
+     * 4 - CaptionsConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/CaptionsConfig.html
+     * 5 - RelatedConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/RelatedConfig.html
+     * 6 - SharingConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SharingConfig.html
+     * 7 - SkinConfig - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html
+     * <p>
+     * More info about our Player Configuration and other available Configurations:
+     * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
+     */
     private void setupJWPlayer() {
 
         String url = "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
@@ -144,7 +151,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
         // Exit fullscreen when the user pressed the Back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false,true);
+                mPlayerView.setFullscreen(false, true);
                 return false;
             }
         }
@@ -155,8 +162,11 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerfragment, menu);
+
         // Register the MediaRouterButton on the JW Player SDK
-        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+
         return true;
     }
 
@@ -183,7 +193,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity implements VideoP
             }
         }
     }
-    void print(String s){
+
+    void print(String s) {
         Log.i("jwsupportfragment", s);
     }
 

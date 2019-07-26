@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
 import android.util.Log;
@@ -55,7 +55,7 @@ public class JWAdEventHandler implements
     private JWPlayerView mPlayer;
 
 
-    JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;

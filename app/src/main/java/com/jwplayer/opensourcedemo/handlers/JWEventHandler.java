@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
 import android.util.Log;
@@ -91,7 +91,7 @@ public class JWEventHandler implements
     private final StringBuilder outputStringBuilder = new StringBuilder();
 
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;
