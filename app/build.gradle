@@ -36,7 +36,6 @@ android {
 ext {
     jwplayerVersion = '2.9.2+2'
     jwplayerVersion2 = '2.8.1+43'
-    buildTool27 = '27.0.3'
     supportVersion27 = '27.1.1'
     supportVersion28 = '28.0.0'
 }

@@ -24,6 +24,7 @@ import com.jwplayer.opensourcedemo.sample.SamplePlaylist;
 import com.jwplayer.opensourcedemo.utilities.JWLogger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.cast.CastManager;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
@@ -95,9 +96,19 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
     * */
     private void setupJWPlayer() {
 
-        List<PlaylistItem> mediaSourceExample = SamplePlaylist.getMediaSourceExample();
-        mPlayerView.load(mediaSourceExample);
+//        List<PlaylistItem> mediaSourceExample = SamplePlaylist.getMediaSourceExample();
+//        mPlayerView.load(mediaSourceExample);
 
+        List<PlaylistItem> playlistItems = SamplePlaylist.createPlaylist();
+//        mPlayerView.load(playlistItems);
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlistItems)
+                .autostart(true)
+                .allowCrossProtocolRedirects(true)
+                .build();
+
+        mPlayerView.setup(config);
     }
 
     @Override
