@@ -1,7 +1,9 @@
 # Additional: JW Player SDK for Android Open Source Demo
-## JSON - Pass Media ID, Playlist ID, and Schedule ID
+## AsyncTask example - JSON - Pass Media ID, Playlist ID, and Schedule ID
 
-This application contains an example implementation of the JW Player SDK for Android.
+This application contains an example implementation of the JW Player SDK for Android and retreiving the Media / Playlist / Advertisement ID using AsyncTask.
+
+#### Credits to: https://guides.codepath.com/android/Creating-and-Executing-Async-Tasks
 
 #### Usage instructions:
 
@@ -14,4 +16,4 @@ For more information on how to use our SDK refer to our developer guide:
 
 [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 
-![alt_text](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/github/v352-json.png)
+![alt](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/github/v360-asynctask.gif)
