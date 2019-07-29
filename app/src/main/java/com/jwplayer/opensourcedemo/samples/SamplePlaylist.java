@@ -19,7 +19,7 @@ import java.util.List;
 
 public class SamplePlaylist {
 
-    private static List<PlaylistItem> mPlaylist;
+    public static List<PlaylistItem> mPlaylist;
     private static Thread thread;
     private MyThreadListener mListener;
 

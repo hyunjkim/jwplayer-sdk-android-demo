@@ -3,7 +3,6 @@ package com.jwplayer.opensourcedemo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +24,7 @@ import com.jwplayer.opensourcedemo.listener.MyThreadListener;
 import com.jwplayer.opensourcedemo.samples.SampleAds;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
 import com.jwplayer.opensourcedemo.util.JWLogger;
+import com.jwplayer.opensourcedemo.asynctask.MediaIdAsyncTask;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
@@ -60,6 +60,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     private SampleAds mSampleAds;
     private SamplePlaylist mSamplePlaylist;
     private EditText et;
+    private TextView countdown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
         et = findViewById(R.id.enter_url);
+        countdown = findViewById(R.id.countdown);
         findViewById(R.id.media_btn).setOnClickListener(this);
         findViewById(R.id.playlist_btn).setOnClickListener(this);
         findViewById(R.id.ad_btn).setOnClickListener(this);
@@ -81,25 +83,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Print JWPlayerVersion
         outputTextView.setText(JWLogger.generateLogLine("Build Version: " + mPlayerView.getVersionCode()));
 
-        // I need to track the JSON advertising
-        MyThreadListener listener = this;
-
-        Handler handler = new Handler(getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                print("onCreate() - setupJWPlayer");
-
-                // I need to know when my SampleAd is ready to setup JWPlayerView
-                mSampleAds = new SampleAds(listener);
-                mSamplePlaylist = new SamplePlaylist(listener);
-
-                // Get JSON Advertising Schedule
-                mSampleAds.getJSONAdvertising("02U1YHTW");
-                mSamplePlaylist.getJSONPlaylistItem("jumBvHdL");
-            }
-        });
-
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
@@ -109,17 +92,21 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Instantiate the JW Player Ad event handler class
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
+        print("onCreate() - setupJWPlayer");
+        // I need to know when my SampleAd is ready to setup JWPlayerView
+        new MediaIdAsyncTask(this).execute("jumBvHdL");
+
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
     }
 
     /**
-    * When user clicks the button, ID will be passed, Get json response
-    *
+     * When user clicks the button, ID will be passed, Get json response
+     *
      * @see SamplePlaylist#getJSONPlaylistItem(java.lang.String)
      * @see SamplePlaylist#getJSONPlaylist(java.lang.String)
      * @see SampleAds#getJSONAdvertising(java.lang.String)
-    * */
+     */
     @Override
     public void onClick(View v) {
         String id = et.getText().toString();
@@ -140,6 +127,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
             et.setText("");
         }
 
+    }
+    @Override
+    public void clear(){
+        countdown.setText("0:00");
+    };
+
+    @Override
+    public void countDown(String count) {
+        Log.i("HYUNJOO", "countdown: " + count);
+        String loading = "Loading: " + count;
+        countdown.setText(loading);
+    }
+
+    @Override
+    public void beforeExecute() {
+        String downloading = "Please wait...It is downloading";
+        countdown.setText(downloading);
     }
 
     /**
