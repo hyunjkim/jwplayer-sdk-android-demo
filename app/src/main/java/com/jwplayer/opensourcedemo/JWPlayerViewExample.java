@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.jwplayer.opensourcedemo.asynctask.AdvertisingAsyncTask;
+import com.jwplayer.opensourcedemo.asynctask.PlaylistIdAysncTask;
 import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
@@ -102,10 +104,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     /**
      * When user clicks the button, ID will be passed, Get json response
-     *
-     * @see SamplePlaylist#getJSONPlaylistItem(java.lang.String)
-     * @see SamplePlaylist#getJSONPlaylist(java.lang.String)
-     * @see SampleAds#getJSONAdvertising(java.lang.String)
      */
     @Override
     public void onClick(View v) {
@@ -113,15 +111,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         if (id.length() > 0) {
             switch (v.getId()) {
                 case R.id.media_btn:
-                    runOnUiThread(() -> mSamplePlaylist.getJSONPlaylistItem(id));
-                    mSampleAds = null;
+                    new MediaIdAsyncTask(this).execute(id);
                     break;
                 case R.id.playlist_btn:
-                    runOnUiThread(() -> mSamplePlaylist.getJSONPlaylist(id));
+                    new PlaylistIdAysncTask(this).execute(id);
                     mSampleAds = null;
                     break;
                 case R.id.ad_btn:
-                    runOnUiThread(() -> mSampleAds.getJSONAdvertising(id));
+                    new AdvertisingAsyncTask(this).execute(id);
                     break;
             }
             et.setText("");
@@ -130,7 +127,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     }
     @Override
     public void clear(){
-        countdown.setText("0:00");
+        String reset = "0:00";
+        countdown.setText(reset);
     };
 
     @Override
@@ -170,9 +168,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
             config.setAdvertising(advertising);
         }
         mPlayerView.setup(config);
-
-        SamplePlaylist.stopThreads();
-        SampleAds.stopThreads();
     }
 
     /*

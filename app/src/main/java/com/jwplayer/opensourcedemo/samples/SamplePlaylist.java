@@ -20,12 +20,6 @@ import java.util.List;
 public class SamplePlaylist {
 
     public static List<PlaylistItem> mPlaylist;
-    private static Thread thread;
-    private MyThreadListener mListener;
-
-    public SamplePlaylist(MyThreadListener listener) {
-        mListener = listener;
-    }
 
     public static List<PlaylistItem> getPlaylist() {
         return mPlaylist;
@@ -77,77 +71,6 @@ public class SamplePlaylist {
         playlistItemList.add(item);
 
         return playlistItemList;
-    }
-
-    public static void stopThreads() {
-        if (thread != null) thread = null;
-    }
-
-    public void getJSONPlaylist(String playlistid) {
-
-        thread = new Thread(() -> {
-            String json = "https://cdn.jwplayer.com/v2/playlists/" + playlistid + "?format=json";
-
-            try {
-                byte[] response = Util.executePost(json);
-                String strResponse = new String(response);
-
-                JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
-                print(jsonArray.toString());
-                mPlaylist = PlaylistItem.listFromJson(jsonArray);
-
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-                print("ERROR CATCH Localized Message: " + e.getLocalizedMessage());
-                print("ERROR CATCH Get Stack Trace : " + Arrays.toString(e.getStackTrace()));
-                print("ERROR CATCH Get Message: " + e.getMessage());
-            }
-        });
-
-        thread.start();
-
-        while (thread.isAlive()) {
-            try {
-                print("Sample playlist - Thread join() ");
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        print("Sample playlist - setupjwplayer start() ");
-        mListener.setupJWPlayer();
-    }
-
-    public void getJSONPlaylistItem(String mediaId) {
-
-        thread = new Thread(() -> {
-            String json = "https://cdn.jwplayer.com/v2/media/" + mediaId + "?format=json";
-
-            try {
-                byte[] response = Util.executePost(json);
-                String strResponse = new String(response);
-
-                JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
-                print(jsonArray.toString());
-                mPlaylist = PlaylistItem.listFromJson(jsonArray);
-
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-                print("ERROR CATCH Localized Message: " + e.getLocalizedMessage());
-                print("ERROR CATCH Get Stack Trace : " + Arrays.toString(e.getStackTrace()));
-                print("ERROR CATCH Get Message: " + e.getMessage());
-            }
-        });
-
-        thread.start();
-        while (thread.isAlive()) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        mListener.setupJWPlayer();
     }
 
     private void print(String s) {

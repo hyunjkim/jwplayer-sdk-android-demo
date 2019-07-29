@@ -24,77 +24,10 @@ import java.util.List;
 
 public class SampleAds {
 
-    private static Thread thread;
-    private String client;
-    private JSONArray schedule;
-    private JSONObject adRules;
-    private List<AdBreak> adbreaklist;
-    private MyThreadListener mListener;
-
-    public SampleAds(MyThreadListener listener) {
-        mListener = listener;
-    }
-
-    public static void stopThreads() {
-        if (thread != null) thread = null;
-    }
-
-    public void getJSONAdvertising(String adscheduleid) {
-
-        thread = new Thread(() -> {
-            String json = "https://cdn.jwplayer.com/v2/advertising/schedules/" + adscheduleid + ".json";
-
-            try {
-                byte[] response = Util.executePost(json);
-                String strResponse = new String(response);
-
-                JSONObject jsonObject = new JSONObject(strResponse);
-                print(jsonObject.toString());
-
-                Iterator<String> keys = jsonObject.keys();
-                while (keys.hasNext()) {
-
-                    String key = keys.next();
-
-                    print("Each key: " + key);
-
-                    switch (key) {
-                        case "schedule":
-                            schedule = new JSONArray(jsonObject.getJSONArray("schedule").toString());
-                            break;
-                        case "rules":
-                            adRules = new JSONObject(jsonObject.getJSONObject("rules").toString());
-                            break;
-                        case "client":
-                            client = jsonObject.getString("client");
-                            break;
-                        case "adscheduleid":
-                            print("Each key: " + adscheduleid);
-                            break;
-                    }
-                }
-
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-                print("ERROR CATCH Localized Message: " + e.getLocalizedMessage());
-                print("ERROR CATCH Get Stack Trace : " + Arrays.toString(e.getStackTrace()));
-                print("ERROR CATCH Get Message: " + e.getMessage());
-            }
-        });
-
-        thread.start();
-
-        while (thread.isAlive()) {
-            try {
-                print("SampleAds - Thread join() ");
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        print("SampleAds - setupjwplayer start() ");
-        mListener.setupJWPlayer();
-    }
+    public static String client;
+    public static JSONArray schedule;
+    public static JSONObject adRules;
+    public static List<AdBreak> adbreaklist;
 
     /*
      * Vast Ad Setup Example

@@ -2,7 +2,6 @@ package com.jwplayer.opensourcedemo.asynctask;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ProgressBar;
 
 import com.jwplayer.opensourcedemo.listener.MyThreadListener;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
@@ -17,11 +16,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class MediaIdAsyncTask extends AsyncTask<String, String, List<PlaylistItem>> {
+public class PlaylistIdAysncTask extends AsyncTask<String, String, List<PlaylistItem>> {
 
     private MyThreadListener threadListener;
 
-    public MediaIdAsyncTask(MyThreadListener threadListener) {
+    public PlaylistIdAysncTask(MyThreadListener threadListener) {
         super();
         this.threadListener = threadListener;
     }
@@ -29,9 +28,9 @@ public class MediaIdAsyncTask extends AsyncTask<String, String, List<PlaylistIte
     @Override
     protected List<PlaylistItem> doInBackground(String... strings) {
 
-        print("PlaylistItem MediaID : " + strings[0]);
+        print("PlaylistItem Playlist ID : " + strings[0]);
 
-        String json = "https://cdn.jwplayer.com/v2/media/" + strings[0] + "?format=json";
+        String json = "https://cdn.jwplayer.com/v2/playlists/" + strings[0] + "?format=json";
 
         try {
             byte[] response = Util.executePost(json);
@@ -40,7 +39,6 @@ public class MediaIdAsyncTask extends AsyncTask<String, String, List<PlaylistIte
             JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
             print(jsonArray.toString());
             SamplePlaylist.mPlaylist = PlaylistItem.listFromJson(jsonArray);
-
             return PlaylistItem.listFromJson(jsonArray);
 
         } catch (IOException | JSONException e) {
@@ -49,6 +47,7 @@ public class MediaIdAsyncTask extends AsyncTask<String, String, List<PlaylistIte
             print("ERROR CATCH Get Stack Trace : " + Arrays.toString(e.getStackTrace()));
             print("ERROR CATCH Get Message: " + e.getMessage());
         }
+
         return null;
     }
 
