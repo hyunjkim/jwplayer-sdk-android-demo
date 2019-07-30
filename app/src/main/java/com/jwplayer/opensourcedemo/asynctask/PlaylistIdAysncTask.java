@@ -28,26 +28,28 @@ public class PlaylistIdAysncTask extends AsyncTask<String, String, List<Playlist
     @Override
     protected List<PlaylistItem> doInBackground(String... strings) {
 
-        print("PlaylistItem Playlist ID : " + strings[0]);
+        if (!isCancelled()) {
 
-        String json = "https://cdn.jwplayer.com/v2/playlists/" + strings[0] + "?format=json";
+            print("PlaylistItem Playlist ID : " + strings[0]);
 
-        try {
-            byte[] response = Util.executePost(json);
-            String strResponse = new String(response);
+            String json = "https://cdn.jwplayer.com/v2/playlists/" + strings[0] + "?format=json";
 
-            JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
-            print(jsonArray.toString());
-            SamplePlaylist.mPlaylist = PlaylistItem.listFromJson(jsonArray);
-            return PlaylistItem.listFromJson(jsonArray);
+            try {
+                byte[] response = Util.executePost(json);
+                String strResponse = new String(response);
 
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            print("ERROR CATCH Localized Message: " + e.getLocalizedMessage());
-            print("ERROR CATCH Get Stack Trace : " + Arrays.toString(e.getStackTrace()));
-            print("ERROR CATCH Get Message: " + e.getMessage());
+                JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
+//                print(jsonArray.toString());
+                SamplePlaylist.mPlaylist = PlaylistItem.listFromJson(jsonArray);
+                return PlaylistItem.listFromJson(jsonArray);
+
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                print("ERROR CATCH Localized Message: " + e.getLocalizedMessage());
+                print("ERROR CATCH Get Stack Trace : " + Arrays.toString(e.getStackTrace()));
+                print("ERROR CATCH Get Message: " + e.getMessage());
+            }
         }
-
         return null;
     }
 
@@ -74,11 +76,15 @@ public class PlaylistIdAysncTask extends AsyncTask<String, String, List<Playlist
     @Override
     protected void onCancelled(List<PlaylistItem> playlistItem) {
         super.onCancelled(playlistItem);
+        threadListener = null;
+        print("oncancelled List<PlaylistItem> playlistItem");
     }
 
     @Override
     protected void onCancelled() {
         super.onCancelled();
+        threadListener = null;
+        print("oncancelled PlaylistIdAysncTask");
     }
 
     private void print(String s) {

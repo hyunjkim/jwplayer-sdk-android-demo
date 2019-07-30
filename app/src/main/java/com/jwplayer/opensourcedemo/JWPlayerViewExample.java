@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.jwplayer.opensourcedemo.asynctask.AdvertisingAsyncTask;
+import com.jwplayer.opensourcedemo.asynctask.MediaIdAsyncTask;
 import com.jwplayer.opensourcedemo.asynctask.PlaylistIdAysncTask;
 import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
@@ -26,7 +27,6 @@ import com.jwplayer.opensourcedemo.listener.MyThreadListener;
 import com.jwplayer.opensourcedemo.samples.SampleAds;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
 import com.jwplayer.opensourcedemo.util.JWLogger;
-import com.jwplayer.opensourcedemo.asynctask.MediaIdAsyncTask;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
@@ -60,9 +60,11 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
 
     private SampleAds mSampleAds;
-    private SamplePlaylist mSamplePlaylist;
     private EditText et;
     private TextView countdown;
+    private MediaIdAsyncTask mediasync;
+    private PlaylistIdAysncTask playasync;
+    private AdvertisingAsyncTask adasync;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +97,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
         print("onCreate() - setupJWPlayer");
+
         // I need to know when my SampleAd is ready to setup JWPlayerView
-        new MediaIdAsyncTask(this).execute("jumBvHdL");
+        mediasync = new MediaIdAsyncTask(this);
+        mediasync.execute("jumBvHdL");
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -111,25 +115,29 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         if (id.length() > 0) {
             switch (v.getId()) {
                 case R.id.media_btn:
-                    new MediaIdAsyncTask(this).execute(id);
+                    mediasync = new MediaIdAsyncTask(this);
+                    mediasync.execute(id);
                     break;
                 case R.id.playlist_btn:
-                    new PlaylistIdAysncTask(this).execute(id);
+                    playasync = new PlaylistIdAysncTask(this);
+                    playasync.execute(id);
                     mSampleAds = null;
                     break;
                 case R.id.ad_btn:
-                    new AdvertisingAsyncTask(this).execute(id);
+                    adasync = new AdvertisingAsyncTask(this);
+                    adasync.execute(id);
                     break;
             }
             et.setText("");
         }
 
     }
+
     @Override
-    public void clear(){
+    public void clear() {
         String reset = "0:00";
         countdown.setText(reset);
-    };
+    }
 
     @Override
     public void countDown(String count) {
@@ -168,6 +176,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
             config.setAdvertising(advertising);
         }
         mPlayerView.setup(config);
+        cancelRunningAsyncTasks();
     }
 
     /*
@@ -204,13 +213,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         mPlayerView.onStop();
+
+    }
+
+    public void cancelRunningAsyncTasks(){
+        print(" - cancel asyncs" );
+        if(mediasync !=null) mediasync.cancel(true);
+        if(playasync !=null) playasync.cancel(true);
+        if(adasync !=null) adasync.cancel(true);
     }
 
     @Override
     protected void onDestroy() {
         // Let JW Player know that the app is being destroyed
+        print(" - onDestroy()" );
         mPlayerView.onDestroy();
         super.onDestroy();
+        cancelRunningAsyncTasks();
     }
 
 
@@ -277,7 +296,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     }
 
     private void print(String s) {
-        Log.i("JWPLAYERVIEWEXAMPLE", "JSON OBJECT RESPONSE: " + s);
+        Log.i("JWPLAYERVIEWEXAMPLE", " - HYUNJOO - " + s);
     }
 
 }
