@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+
+        minSdkVersion 16
+        targetSdkVersion 29
+
+        versionCode 1
+        versionName "1.0"
+
+        applicationId "com.jwplayer.opensourcedemo"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+}
+ext {
+    jwplayer = '3.6.0'
+    desiredVersion = '2.10.2'
+}
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.google.android.material:material:1.1.0-alpha09'
+
+//    implementation('com.android.support:appcompat-v7:28.0.0') {
+//        force = true
+//    }
+//    implementation('com.android.support:design:28.0.0') {
+//        force = true
+//    }
+
+    implementation('com.google.ads.interactivemedia.v3:interactivemedia:3.11.2') {
+        force = true
+    }
+    implementation("com.longtailvideo.jwplayer:jwplayer-core:${jwplayer}") {
+//        exclude group: 'com.google.android', module: 'exoplayer:exoplayer-core'
+//        exclude group: 'com.google.android', module: 'exoplayer:exoplayer-dash'
+//        exclude group: 'com.google.android', module: 'exoplayer:exoplayer-hls'
+//        exclude group: 'com.google.android', module: 'exoplayer:exoplayer-smoothstreaming'
+//        exclude group: 'com.google.android', module: 'exoplayer:exoplayer-ui'
+    }
+    implementation("com.longtailvideo.jwplayer:jwplayer-common:${jwplayer}")
+
+    // Only required if using Chromecast
+    implementation("com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayer}")
+
+    // Only required if using FreeWheel
+    implementation("com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayer}")
+
+    implementation("com.google.android.exoplayer:exoplayer-core:${desiredVersion}") {
+        force = true
+    }
+    implementation("com.google.android.exoplayer:exoplayer-dash:${desiredVersion}") {
+        force = true
+    }
+    implementation("com.google.android.exoplayer:exoplayer-hls:${desiredVersion}") {
+        force = true
+    }
+    implementation("com.google.android.exoplayer:exoplayer-smoothstreaming:${desiredVersion}") {
+        force = true
+    }
+    implementation("com.google.android.exoplayer:exoplayer-ui:${desiredVersion}") {
+        force = true
+    }
+
+    // Only required if using IMA features
+    implementation("com.longtailvideo.jwplayer:jwplayer-ima:${jwplayer}")
+
+    testImplementation 'junit:junit:4.12'
+}
