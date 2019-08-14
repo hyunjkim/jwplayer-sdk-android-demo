@@ -1,10 +1,12 @@
 package com.jwplayer.opensourcedemo;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdClickEvent;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdErrorEvent;
@@ -22,6 +24,7 @@ import com.longtailvideo.jwplayer.events.BufferEvent;
 import com.longtailvideo.jwplayer.events.CaptionsChangedEvent;
 import com.longtailvideo.jwplayer.events.CaptionsListEvent;
 import com.longtailvideo.jwplayer.events.CompleteEvent;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.ControlsEvent;
 import com.longtailvideo.jwplayer.events.DisplayClickEvent;
 import com.longtailvideo.jwplayer.events.ErrorEvent;
@@ -73,6 +76,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         VideoPlayerEvents.OnLevelsListener,
         VideoPlayerEvents.OnCaptionsChangedListener,
         VideoPlayerEvents.OnControlsListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener,
         VideoPlayerEvents.OnDisplayClickListener,
         VideoPlayerEvents.OnMuteListener,
         VideoPlayerEvents.OnSeekedListener,
@@ -94,8 +98,8 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         RelatedPluginEvents.OnRelatedOpenListener,
         RelatedPluginEvents.OnRelatedPlayListener {
 
+    boolean mDisplayClicked = false;
     private String TAG = JWEventHandler.class.getName();
-
     private TextView mOutput;
     private JWPlayerView mPlayerView;
 
@@ -119,6 +123,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
         jwPlayerView.addOnLevelsChangedListener(this);
         jwPlayerView.addOnLevelsListener(this);
         jwPlayerView.addOnCaptionsListListener(this);
+        jwPlayerView.addOnControlBarVisibilityListener(this);
         jwPlayerView.addOnCaptionsChangedListener(this);
         jwPlayerView.addOnRelatedCloseListener(this);
         jwPlayerView.addOnRelatedOpenListener(this);
@@ -215,14 +220,20 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onPause(PauseEvent pauseEvent) {
-        print("onPause");
+
+        print("onPause: did it hit onDisplayClicked? " + mDisplayClicked);
+
+        if (!mDisplayClicked) {
+            print("onPause() - Settings was touched!");
+        }
+        mDisplayClicked = false;
+//        print("onPause()");
         updateOutput("onPause()");
     }
 
-
     @Override
     public void onPlay(PlayEvent playEvent) {
-        print("onPlay()");
+        print("onPlay() set displayclick false");
         updateOutput("onPlay()");
     }
 
@@ -356,7 +367,9 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
 
     @Override
     public void onDisplayClick(DisplayClickEvent displayClickEvent) {
-        print("onDisplayClick");
+        mDisplayClicked = true;
+
+        print("onDisplayClick()");
         updateOutput("onDisplayClick()");
     }
 
@@ -411,4 +424,12 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     private void print(String s) {
         Log.d("JWPLAYEREVENTHANDLER", s);
     }
+
+    @Override
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+
+        print("onControlBarVisibilityChanged()");
+        updateOutput("onControlBarVisibilityChanged()");
+    }
+
 }

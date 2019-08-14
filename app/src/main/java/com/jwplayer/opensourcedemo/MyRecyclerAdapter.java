@@ -13,14 +13,14 @@ import android.widget.Toast;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyRecyclerViewHolder> {
 
-    private List<PlaylistItem> list;
+    private List<PlaylistItem> mPlaylist;
 
-    MyRecyclerAdapter(List<PlaylistItem> myPlaylist) {
-        list = myPlaylist;
+    MyRecyclerAdapter() {
     }
 
     @NonNull
@@ -34,12 +34,20 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
     @Override
     public void onBindViewHolder(@NonNull MyRecyclerViewHolder myViewHolder, int position) {
-        myViewHolder.bind(list.get(position), position);
+        // Attach everything on the list
+        myViewHolder.bind(mPlaylist.get(position), position);
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if(mPlaylist.isEmpty()){
+            return 0;
+        }
+        return mPlaylist.size();
+    }
+
+    void setPlaylist(List<PlaylistItem> playlist) {
+        mPlaylist = playlist;
     }
 
     /*
@@ -62,7 +70,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                     .into(grid);
             videotitle.setText(playlistItem.getTitle());
             grid.setOnClickListener(view -> {
-                Log.i("JWEVENTHANDLER", "Click on grid: " + playlistItem.getTitle() + "position: " + position);
+                Log.i("JWEVENTHANDLER", " - Grid clicked: " + playlistItem.getTitle() + " - position: " + position);
                 Toast.makeText(itemView.getContext(), playlistItem.getTitle(), Toast.LENGTH_SHORT).show();
             });
         }
