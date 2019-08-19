@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 ext {
-	jwplayerVersion = '3.4.3'
+	jwplayerVersion = '3.7.0'
 }
 android {
 	compileSdkVersion 28

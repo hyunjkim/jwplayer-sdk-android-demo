@@ -1,31 +1,39 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.jwplayer.opensourcedemo">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.jwplayer.opensourcedemo">
 
     <application
-        android:name="com.jwplayer.opensourcedemo.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name=".views.MyJWPlayerViewExample"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+
+        <!--https://developer.android.com/about/versions/pie/android-9.0-changes-28#apache-p-->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".views.JWPlayerViewExample"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".views.JWPlayerFragmentExample"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
-        </activity>
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
+
+
+        <!--TODO Add this if you are using Chromecast -->
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="com.jwplayer.opensourcedemo.CastOptionsProvider" />
 
         <!--TODO Add this if you are using AAR & Maven imports-->
         <meta-data
