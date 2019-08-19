@@ -1,14 +1,26 @@
 package com.jwplayer.opensourcedemo;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -23,6 +35,7 @@ import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.SkinConfig;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
@@ -33,7 +46,8 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.List;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-        VideoPlayerEvents.OnFullscreenListener {
+        VideoPlayerEvents.OnFullscreenListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener{
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -50,7 +64,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      * {@link - http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html}
      */
     private CoordinatorLayout mCoordinatorLayout;
+    private WebView webview;
 
+    @SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +76,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
         // Print JWPlayer Version
         outputTextView.setText(Logger.generateLogLine("JWPlayerViewExample \r\nBuild version: " + mPlayerView.getVersionCode()));
@@ -78,6 +98,39 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         // Setup JWPlayer
         setupJWPlayer();
+
+        // TODO:
+        //  1- get current HTML from webview ,
+        //  2- add listener for both JS & Android,
+        //  3- reload the url to webview
+
+        webview = new WebView(mPlayerView.getContext());
+        webview.addJavascriptInterface(new MyJavaScriptInterface(), "addSettingsListener");
+        WebSettings settings = webview.getSettings();
+        settings.setJavaScriptEnabled(true);
+
+//        WebChromeClient client = new WebChromeClient();
+//        webview.setWebChromeClient(client);
+//        client.onRequestFocus(webview);
+        webview.loadUrl(
+                "javascript:(function(){" +
+                        "var isClicked = false;" +
+                        "jwplayer().on(\"time\", () => { " +
+                        "   document.getElementsByClassName(\"jw-icon-settings\")[0].addEventListener(\"click\", ()=> { " +
+                        "           isClicked = true; " +
+                        "       })" +
+                        "});" +
+                        "jwplayer().on(\"beforePlay\", () => { " +
+                        "           isClicked = false; " +
+                        "});" +
+                        "})()"
+        );
+
+//        MyTouch touch = new MyTouch(getWindow().getContext());
+//        webview.setOnTouchListener(touch);
+//        mPlayerView.setOnTouchListener(touch);
+
+        mPlayerView.addOnControlBarVisibilityListener(this);
 
         // CastContext is lazily initialized when the CastContext.getSharedInstance() is called.
         mCastContext = CastContext.getSharedInstance(this);
@@ -133,7 +186,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mPlayerView.setup(config);
     }
 
-
     /*
      * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
      */
@@ -143,7 +195,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
         super.onConfigurationChanged(newConfig);
     }
-
 
     @Override
     protected void onStart() {
@@ -207,7 +258,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
@@ -226,6 +276,96 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+        String script1 = "javascript:(function(){" +
+                "var isClicked = false;" +
+                "jwplayer().on(\"time\", () => { " +
+                "   document.getElementsByClassName(\"jw-icon-settings\")[0].addEventListener(\"click\", ()=> { " +
+                "           isClicked = true; " +
+                "       });" +
+                "});" +
+                "jwplayer().on(\"beforePlay\", () => { " +
+                "           isClicked = false; " +
+                "});" +
+                "})()";
+        String script = "javascript:window";
+            String script2 = "javascript:document.getElementsByClassName('jw-settings-menu')[0].hidden";
+//            String script = "javascript:document.getElementsByClassName('jw-settings-menu');";
+//            String script = "javascript:(function(){document.getElementsByClassName('jw-settings-menu')[0].hidden;})()";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webview.evaluateJavascript(script, new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    Log.i("HYUNJOO", "isClicked = " + value);
+                }
+            });
+        }
+    }
+
+    private class MyJavaScriptInterface {
+
+        @JavascriptInterface
+        public void addSettingsListener() {
+//            String settingsListener = "var isClicked = false; " +
+//                    "jwplayer().on(\"time\", ()=> { document.getElementsByClassName(\"jw-icon-settings\")[0].addEventListener(\"click\", ()=> { isClicked = true; console.log(\"hey there\");})});";
+            String start = "javascript:( function() {" +
+                    "var isClicked = false;" +
+                    " document.getElementsByClassName(\"jw-icon-settings\")[0].addEventListener(\"click\", () => { " +
+                    " isClicked = true; " +
+                    "console.log(\"hey there\");" +
+                    "});" +
+                    "})()";
+        }
+
+//        @JavascriptInterface
+//        public String isShowing(){
+//            return "document.getElementsByClassName('jw-settings-menu')[0].hidden";
+//        }
+
+    }
+
+    class MyTouch extends ViewGroup implements View.OnTouchListener {
+
+        private Context mContext;
+
+        public MyTouch(Context context) {
+            super(context);
+            Log.i("HYUNJOO", "MyTouch ");
+        }
+
+        public MyTouch(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public MyTouch(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+
+
+        @Override
+        public boolean onInterceptTouchEvent(MotionEvent ev) {
+
+            WebView.HitTestResult hr = webview.getHitTestResult();
+
+            Log.i("HYUNJOO", "onInterceptTouchEvent - getExtra = " + hr.getExtra() + " Type= " + hr.getType());
+
+
+            return super.onInterceptTouchEvent(ev);
+        }
+
+        @Override
+        protected void onLayout(boolean changed, int l, int t, int r, int b) {
+
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return false;
         }
     }
 }
