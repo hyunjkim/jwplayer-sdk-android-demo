@@ -43,14 +43,13 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         // Setup JWPlayerView
         setupJWPlayer();
 
-        outputTextView.setText(Logger.generateLogLine("JWPlayerFragmentExample \r\nBuild version: " + mPlayerView.getVersionCode()));
-
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView, scrollView);
 
+        outputTextView.setText(Logger.generateLogLine("JWPlayerFragmentExample \r\nBuild version: " + mPlayerView.getVersionCode()));
     }
 
     /** Setup JW Player
