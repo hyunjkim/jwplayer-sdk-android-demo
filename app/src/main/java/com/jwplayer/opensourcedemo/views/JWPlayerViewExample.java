@@ -82,8 +82,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 		List<PlaylistItem> playlistItemList = createPlaylist();
 
 		LogoConfig logoConfig = new LogoConfig.Builder()
-				.file("http://starsshow.in/uploads/starsshow.png")
-				.link("https://www.starsshow.in/")
+				.file("https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg")
+				.link("https://www.jwplayer.com/")
 				.margin(10)
 				.hide(false)
 				.position(LogoConfig.LOGO_POSITION_BOTTOM_RIGHT)
