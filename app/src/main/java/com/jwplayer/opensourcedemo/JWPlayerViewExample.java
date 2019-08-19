@@ -109,8 +109,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
 
         SkinConfig skin = new SkinConfig.Builder()
-                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/removerelatedbtn.css")
-                .name("removerelatedbtn")
+                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/hide-fullscreen.css")
+                .name("hide-fullscreen")
                 .build();
 
         PlayerConfig config = new PlayerConfig.Builder()
