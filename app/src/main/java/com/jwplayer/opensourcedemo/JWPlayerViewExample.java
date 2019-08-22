@@ -88,7 +88,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     private void setupJWPlayer() {
 
         List<PlaylistItem> playlistItemList = MySamplePlaylist.myCustomPlaylist();
-        List<PlaylistItem>  getSampleDRM = MySamplePlaylist.getSampleDRM();
+        List<PlaylistItem> getSampleDRM = MySamplePlaylist.getSampleDRM();
 
         // Ima Tag Example
         ImaAdvertising imaAdvertising = MySampleAd.getImaAd();
