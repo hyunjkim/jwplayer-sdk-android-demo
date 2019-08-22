@@ -6,8 +6,8 @@ public class MySampleSkin {
 
     public static SkinConfig getSkinConfig() {
         return new SkinConfig.Builder()
-                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/css/showcontrolsalways.css")
-                .name("showcontrolsalways")
+                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/removesettings.css")
+                .name("removesettings")
                 .build();
 
     }
