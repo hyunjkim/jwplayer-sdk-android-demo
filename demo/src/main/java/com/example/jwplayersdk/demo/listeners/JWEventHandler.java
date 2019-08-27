@@ -1,10 +1,10 @@
-package com.jwplayer.opensourcedemo.listeners;
+package com.example.jwplayersdk.demo.listeners;
 
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.jwplayer.opensourcedemo.jwutil.Logger;
+import com.example.jwplayersdk.demo.jwutil.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AudioTrackChangedEvent;
 import com.longtailvideo.jwplayer.events.AudioTracksEvent;

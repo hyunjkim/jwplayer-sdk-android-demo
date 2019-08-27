@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.example.jwplayersdk.demo;
 
 import android.content.Context;
 
