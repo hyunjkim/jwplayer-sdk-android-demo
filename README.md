@@ -1,7 +1,4 @@
-# Additional samples: JW Player SDK for Android Open Source Demo
-
-
-[![Join the chat at https://gitter.im/jwplayer/jwplayer-sdk-android-demo](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer-sdk-android-demo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# [UNOFFICIAL] Additional samples: Using JWPlayerSupportFragment with RecyclerView for Android Open Source Demo
 
 This application contains an example implementation of the JW Player SDK for Android.
 
