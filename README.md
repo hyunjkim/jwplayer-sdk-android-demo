@@ -13,3 +13,5 @@ For more information on how to use our SDK refer to our developer guide:
 * **Developer Guide:** [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 * **JWPlayer Java Docs:** https://developer.jwplayer.com/sdk/android/reference/
 * **JWPlayer Demo** https://github.com/jwplayer/jwplayer-sdk-android-demo
+
+![](https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/github/v3_jwsupportfragment_rv.png)
