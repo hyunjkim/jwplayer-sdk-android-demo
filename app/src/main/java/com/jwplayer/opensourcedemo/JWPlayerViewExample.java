@@ -13,10 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
         VideoPlayerEvents.OnFullscreenListener,
-        View.OnClickListener{
+        View.OnClickListener {
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -54,9 +54,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private CoordinatorLayout mCoordinatorLayout;
     private String skin = "";
-    private String skinName= "";
+    private String skinName = "";
     private EditText skinURL;
-    private boolean needsToSetSkinConfig = false;
+    private boolean useDefaultSkinConfig = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +66,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
         mPlayerView = findViewById(R.id.jwplayer);
         skinURL = findViewById(R.id.skinurl);
+        findViewById(R.id.enterbtn).setOnClickListener(this);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
-        findViewById(R.id.enterbtn).setOnClickListener(this);
 
         // Enable WebView debugging
         // Open your Chrome browser > Remote devices > Dev Tools
@@ -117,7 +117,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
 
-        if (skin.length() < 1 || needsToSetSkinConfig) {
+        // Even if I have CSS URL, but I also checked if it's an actualy CSS file by checking if there is a name
+        if (skin.length() < 1 || useDefaultSkinConfig) {
             setDefaultSkinConfig();
         }
 
@@ -126,11 +127,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .name(skinName)
                 .build();
 
-//        SkinConfig sconfig = new SkinConfig.Builder()
-//                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/removeplaybutton.css")
-//                .name("removeplaybutton.css")
-//                .build();
-
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .autostart(true)
@@ -138,20 +134,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .build();
 
         mPlayerView.setup(config);
+
+        // Reset the Skin details to empty
         resetSkinConfig();
     }
 
     /*
-    * Reset the Skin Config
-    * */
+     * Reset the Skin Config
+     * */
     private void resetSkinConfig() {
+        useDefaultSkinConfig = false;
         skin = "";
         skinName = "";
     }
 
     /*
-    * Default Skin Config
-    * */
+     * Default Skin Config
+     * */
     private void setDefaultSkinConfig() {
         skin = "https://ssl.p.jwpcdn.com/player/v/7.2.3/skins/bekle.css";
         skinName = "bekle";
@@ -160,32 +159,50 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
 
+        // Get the Skin URL
         skin = skinURL.getText().toString();
-        String [] urlSplit = skin.split("/");
 
         if (skin.length() > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                skinName = Arrays.stream(urlSplit)
-                        .filter(e -> e.contains(".css"))
-                        .collect(Collectors.joining());
-            } else {
-                int arrayEnd = urlSplit.length;
-                while(arrayEnd >= 0){
-                    if(urlSplit[arrayEnd].contains(".css")){
-                        skinName = urlSplit[arrayEnd];
-                    }
-                    arrayEnd -=1;
-                }
-            }
 
-            // If I can't get a CSS Skin name, then I assume, this is not a Skin URL
-            if (skinName.length() < 1) {
-                needsToSetSkinConfig = true;
+            // Split the URL by "/"
+            String[] urlSplit = skin.split("/");
+
+            if (urlSplit.length > 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // Java8, filter for word that contains ".css"
+
+                    skinName = Arrays.stream(urlSplit)
+                            .filter(eachWord -> eachWord.endsWith(".css"))
+                            .collect(Collectors.joining());
+
+                    skinName = skinName.substring(0, skinName.length() - 4); // remove the ".css"
+
+                } else { // Java7, check from the end of the array for a word with ".css"
+                    int arrayEnd = urlSplit.length;
+                    while (arrayEnd >= 0) {
+                        if (urlSplit[arrayEnd].endsWith(".css")) {
+
+                            String name = urlSplit[arrayEnd];
+                            skinName = name.substring(0, name.length() - 4); // remove the ".css"
+                            arrayEnd = 0;
+                        }
+                        arrayEnd -= 1;
+                    }
+                }
+
+                if (skinName.length() < 1) {
+                    // If I can't get the CSS Skin name, then I assume, this is not a Skin URL and I will use my default skin
+                    useDefaultSkinConfig = true;
+                }
+
             }
         }
 
+
         // Setup JWPlayer
         setupJWPlayer();
+
+        // clear the skin URL
+        skinURL.setText("");
     }
 
 
