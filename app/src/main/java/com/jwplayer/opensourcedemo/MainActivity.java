@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private View fragmentContainer;
     private JWPlayerView mPlayer;
-    private  JWPlayerSupportFragment jwsupportfragment;
+    private JWPlayerSupportFragment jwsupportfragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.menu_mainactivity, menu);
 
         // Register the MediaRouterButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
         return true;
     }
 
@@ -72,6 +71,12 @@ public class MainActivity extends AppCompatActivity implements
                 .autostart(true)
                 .build();
 
+        // If JWPlayerSupportFragment is not null, stop
+        if(jwsupportfragment != null) {
+            jwsupportfragment.onStop();
+        }
+
+        // Replace the JWSupportFragment with a new JWPlayerSupportFragment + Config
         jwsupportfragment = JWPlayerSupportFragment.newInstance(config);
 
         // Begin Fragment Transaction
@@ -80,9 +85,9 @@ public class MainActivity extends AppCompatActivity implements
 
     /**
      * Begin Fragment Transaction with JWPlayerSupportFragment
-     * */
-    public void beginJWSupportFragmentTransaction(){
-        if(jwsupportfragment == null){
+     */
+    public void beginJWSupportFragmentTransaction() {
+        if (jwsupportfragment == null) {
             jwsupportfragment = JWPlayerSupportFragment.newInstance();
         }
         getSupportFragmentManager().beginTransaction()
@@ -140,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mPlayer != null) {
             mPlayer.onDestroy();
         }
+
         super.onDestroy();
     }
 }
