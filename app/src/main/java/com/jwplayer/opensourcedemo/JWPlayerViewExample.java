@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -27,39 +31,44 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
-        VideoPlayerEvents.OnFullscreenListener {
+        VideoPlayerEvents.OnFullscreenListener,
+        View.OnClickListener{
 
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-
-
     /**
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
-
     /**
      * Stored instance of CoordinatorLayout
      * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
      */
     private CoordinatorLayout mCoordinatorLayout;
-
+    private String skin = "";
+    private String skinName= "";
+    private EditText skinURL;
+    private boolean needsToSetSkinConfig = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
         mPlayerView = findViewById(R.id.jwplayer);
+        skinURL = findViewById(R.id.skinurl);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+        findViewById(R.id.enterbtn).setOnClickListener(this);
 
         // Enable WebView debugging
         // Open your Chrome browser > Remote devices > Dev Tools
@@ -67,6 +76,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
@@ -89,7 +99,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
     }
 
-
     /**
      * Setup JW Player
      * <p>
@@ -108,27 +117,85 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
 
-        SkinConfig skin = new SkinConfig.Builder()
-                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/hide-fullscreen.css")
-                .name("hide-fullscreen")
+        if (skin.length() < 1 || needsToSetSkinConfig) {
+            setDefaultSkinConfig();
+        }
+
+        SkinConfig skinConfig = new SkinConfig.Builder()
+                .url(skin)
+                .name(skinName)
                 .build();
+
+//        SkinConfig sconfig = new SkinConfig.Builder()
+//                .url("https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/removeplaybutton.css")
+//                .name("removeplaybutton.css")
+//                .build();
 
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .autostart(true)
-                .skinConfig(skin)
+                .skinConfig(skinConfig)
                 .build();
 
         mPlayerView.setup(config);
+        resetSkinConfig();
     }
 
     /*
-     * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
+    * Reset the Skin Config
+    * */
+    private void resetSkinConfig() {
+        skin = "";
+        skinName = "";
+    }
+
+    /*
+    * Default Skin Config
+    * */
+    private void setDefaultSkinConfig() {
+        skin = "https://ssl.p.jwpcdn.com/player/v/7.2.3/skins/bekle.css";
+        skinName = "bekle";
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        skin = skinURL.getText().toString();
+        String [] urlSplit = skin.split("/");
+
+        if (skin.length() > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                skinName = Arrays.stream(urlSplit)
+                        .filter(e -> e.contains(".css"))
+                        .collect(Collectors.joining());
+            } else {
+                int arrayEnd = urlSplit.length;
+                while(arrayEnd >= 0){
+                    if(urlSplit[arrayEnd].contains(".css")){
+                        skinName = urlSplit[arrayEnd];
+                    }
+                    arrayEnd -=1;
+                }
+            }
+
+            // If I can't get a CSS Skin name, then I assume, this is not a Skin URL
+            if (skinName.length() < 1) {
+                needsToSetSkinConfig = true;
+            }
+        }
+
+        // Setup JWPlayer
+        setupJWPlayer();
+    }
+
+
+    /*
+//     * In landscape mode, set to fullscreen or if the user clicks the fullscreen button
      */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // Set fullscreen when the device is rotated to landscape
-//		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
+        mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, false);
         super.onConfigurationChanged(newConfig);
     }
 
@@ -220,4 +287,5 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }
