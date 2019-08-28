@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.longtailvideo.jwplayer.JWPlayerSupportFragment;
+import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 
@@ -24,6 +25,7 @@ public class VideoDetailFragment extends Fragment {
     private JWPlayerView mPlayerView;
 
     private String file = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,8 +49,8 @@ public class VideoDetailFragment extends Fragment {
     }
 
     /*
-    * Setup JWPlayerView
-    * */
+     * Setup JWPlayerView
+     * */
     private void setupJWPlayerFrag(String url) {
 
         PlayerConfig config = new PlayerConfig.Builder()
@@ -69,7 +71,7 @@ public class VideoDetailFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_jwplayerview, menu);
-        CastButtonFactory.setUpMediaRouteButton(getContext(), menu, R.id.media_route_menu_item);
+        CastButtonFactory.setUpMediaRouteButton(getActivity(), menu, R.id.media_route_menu_item);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

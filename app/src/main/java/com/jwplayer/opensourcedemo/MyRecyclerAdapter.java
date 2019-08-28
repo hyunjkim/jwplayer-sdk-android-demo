@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyRecyclerViewHolder> {
@@ -40,7 +39,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
     @Override
     public int getItemCount() {
-        if(mPlaylist.isEmpty()){
+        if (mPlaylist.isEmpty()) {
             return 0;
         }
         return mPlaylist.size();
@@ -48,6 +47,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
     void setPlaylist(List<PlaylistItem> playlist) {
         mPlaylist = playlist;
+        notifyDataSetChanged();
     }
 
     /*
@@ -70,7 +70,6 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                     .into(grid);
             videotitle.setText(playlistItem.getTitle());
             grid.setOnClickListener(view -> {
-                Log.i("JWEVENTHANDLER", " - Grid clicked: " + playlistItem.getTitle() + " - position: " + position);
                 Toast.makeText(itemView.getContext(), playlistItem.getTitle(), Toast.LENGTH_SHORT).show();
             });
         }

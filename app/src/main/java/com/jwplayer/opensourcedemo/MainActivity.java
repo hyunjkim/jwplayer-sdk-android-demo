@@ -2,7 +2,6 @@ package com.jwplayer.opensourcedemo;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,8 +34,9 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     private MyRecyclerAdapter myRecyclerAdapter;
     private VideoDetailFragment mVideoDetailFragment;
     private List<PlaylistItem> mPlaylist;
-    private  JWPlaylistAsyncTask asyncTask;
+    private JWPlaylistAsyncTask asyncTask;
     private ProgressBar mProgressBar;
+    private MyRecyclerItemTouchListener myRecyclerItemTouchListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,15 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
         mProgressBar = findViewById(R.id.progressBar);
         mRecyclerView = findViewById(R.id.rv);
 
-
         // Get the Playerlist in the background
         asyncTask = new JWPlaylistAsyncTask(this);
         asyncTask.execute("l3EGQ9TD");
 
+        // Initialize JWPlayerView Fragment
+        mVideoDetailFragment = new VideoDetailFragment();
+
+        // Initialize RecyclerView
+        setupRecyclerView();
 
         // Get a reference to the CastContext
         CastContext.getSharedInstance(this);
@@ -64,19 +68,15 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     @Override
     public void playlistUpdated(List<PlaylistItem> playlistItems) {
         mPlaylist = playlistItems;
-        myRecyclerAdapter = new MyRecyclerAdapter();
         myRecyclerAdapter.setPlaylist(playlistItems);
 
-        // Setup JWPlayer Fragment
-        if(mVideoDetailFragment == null){
-            mVideoDetailFragment = new VideoDetailFragment();
+        // Stop the current player
+        if (mVideoDetailFragment != null) {
+            mVideoDetailFragment.onStop();
         }
 
         // Setup JWPlayer Video Fragment
-        setupJWPlayerFrag(mVideoDetailFragment);
-
-        // Setup RecyclerView
-        setupRecyclerView();
+        setupJWPlayerFrag();
     }
 
     @Override
@@ -92,9 +92,7 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     /*
      * JWPlayerView using Support Fragments in One Activity Example
      * */
-    public void setupJWPlayerFrag(VideoDetailFragment fragment) {
-
-        mVideoDetailFragment = fragment;
+    public void setupJWPlayerFrag() {
 
         // Attach the Fragment to our layout
         FragmentManager mFragmentManager = getSupportFragmentManager();
@@ -107,31 +105,42 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
         // Make sure all the pending fragment transactions have been completed, otherwise
         mFragmentManager.executePendingTransactions();
     }
-    private MyRecyclerItemTouchListener myRecyclerItemTouchListener;
+
     /*
      * Setup RecyclerView in Grid view
      * */
     private void setupRecyclerView() {
-        Log.i("HYUNJOO", "SETUP RECYCLERVIEW");
-
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        // Initialize Recycler Layout and Adapter
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        myRecyclerAdapter = new MyRecyclerAdapter();
         mRecyclerView.setAdapter(myRecyclerAdapter);
         myRecyclerItemTouchListener =
-                new MyRecyclerItemTouchListener(getApplicationContext(), mRecyclerView, new MyRecyclerItemTouchListener.MyClickListener() {
+                new MyRecyclerItemTouchListener(this, mRecyclerView, new MyRecyclerItemTouchListener.MyClickListener() {
                     @Override
                     public void onItemClick(View view, final int position) {
 
+                        // Get the File from the static playlist
                         String fileClicked = mPlaylist.get(position).getSources().get(0).getFile();
-                        Log.i("HYUNJOO", "RECYCLERVIEW TOUCH LISTENER:  " + fileClicked);
-                        mVideoDetailFragment.onStop();
-                        VideoDetailFragment frag = new VideoDetailFragment();
-                        frag.passFile(fileClicked);
-                        setupJWPlayerFrag(frag);
+
+                        // Make sure to stop the current JWPlayerView
+                        if (mVideoDetailFragment != null) {
+
+                            // Release resources related to JWPlayerView
+                            mVideoDetailFragment.onStop();
+                        }
+
+                        // Re-Instantiate JWPlayerView
+                        mVideoDetailFragment = new VideoDetailFragment();
+
+                        // Pass the file I am using to play
+                        mVideoDetailFragment.passFile(fileClicked);
+
+                        // Begin to replace the older container with the new view
+                        setupJWPlayerFrag();
                     }
 
                     @Override
                     public void onLongClick(View view, int position) {
-                        // TODO: remove the item from the playlist
                     }
                 });
         mRecyclerView.addOnItemTouchListener(myRecyclerItemTouchListener);
