@@ -14,7 +14,7 @@ For more information on how to use our SDK refer to our developer guide:
 
 ## Single Activity that can add to the back of the Fragment stack of JWPlayer views whenever a user clicks on a video from the  video list
 
-## Credit to: https://medium.com/@harivigneshjayapalan/android-recyclerview-implementing-single-item-click-and-long-press-part-ii-b43ef8cb6ad8
+#### Credit to: https://medium.com/@harivigneshjayapalan/android-recyclerview-implementing-single-item-click-and-long-press-part-ii-b43ef8cb6ad8
 
 ## [MyRecyclerItemTouchListener](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/MyRecyclerItemTouchListener.java)
 - Includes an MyClickListener Interface https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_fragments/app/src/main/java/com/jwplayer/opensourcedemo/MyRecyclerItemTouchListener.java#L71
