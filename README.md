@@ -1,4 +1,4 @@
-# JW Player SDK for Android Open Source Demo
+# [UNOFFICIAL] Additional Samples - Picture in Picture - JW Player SDK for Android Open Source Demo
 
 ### Working with Recyclerview and JWPlayerView minimized player
 
@@ -7,7 +7,7 @@ This application contains an example implementation of the JW Player SDK for And
 #### Usage instructions:
 
 -	Clone the repository into your Android Studio workspace, `git clone git@github.com:jwplayer/jwplayer-sdk-android-demo.git`
--	Open the AndroidManifest.xml file and replace `{YOUR_LICENSE_KEY}` with your `license key`
+-	Open the `AndroidManifest.xml` file and replace `{YOUR_LICENSE_KEY}` with your `license key`
 
 The demo application should now build and run. 
 For more information on how to use our SDK refer to our developer guide:
