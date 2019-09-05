@@ -1,7 +1,4 @@
-# Additional samples: JW Player SDK for Android Open Source Demo
-
-
-[![Join the chat at https://gitter.im/jwplayer/jwplayer-sdk-android-demo](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer-sdk-android-demo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# [UNOFFICAL] Additional samples: OnLongClick - JW Player SDK for Android Open Source Demo
 
 This application contains an example implementation of the JW Player SDK for Android.
 
@@ -16,3 +13,5 @@ For more information on how to use our SDK refer to our developer guide:
 * **Developer Guide:** [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 * **JWPlayer Java Docs:** https://developer.jwplayer.com/sdk/android/reference/
 * **JWPlayer Demo** https://github.com/jwplayer/jwplayer-sdk-android-demo
+
+![](https://media.giphy.com/media/JszD2lq8DMepviPYEf/giphy.gif)
