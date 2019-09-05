@@ -56,6 +56,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mRecyclerView = findViewById(R.id.recyclerview);
         mPlayerView = findViewById(R.id.jwplayer);
 
+        // Handle hiding/showing of ActionBar
+        mPlayerView.addOnFullscreenListener(this);
+
+        // Keep the screen on during playback
+        new KeepScreenOnHandler(mPlayerView, getWindow());
+
+        // Instantiate the JW Player event handler class
+        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
+
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
                 .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
@@ -73,15 +82,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         MyGestureListener myGestureListener = new MyGestureListener(mPlayerView, mRelativeLayout, mParentLinearLayout);
         mPlayerView.addOnGestureListener(getApplicationContext(), myGestureListener);
         mPlayerView.addOnDragListener(myGestureListener);
-
-        // Handle hiding/showing of ActionBar
-        mPlayerView.addOnFullscreenListener(this);
-
-        // Keep the screen on during playback
-        new KeepScreenOnHandler(mPlayerView, getWindow());
-
-        // Instantiate the JW Player event handler class
-        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -116,6 +116,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mPlayerView.onDestroy();
+        mPlayerView.removeOnGestureListener();
     }
 
     @Override

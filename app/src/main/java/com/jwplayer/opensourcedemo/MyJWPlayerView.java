@@ -49,4 +49,9 @@ public class MyJWPlayerView extends JWPlayerView implements
         mGestureDetector.setIsLongpressEnabled(true);
         mGestureDetector.setOnDoubleTapListener(myGestureListener);
     }
+
+    public void removeOnGestureListener(){
+        mGestureDetector = null;
+    }
+
 }

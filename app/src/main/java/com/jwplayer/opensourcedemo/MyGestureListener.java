@@ -1,8 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.ClipData;
 import android.os.Build;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.GestureDetector;
@@ -23,10 +21,12 @@ public class MyGestureListener implements
         MyJWPlayerView.OnDragListener {
 
 
-    private final String TAG = "HYUNJOO";
+    private final String TAG = MyGestureListener.class.getName();
     private LinearLayout mParentLinearLayout;
     private RelativeLayout mRelativeLayout;
-    private boolean isMinimized = false, isNormalView = true;
+    private boolean
+            isMinimized = false,
+            isNormalView = true;
     private JWPlayerView mPlayerView;
 
     MyGestureListener(JWPlayerView jwPlayerView, RelativeLayout mRelativeLayout, LinearLayout mParentLinearLayout) {
@@ -62,7 +62,7 @@ public class MyGestureListener implements
     @Override
     public void onShowPress(MotionEvent e) {
         Log.i(TAG, "onShowPress " + getEvent(e.getAction()));
-        if(!isNormalView) normalSizePlayer();
+        if (!isNormalView) normalSizePlayer();
     }
 
     @Override
@@ -71,21 +71,31 @@ public class MyGestureListener implements
         return false;
     }
 
+    /*
+    * When the user scrolls downwards or upwards
+    * */
+    // TODO: Need to make this smoother when minimizing the player
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Log.i(TAG, "onScroll " + getEvent(e1.getAction()) + " | "+ getEvent(e2.getAction()));
+        Log.i(TAG, "onScroll " + getEvent(e1.getAction()) + " | " + getEvent(e2.getAction()));
 //        if (e1.getAction() == MotionEvent.ACTION_DOWN) {
 ////             Focus on JWPlayerView and controls
-//            Log.i("HYUNJOO", "start drag");
+//            Log.iTAG, "start drag");
 //            ClipData dragData = ClipData.newPlainText("", "");
 //            View.DragShadowBuilder myShadow = new View.DragShadowBuilder();
 //            mPlayerView.startDrag(dragData, myShadow, mPlayerView, 0);
 //            mPlayerView.setVisibility(View.VISIBLE);
 ////            return true;
 //        }
-        if(distanceY < 0) minimize();
-        else normalSizePlayer();
-        Log.i(TAG, "onScroll x: " + distanceX + " | y: "+ distanceY );
+
+        // When the finger is moving downwards
+        if (distanceY < 0) {
+            minimize();
+        } else {
+            // Otherwise, the player will need to be in normal size
+            normalSizePlayer();
+        }
+        Log.i(TAG, "onScroll x: " + distanceX + " | y: " + distanceY);
         return false;
     }
 
@@ -97,14 +107,15 @@ public class MyGestureListener implements
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         Log.i(TAG, "onFling " + getEvent(e1.getAction()) + " | " + getEvent(e2.getAction()));
-        Log.i(TAG, "onFling x: " + velocityX + " | : "+ velocityY );
+        Log.i(TAG, "onFling x: " + velocityX + " | : " + velocityY);
         return false;
     }
 
-    /*
-     * Credits to Tutorials Point: https://www.tutorialspoint.com/android/android_drag_and_drop.htm
+    /**
+     * When the user drags the player
+     * Credits to Tutorials Point: {@link - https://www.tutorialspoint.com/android/android_drag_and_drop.htm}
      * TODO: Work on transitions
-     * */
+     */
     @Override
     public boolean onDrag(View v, DragEvent event) {
 
@@ -112,14 +123,20 @@ public class MyGestureListener implements
         int y_cord;
 
         switch (event.getAction()) {
+
             case DragEvent.ACTION_DRAG_ENDED:
-                Log.i("HYUNJOO", "ACTION_DRAG_ENDED ");
-                if (!isMinimized) minimize();
-                else normalSizePlayer();
+                Log.i(TAG, "ACTION_DRAG_ENDED ");
+                if (!isMinimized) {
+                    minimize();
+                } else {
+                    normalSizePlayer();
+                }
+
+                // Change immediately on the screen
                 v.invalidate();
                 break;
 //            case DragEvent.ACTION_DRAG_EXITED:
-////                Log.i("HYUNJOO", "ACTION_DRAG_EXITED ");
+////                Log.iTAG, "ACTION_DRAG_EXITED ");
 //////                normalSizePlayer();
 ////                v.invalidate();
 //                break;
@@ -127,24 +144,24 @@ public class MyGestureListener implements
 ////                x_cord = (int) event.getX();
 ////                y_cord = (int) event.getY();
 ////                int total = x_cord + y_cord;
-////                Log.i("HYUNJOO", "ACTION_DRAG_LOCATION -  location \r\nx: " + x_cord + "\r\ny: " + y_cord + "\r\nTotal: " + total);
+////                Log.iTAG, "ACTION_DRAG_LOCATION -  location \r\nx: " + x_cord + "\r\ny: " + y_cord + "\r\nTotal: " + total);
 ////                break;
 //            case DragEvent.ACTION_DROP:
 ////                x_cord = (int) event.getX();
 ////                y_cord = (int) event.getY();
-//                Log.i("HYUNJOO", "ACTION_DROP - location x: " + x_cord + "    y: " + y_cord);
+//                Log.iTAG, "ACTION_DROP - location x: " + x_cord + "    y: " + y_cord);
 //                break;
 //            case DragEvent.ACTION_DRAG_STARTED:
 ////                x_cord = (int) event.getX();
 ////                y_cord = (int) event.getY();
-//                Log.i("HYUNJOO", "ACTION_DRAG_STARTED - location x: " + x_cord + " y: " + y_cord);
+//                Log.iTAG, "ACTION_DRAG_STARTED - location x: " + x_cord + " y: " + y_cord);
 ////                v.invalidate();
 //                break;
 //            case DragEvent.ACTION_DRAG_ENTERED:
 ////                x_cord = (int) event.getX();
 ////                y_cord = (int) event.getY();
 ////                v.invalidate();
-//                Log.i("HYUNJOO", "ACTION_DRAG_ENTERED - location x: " + x_cord + " y: " + y_cord);
+//                Log.iTAG, "ACTION_DRAG_ENTERED - location x: " + x_cord + " y: " + y_cord);
 //                break;
 //        }
         }
@@ -157,7 +174,8 @@ public class MyGestureListener implements
     private void minimize() {
         if (mPlayerView == null) return;
         if (!isMinimized) {
-            Log.i("HYUNJOO", "minimize");
+            Log.i(TAG, "minimize");
+
             // Get the JWPlayerView from the Parent Linear Layout, which should be at index 0
             View player = mParentLinearLayout.getChildAt(0);
 
@@ -192,7 +210,7 @@ public class MyGestureListener implements
         if (mPlayerView == null) return;
 
         if (isMinimized) {
-            Log.i("HYUNJOO", "normal");
+            Log.i(TAG, "normal");
 
             // Remove the specific location of the player from the Relative Layout
             View player = mRelativeLayout.getChildAt(2);
@@ -219,24 +237,24 @@ public class MyGestureListener implements
         isNormalView = !isMinimized;
     }
 
-    String getEvent(int action){
-        switch(action){
+    private String getEvent(int action) {
+        switch (action) {
             case MotionEvent.ACTION_UP:
-                return " " +action + " MotionEvent.ACTION_UP";
+                return " " + action + " MotionEvent.ACTION_UP";
             case MotionEvent.ACTION_CANCEL:
-                return " " +action + " MotionEvent.ACTION_CANCEL";
+                return " " + action + " MotionEvent.ACTION_CANCEL";
             case MotionEvent.ACTION_DOWN:
-                return " " +action + " MotionEvent.ACTION_DOWN";
+                return " " + action + " MotionEvent.ACTION_DOWN";
             case MotionEvent.ACTION_SCROLL:
-                return " " +action + " MotionEvent.ACTION_SCROLL";
+                return " " + action + " MotionEvent.ACTION_SCROLL";
             case MotionEvent.ACTION_POINTER_UP:
-                return " " +action + " MotionEvent.ACTION_POINTER_UP";
+                return " " + action + " MotionEvent.ACTION_POINTER_UP";
             case MotionEvent.ACTION_POINTER_DOWN:
-                return " " +action + " MotionEvent.ACTION_POINTER_DOWN";
+                return " " + action + " MotionEvent.ACTION_POINTER_DOWN";
             case MotionEvent.ACTION_MOVE:
-                return " " +action + " MotionEvent.ACTION_MOVE";
+                return " " + action + " MotionEvent.ACTION_MOVE";
             case MotionEvent.ACTION_MASK:
-                return " " +action + " MotionEvent.ACTION_MASK";
+                return " " + action + " MotionEvent.ACTION_MASK";
         }
         return "";
     }

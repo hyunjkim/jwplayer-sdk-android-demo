@@ -5,7 +5,7 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SamplePlaylist {
+class SamplePlaylist {
 
     /*
      * Create a Playlist Example
