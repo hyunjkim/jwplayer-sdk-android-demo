@@ -2,13 +2,18 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TouchDelegate;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -51,11 +56,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private CoordinatorLayout mCoordinatorLayout;
 
+    private FrameLayout mFramelayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+//        mFramelayout = findViewById(R.id.longclick_container);
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
@@ -78,6 +86,16 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         // Setup JWPlayer
         setupJWPlayer();
+
+        // More info: https://stuff.mit.edu/afs/sipb/project/android/docs/training/gestures/viewgroup.html#delegate
+        // Whenever you dealing with TouchEvents inside ViewGroup
+        mPlayerView.post(() -> {
+            for (int i = 0; i < mPlayerView.getChildCount(); i++) {
+                mPlayerView.getChildAt(i).setLongClickable(false);
+                mPlayerView.getChildAt(i).setOnLongClickListener(v -> true);
+                mPlayerView.getChildAt(i).setOnClickListener(v -> mPlayerView.requestFocus());
+            }
+        });
 
         // CastContext is lazily initialized when the CastContext.getSharedInstance() is called.
         mCastContext = CastContext.getSharedInstance(this);
