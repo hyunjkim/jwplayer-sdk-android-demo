@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -56,6 +58,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
@@ -99,23 +105,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private void setupJWPlayer() {
 
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
-
-        // Ima Tag Example
-        ImaAdvertising imaAdvertising = SampleAds.getImaAd();
-
-        // VAST Tag Example
-        Advertising vastAdvertising = SampleAds.getVastAd();
-
-        // VMAP Tag Example
-        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("vast");
-
-        // Skin Config
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.host.com/css/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
+		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
 
         // PlayerConfig
         PlayerConfig config = new PlayerConfig.Builder()
@@ -124,10 +114,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .preload(true)
                 .mute(true)
                 .allowCrossProtocolRedirects(true)
-//				.skinConfig(skinConfig)
-//				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-//				.advertising(vmapAdvertising)
                 .build();
 
         mPlayerView.setup(config);

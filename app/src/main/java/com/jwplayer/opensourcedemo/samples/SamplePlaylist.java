@@ -9,29 +9,6 @@ import java.util.List;
 
 public class SamplePlaylist {
 
-    /*
-     * Create a Playlist Example
-     * */
-    public static List<PlaylistItem> createPlaylist() {
-        List<PlaylistItem> playlistItemList = new ArrayList<>();
-
-        String[] playlist = {
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
-                "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-        };
-
-        for (String each : playlist) {
-            PlaylistItem item = new PlaylistItem(each);
-            playlistItemList.add(item);
-        }
-
-        return playlistItemList;
-    }
 
     /**
      * MediaSource Playlist Example
@@ -39,45 +16,54 @@ public class SamplePlaylist {
      * Adaptive Streaming for more info: https://support.jwplayer.com/articles/adaptive-streaming-reference
      */
     public static List<PlaylistItem> createMediaSourcePlaylist() {
+
         List<MediaSource> mediaSourceList = new ArrayList<>();
         List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-        String hls = "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8";
-        String mp4 = "https://cdn.jwplayer.com/videos/jumBvHdL-Zq6530MP.mp4";
-        String mp4_1 = "https://cdn.jwplayer.com/videos/jumBvHdL-TNpruJId.mp4";
-        String mp4_2 = "https://cdn.jwplayer.com/videos/jumBvHdL-FctPAkow.mp4";
-
-        MediaSource mshls = new MediaSource.Builder()
-                .file(hls)
-                .label("HLS")
-                .type(MediaType.HLS)
-                .build();
-        MediaSource ms = new MediaSource.Builder()
-                .file(mp4)
+        MediaSource ms1 = new MediaSource.Builder()
+                .file("https://cdn.jwplayer.com/videos/iLwfYW2S-Zq6530MP.mp4")
                 .label("180px")
                 .type(MediaType.MP4)
                 .build();
-        MediaSource ms1 = new MediaSource.Builder()
-                .file(mp4_1)
-                .label("480px")
+        MediaSource ms2 = new MediaSource.Builder()
+                .file("https://cdn.jwplayer.com/videos/iLwfYW2S-TNpruJId.mp4")
+                .label("270px")
                 .type(MediaType.MP4)
                 .build();
-        MediaSource ms2 = new MediaSource.Builder()
-                .file(mp4_2)
-                .label("1280px")
+        MediaSource ms3 = new MediaSource.Builder()
+                .file("https://cdn.jwplayer.com/videos/iLwfYW2S-cIp6U8lV.mp4")
+                .label("406px")
+                .type(MediaType.MP4)
+                .build();
+        MediaSource ms4 = new MediaSource.Builder()
+                .file("https://cdn.jwplayer.com/videos/iLwfYW2S-FctPAkow.mp4")
+                .label("720px")
+                .type(MediaType.MP4)
+                .build();
+        MediaSource ms5 = new MediaSource.Builder()
+                .file("https://cdn.jwplayer.com/videos/iLwfYW2S-8yQ1cYbs.mp4")
+                .label("1080px")
                 .type(MediaType.MP4)
                 .build();
 
-        mediaSourceList.add(ms);
         mediaSourceList.add(ms1);
         mediaSourceList.add(ms2);
-        mediaSourceList.add(mshls);
+        mediaSourceList.add(ms3);
+        mediaSourceList.add(ms4);
+        mediaSourceList.add(ms5);
 
-        PlaylistItem item = new PlaylistItem.Builder()
+        PlaylistItem mp4 = new PlaylistItem.Builder()
+                .title("People Laughing in a Car")
                 .sources(mediaSourceList)
                 .build();
 
-        playlistItemList.add(item);
+        PlaylistItem hls = new PlaylistItem.Builder()
+                .title("Alaska Video")
+                .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+                .build();
+
+        playlistItemList.add(hls);
+        playlistItemList.add(mp4);
 
         return playlistItemList;
     }
