@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     private JWPlaylistAsyncTask asyncTask;
     private ProgressBar mProgressBar;
     private MyRecyclerItemTouchListener myRecyclerItemTouchListener;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

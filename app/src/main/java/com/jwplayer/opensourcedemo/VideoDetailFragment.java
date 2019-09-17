@@ -1,5 +1,6 @@
 package com.jwplayer.opensourcedemo;
 
+import android.app.ActionBar;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
@@ -16,13 +18,17 @@ import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
-public class VideoDetailFragment extends Fragment {
+public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.OnFullscreenListener {
 
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
+
+    private LinearLayout mLinearLayout;
 
     private String file = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
@@ -33,9 +39,13 @@ public class VideoDetailFragment extends Fragment {
         setHasOptionsMenu(true);
 
         View view = inflater.inflate(R.layout.fragment_videodetailfragment, container, false);
+        mLinearLayout = view.findViewById(R.id.layout_videodetailfragment);
+
 
         mPlayerView = view.findViewById(R.id.playerFragment);
         TextView outputTextView = view.findViewById(R.id.output);
+
+        mPlayerView.addOnFullscreenListener(this);
 
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getActivity().getWindow());
@@ -126,5 +136,19 @@ public class VideoDetailFragment extends Fragment {
 
     public void passFile(String fileClicked) {
         file = fileClicked;
+    }
+
+    @Override
+    public void onFullscreen(FullscreenEvent fullscreenEvent) {
+        ActionBar actionBar = getActivity().getActionBar();
+        if (actionBar != null) {
+            if (fullscreenEvent.getFullscreen()) {
+                actionBar.hide();
+            } else {
+                actionBar.show();
+            }
+        }
+        // When going to Fullscreen we want to set fitsSystemWindows="false"
+        mLinearLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 }
