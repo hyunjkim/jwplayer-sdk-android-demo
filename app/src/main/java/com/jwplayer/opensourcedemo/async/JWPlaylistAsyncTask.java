@@ -1,8 +1,9 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.async;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.jwplayer.opensourcedemo.Util;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import org.json.JSONArray;
@@ -17,7 +18,7 @@ public class JWPlaylistAsyncTask extends AsyncTask<String, String, List<Playlist
 
     private MyThreadListener mThreadListener;
 
-    JWPlaylistAsyncTask(MyThreadListener passThreadListener) {
+    public JWPlaylistAsyncTask(MyThreadListener passThreadListener) {
         super();
         this.mThreadListener = passThreadListener;
     }

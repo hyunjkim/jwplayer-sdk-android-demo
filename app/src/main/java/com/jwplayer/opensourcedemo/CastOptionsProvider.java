@@ -29,17 +29,18 @@ public class CastOptionsProvider implements OptionsProvider {
                         MediaIntentReceiver.ACTION_SKIP_NEXT,
                         MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
                         MediaIntentReceiver.ACTION_STOP_CASTING), new int[]{0, 1, 2})
-                .setTargetActivityClassName(MainActivity.class.getName())
+                .setTargetActivityClassName(VideoDetailFragment.class.getName())
                 .build();
 
         final CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setNotificationOptions(notificationOptions)
-                .setExpandedControllerActivityClassName(MainActivity.class.getName())
+                .setExpandedControllerActivityClassName(VideoDetailFragment.class.getName())
                 .build();
 
         return new CastOptions.Builder()
                 .setReceiverApplicationId(DEFAULT_APPLICATION_ID)
                 .setCastMediaOptions(mediaOptions)
+                .setEnableReconnectionService(true)
                 .build();
     }
 

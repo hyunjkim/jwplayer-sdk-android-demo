@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.recyclerview;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,12 +12,12 @@ import android.view.View;
 /*
  * Credit to: https://medium.com/@harivigneshjayapalan/android-recyclerview-implementing-single-item-click-and-long-press-part-ii-b43ef8cb6ad8
  * */
-class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
+public class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
 
     private MyClickListener clicklistener;
     private GestureDetector gestureDetector;
 
-    MyRecyclerItemTouchListener(Context context, final RecyclerView recyclerView, final MyClickListener clicklistener) {
+    public MyRecyclerItemTouchListener(Context context, final RecyclerView recyclerView, final MyClickListener clicklistener) {
 
         this.clicklistener = clicklistener;
 
@@ -68,7 +68,7 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
     public void onRequestDisallowInterceptTouchEvent(boolean b) {
     }
 
-    interface MyClickListener {
+    public interface MyClickListener {
         void onItemClick(View view, int position);
 
         void onLongClick(View view, int position);

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.async;
 
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 

@@ -12,10 +12,10 @@ import java.util.Map;
 
 import static com.google.android.exoplayer2.util.Util.toByteArray;
 
-class Util {
+public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    static byte[] executePost(String requestURL)
+    public static byte[] executePost(String requestURL)
             throws IOException {
 
         HttpURLConnection urlConnection = null;

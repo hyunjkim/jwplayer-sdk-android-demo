@@ -1,12 +1,10 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
-import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdClickEvent;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdErrorEvent;
@@ -103,7 +101,7 @@ public class JWEventHandler implements VideoPlayerEvents.OnSetupErrorListener,
     private TextView mOutput;
     private JWPlayerView mPlayerView;
 
-    JWEventHandler(JWPlayerView jwPlayerView, TextView output) {
+    public JWEventHandler(JWPlayerView jwPlayerView, TextView output) {
         mOutput = output;
         mPlayerView = jwPlayerView;
 

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,7 +34,7 @@ public class KeepScreenOnHandler implements VideoPlayerEvents.OnPlayListener,
      */
     private Window mWindow;
 
-    KeepScreenOnHandler(JWPlayerView jwPlayerView, Window window) {
+    public KeepScreenOnHandler(JWPlayerView jwPlayerView, Window window) {
         jwPlayerView.addOnPlayListener(this);
         jwPlayerView.addOnPauseListener(this);
         jwPlayerView.addOnCompleteListener(this);

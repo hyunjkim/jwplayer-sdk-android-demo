@@ -2,6 +2,7 @@ package com.jwplayer.opensourcedemo;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,6 +16,10 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.jwplayer.opensourcedemo.async.JWPlaylistAsyncTask;
+import com.jwplayer.opensourcedemo.async.MyThreadListener;
+import com.jwplayer.opensourcedemo.recyclerview.MyRecyclerAdapter;
+import com.jwplayer.opensourcedemo.recyclerview.MyRecyclerItemTouchListener;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
@@ -55,28 +60,29 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
         asyncTask = new JWPlaylistAsyncTask(this);
         asyncTask.execute("l3EGQ9TD");
 
-        // Initialize JWPlayerView Fragment
-        mVideoDetailFragment = new VideoDetailFragment();
-
         // Initialize RecyclerView
         setupRecyclerView();
 
         // Get a reference to the CastContext
-        CastContext.getSharedInstance(this);
-    }
-
-    @Override
-    public void playlistUpdated(List<PlaylistItem> playlistItems) {
-        mPlaylist = playlistItems;
-        myRecyclerAdapter.setPlaylist(playlistItems);
-
-        // Stop the current player
-        if (mVideoDetailFragment != null) {
-            mVideoDetailFragment.onStop();
-        }
-
-        // Setup JWPlayer Video Fragment
-        setupJWPlayerFrag();
+        CastContext context = CastContext.getSharedInstance(this);
+        context.addCastStateListener(i -> {
+            String caststate = "";
+            switch (i) {
+                case 1:
+                    caststate = "on devices available";
+                    break;
+                case 2:
+                    caststate = "not connected";
+                    break;
+                case 3:
+                    caststate = "connecting";
+                    break;
+                case 4:
+                    caststate = "connected";
+                    break;
+            }
+            Log.i("HYUNJOO", "onCastStateChanged() " + caststate);
+        });
     }
 
     @Override
@@ -87,6 +93,25 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
         } else {
             mProgressBar.setIndeterminate(true);
         }
+    }
+
+    @Override
+    public void playlistUpdated(List<PlaylistItem> playlistItems) {
+        asyncTask.cancel(true);
+
+        mPlaylist = playlistItems;
+        myRecyclerAdapter.setPlaylist(playlistItems);
+
+        // Stop the current player
+        if (mVideoDetailFragment != null) {
+            mVideoDetailFragment.onStop();
+        } else {
+            // Initialize JWPlayerView Fragment
+            mVideoDetailFragment = new VideoDetailFragment();
+        }
+
+        // Setup JWPlayer Video Fragment
+        setupJWPlayerFrag();
     }
 
     /*
@@ -154,18 +179,20 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     }
 
     @Override
+    protected void onPause() {
+        Log.i("HYUNJOO", "onPause() - supportInvalidateOptionsMenu");
+        supportInvalidateOptionsMenu();
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         Log.i("HYUNJOO", "onStop() - remove onItem Touch Listener");
         mRecyclerView.removeOnItemTouchListener(myRecyclerItemTouchListener);
         mRecyclerView = null;
         asyncTask = null;
         myRecyclerItemTouchListener = null;
+
         super.onStop();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

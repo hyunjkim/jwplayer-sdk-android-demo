@@ -2,7 +2,6 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 
@@ -26,9 +26,10 @@ public class VideoDetailFragment extends Fragment {
 
     private String file = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i("HYUNJOO", "onCreateView - VideoDetailFragment");
+
         setHasOptionsMenu(true);
 
         View view = inflater.inflate(R.layout.fragment_videodetailfragment, container, false);
@@ -52,7 +53,6 @@ public class VideoDetailFragment extends Fragment {
      * Setup JWPlayerView
      * */
     private void setupJWPlayerFrag(String url) {
-
         PlayerConfig config = new PlayerConfig.Builder()
                 .file(url)
                 .autostart(true)

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.recyclerview;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jwplayer.opensourcedemo.R;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import com.squareup.picasso.Picasso;
 
@@ -19,7 +20,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
     private List<PlaylistItem> mPlaylist;
 
-    MyRecyclerAdapter() {
+    public MyRecyclerAdapter() {
     }
 
     @NonNull
@@ -45,7 +46,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         return mPlaylist.size();
     }
 
-    void setPlaylist(List<PlaylistItem> playlist) {
+    public void setPlaylist(List<PlaylistItem> playlist) {
         mPlaylist = playlist;
         notifyDataSetChanged();
     }
