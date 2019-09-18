@@ -2,7 +2,6 @@ package com.jwplayer.opensourcedemo;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -135,6 +134,9 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
                 .addToBackStack(null)
                 .commit();
 
+        //retain their instance for orientation reasons
+        mVideoDetailFragment.setRetainInstance(true);
+
         // Make sure all the pending fragment transactions have been completed, otherwise
         mFragmentManager.executePendingTransactions();
     }
@@ -166,7 +168,9 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
                         mVideoDetailFragment = new VideoDetailFragment();
 
                         // Pass the file I am using to play
-                        mVideoDetailFragment.passFile(fileClicked);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("mediaurl", fileClicked);
+                        mVideoDetailFragment.setArguments(bundle);
 
                         // Begin to replace the older container with the new view
                         setupJWPlayerFrag();

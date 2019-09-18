@@ -3,6 +3,7 @@ package com.jwplayer.opensourcedemo;
 import android.app.ActionBar;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +39,17 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
     private CastSession mCastSession;
     private CastContext mCastContext;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(getArguments()!= null){
+            Log.i("HYUNJOO", "onCreate - VideoDetailFragment");
+            file = getArguments().getString("mediaurl");
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("HYUNJOO", "onCreateView - VideoDetailFragment");
@@ -63,7 +75,7 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
         mCastContext = CastContext.getSharedInstance(getActivity());
 
         // Setup JWPlayerView
-        setupJWPlayerFrag(file);
+        setupJWPlayerFrag();
 
         return view;
     }
@@ -71,9 +83,11 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
     /*
      * Setup JWPlayerView
      * */
-    private void setupJWPlayerFrag(String url) {
+    private void setupJWPlayerFrag() {
+        Log.i("HYUNJOO", "setupJWPlayerFrag - VideoDetailFragment :" + file);
+
         PlayerConfig config = new PlayerConfig.Builder()
-                .file(url)
+                .file(file)
                 .autostart(true)
                 .build();
 
@@ -150,10 +164,6 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
             mPlayerView.onDestroy();
         }
         super.onDestroy();
-    }
-
-    public void passFile(String fileClicked) {
-        file = fileClicked;
     }
 
     @Override
