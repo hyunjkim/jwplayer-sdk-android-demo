@@ -27,12 +27,14 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MyThreadListener {
-
+    /**
+     * Reference to the {@link CastSession}
+     */
+    private final SessionManagerListener<CastSession> mSessionManagerListener = new MySessionManagerListener();
     /**
      * Reference to the {@link CastContext}
      */
     private CastContext mCastContext;
-
     /**
      * Reference to the {@link FrameLayout}
      */
@@ -45,65 +47,6 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     private ProgressBar mProgressBar;
     private CastSession mCastSession;
     private MyRecyclerItemTouchListener myRecyclerItemTouchListener;
-    private final SessionManagerListener<CastSession> mSessionManagerListener =
-            new MySessionManagerListener();
-
-
-    private class MySessionManagerListener implements SessionManagerListener<CastSession> {
-
-        @Override
-        public void onSessionEnded(CastSession session, int error) {
-            if (session == mCastSession) {
-                mCastSession = null;
-            }
-            supportInvalidateOptionsMenu();
-            Log.i("HYUNJOO", "onSessionEnded");
-        }
-
-        @Override
-        public void onSessionResumed(CastSession session, boolean wasSuspended) {
-            mCastSession = session;
-            supportInvalidateOptionsMenu();
-            Log.i("HYUNJOO", "onSessionResumed");
-        }
-
-        @Override
-        public void onSessionStarted(CastSession session, String sessionId) {
-            mCastSession = session;
-            supportInvalidateOptionsMenu();
-            Log.i("HYUNJOO", "onSessionStarted");
-        }
-
-        @Override
-        public void onSessionStarting(CastSession session) {
-            Log.i("HYUNJOO", "onSessionStarting");
-        }
-
-        @Override
-        public void onSessionStartFailed(CastSession session, int error) {
-            Log.i("HYUNJOO", "onSessionStartFailed");
-        }
-
-        @Override
-        public void onSessionEnding(CastSession session) {
-            Log.i("HYUNJOO", "onSessionEnding");
-        }
-
-        @Override
-        public void onSessionResuming(CastSession session, String sessionId) {
-            Log.i("HYUNJOO", "onSessionResuming");
-        }
-
-        @Override
-        public void onSessionResumeFailed(CastSession session, int error) {
-            Log.i("HYUNJOO", "onSessionResumeFailed");
-        }
-
-        @Override
-        public void onSessionSuspended(CastSession session, int reason) {
-            Log.i("HYUNJOO", "onSessionSuspended");
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +102,10 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
 
     @Override
     public void playlistUpdated(List<PlaylistItem> playlistItems) {
+
+        // Destroy this so that is doesn't update the old activity
         asyncTask.cancel(true);
+        asyncTask = null;
 
         mPlaylist = playlistItems;
         myRecyclerAdapter.setPlaylist(playlistItems);
@@ -273,5 +219,61 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
         mRecyclerView.removeOnItemTouchListener(myRecyclerItemTouchListener);
         mRecyclerView = null;
         myRecyclerItemTouchListener = null;
+    }
+
+    private class MySessionManagerListener implements SessionManagerListener<CastSession> {
+
+        @Override
+        public void onSessionEnded(CastSession session, int error) {
+            if (session == mCastSession) {
+                mCastSession = null;
+            }
+            supportInvalidateOptionsMenu();
+            Log.i("HYUNJOO", "onSessionEnded");
+        }
+
+        @Override
+        public void onSessionResumed(CastSession session, boolean wasSuspended) {
+            mCastSession = session;
+            supportInvalidateOptionsMenu();
+            Log.i("HYUNJOO", "onSessionResumed");
+        }
+
+        @Override
+        public void onSessionStarted(CastSession session, String sessionId) {
+            mCastSession = session;
+            supportInvalidateOptionsMenu();
+            Log.i("HYUNJOO", "onSessionStarted");
+        }
+
+        @Override
+        public void onSessionStarting(CastSession session) {
+            Log.i("HYUNJOO", "onSessionStarting");
+        }
+
+        @Override
+        public void onSessionStartFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionStartFailed");
+        }
+
+        @Override
+        public void onSessionEnding(CastSession session) {
+            Log.i("HYUNJOO", "onSessionEnding");
+        }
+
+        @Override
+        public void onSessionResuming(CastSession session, String sessionId) {
+            Log.i("HYUNJOO", "onSessionResuming");
+        }
+
+        @Override
+        public void onSessionResumeFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionResumeFailed");
+        }
+
+        @Override
+        public void onSessionSuspended(CastSession session, int reason) {
+            Log.i("HYUNJOO", "onSessionSuspended");
+        }
     }
 }

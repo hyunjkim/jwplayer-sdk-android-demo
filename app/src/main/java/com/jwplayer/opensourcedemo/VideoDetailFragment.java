@@ -25,74 +25,16 @@ import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
 public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.OnFullscreenListener {
-
+    /**
+     * Reference to the {@link CastSession}
+     */
+    private final SessionManagerListener<CastSession> mSessionManagerListener = new MySessionManagerListener();
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-
     private LinearLayout mLinearLayout;
-
     private String file = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
-
-    private final SessionManagerListener<CastSession> mSessionManagerListener = new MySessionManagerListener();
-
-    private class MySessionManagerListener implements SessionManagerListener<CastSession> {
-
-        @Override
-        public void onSessionEnded(CastSession session, int error) {
-            if (session == mCastSession) {
-                mCastSession = null;
-            }
-            setHasOptionsMenu(true);
-            Log.i("HYUNJOO", "onSessionEnded");
-        }
-
-        @Override
-        public void onSessionResumed(CastSession session, boolean wasSuspended) {
-            mCastSession = session;
-            setHasOptionsMenu(true);
-            Log.i("HYUNJOO", "onSessionResumed");
-        }
-
-        @Override
-        public void onSessionStarted(CastSession session, String sessionId) {
-            mCastSession = session;
-            setHasOptionsMenu(true);
-            Log.i("HYUNJOO", "onSessionStarted");
-        }
-
-        @Override
-        public void onSessionStarting(CastSession session) {
-            Log.i("HYUNJOO", "onSessionStarting");
-        }
-
-        @Override
-        public void onSessionStartFailed(CastSession session, int error) {
-            Log.i("HYUNJOO", "onSessionStartFailed");
-        }
-
-        @Override
-        public void onSessionEnding(CastSession session) {
-            Log.i("HYUNJOO", "onSessionEnding");
-        }
-
-        @Override
-        public void onSessionResuming(CastSession session, String sessionId) {
-            Log.i("HYUNJOO", "onSessionResuming");
-        }
-
-        @Override
-        public void onSessionResumeFailed(CastSession session, int error) {
-            Log.i("HYUNJOO", "onSessionResumeFailed");
-        }
-
-        @Override
-        public void onSessionSuspended(CastSession session, int reason) {
-            Log.i("HYUNJOO", "onSessionSuspended");
-        }
-    }
-
     private CastSession mCastSession;
     private CastContext mCastContext;
 
@@ -151,7 +93,6 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
         CastButtonFactory.setUpMediaRouteButton(getActivity(), menu, R.id.media_route_menu_item);
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 
     @Override
     public void onStart() {
@@ -227,5 +168,61 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
         }
         // When going to Fullscreen we want to set fitsSystemWindows="false"
         mLinearLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
+    }
+
+    private class MySessionManagerListener implements SessionManagerListener<CastSession> {
+
+        @Override
+        public void onSessionEnded(CastSession session, int error) {
+            if (session == mCastSession) {
+                mCastSession = null;
+            }
+            setHasOptionsMenu(true);
+            Log.i("HYUNJOO", "onSessionEnded");
+        }
+
+        @Override
+        public void onSessionResumed(CastSession session, boolean wasSuspended) {
+            mCastSession = session;
+            setHasOptionsMenu(true);
+            Log.i("HYUNJOO", "onSessionResumed");
+        }
+
+        @Override
+        public void onSessionStarted(CastSession session, String sessionId) {
+            mCastSession = session;
+            setHasOptionsMenu(true);
+            Log.i("HYUNJOO", "onSessionStarted");
+        }
+
+        @Override
+        public void onSessionStarting(CastSession session) {
+            Log.i("HYUNJOO", "onSessionStarting");
+        }
+
+        @Override
+        public void onSessionStartFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionStartFailed");
+        }
+
+        @Override
+        public void onSessionEnding(CastSession session) {
+            Log.i("HYUNJOO", "onSessionEnding");
+        }
+
+        @Override
+        public void onSessionResuming(CastSession session, String sessionId) {
+            Log.i("HYUNJOO", "onSessionResuming");
+        }
+
+        @Override
+        public void onSessionResumeFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionResumeFailed");
+        }
+
+        @Override
+        public void onSessionSuspended(CastSession session, int reason) {
+            Log.i("HYUNJOO", "onSessionSuspended");
+        }
     }
 }
