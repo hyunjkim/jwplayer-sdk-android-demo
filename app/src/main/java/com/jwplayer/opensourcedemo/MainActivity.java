@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.jwplayer.opensourcedemo.async.JWPlaylistAsyncTask;
 import com.jwplayer.opensourcedemo.async.MyThreadListener;
 import com.jwplayer.opensourcedemo.recyclerview.MyRecyclerAdapter;
@@ -41,8 +43,67 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     private List<PlaylistItem> mPlaylist;
     private JWPlaylistAsyncTask asyncTask;
     private ProgressBar mProgressBar;
+    private CastSession mCastSession;
     private MyRecyclerItemTouchListener myRecyclerItemTouchListener;
-    
+    private final SessionManagerListener<CastSession> mSessionManagerListener =
+            new MySessionManagerListener();
+
+
+    private class MySessionManagerListener implements SessionManagerListener<CastSession> {
+
+        @Override
+        public void onSessionEnded(CastSession session, int error) {
+            if (session == mCastSession) {
+                mCastSession = null;
+            }
+            supportInvalidateOptionsMenu();
+            Log.i("HYUNJOO", "onSessionEnded");
+        }
+
+        @Override
+        public void onSessionResumed(CastSession session, boolean wasSuspended) {
+            mCastSession = session;
+            supportInvalidateOptionsMenu();
+            Log.i("HYUNJOO", "onSessionResumed");
+        }
+
+        @Override
+        public void onSessionStarted(CastSession session, String sessionId) {
+            mCastSession = session;
+            supportInvalidateOptionsMenu();
+            Log.i("HYUNJOO", "onSessionStarted");
+        }
+
+        @Override
+        public void onSessionStarting(CastSession session) {
+            Log.i("HYUNJOO", "onSessionStarting");
+        }
+
+        @Override
+        public void onSessionStartFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionStartFailed");
+        }
+
+        @Override
+        public void onSessionEnding(CastSession session) {
+            Log.i("HYUNJOO", "onSessionEnding");
+        }
+
+        @Override
+        public void onSessionResuming(CastSession session, String sessionId) {
+            Log.i("HYUNJOO", "onSessionResuming");
+        }
+
+        @Override
+        public void onSessionResumeFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionResumeFailed");
+        }
+
+        @Override
+        public void onSessionSuspended(CastSession session, int reason) {
+            Log.i("HYUNJOO", "onSessionSuspended");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +126,8 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
         setupRecyclerView();
 
         // Get a reference to the CastContext
-        CastContext context = CastContext.getSharedInstance(this);
-        context.addCastStateListener(i -> {
+        mCastContext = CastContext.getSharedInstance(this);
+        mCastContext.addCastStateListener(i -> {
             String caststate = "";
             switch (i) {
                 case 1:
@@ -180,20 +241,37 @@ public class MainActivity extends AppCompatActivity implements MyThreadListener 
     }
 
     @Override
+    protected void onResume() {
+        Log.i("HYUNJOO", "MainActivity -  onResume()");
+        mCastContext.getSessionManager().addSessionManagerListener(
+                mSessionManagerListener, CastSession.class);
+        if (mCastSession == null) {
+            mCastSession = CastContext.getSharedInstance(this).getSessionManager()
+                    .getCurrentCastSession();
+        }
+        super.onResume();
+    }
+
+    @Override
     protected void onPause() {
-        Log.i("HYUNJOO", "onPause() - supportInvalidateOptionsMenu");
-        supportInvalidateOptionsMenu();
+        Log.i("HYUNJOO", "MainActivity - onPause() ");
+        mCastContext.getSessionManager().removeSessionManagerListener(
+                mSessionManagerListener, CastSession.class);
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        Log.i("HYUNJOO", "onStop() - remove onItem Touch Listener");
+        Log.i("HYUNJOO", "onStop()");
+        super.onStop();
+        asyncTask = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         mRecyclerView.removeOnItemTouchListener(myRecyclerItemTouchListener);
         mRecyclerView = null;
-        asyncTask = null;
         myRecyclerItemTouchListener = null;
-
-        super.onStop();
     }
 }

@@ -14,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
 import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
 import com.longtailvideo.jwplayer.JWPlayerView;
@@ -31,6 +34,67 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
     private LinearLayout mLinearLayout;
 
     private String file = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
+
+    private final SessionManagerListener<CastSession> mSessionManagerListener = new MySessionManagerListener();
+
+    private class MySessionManagerListener implements SessionManagerListener<CastSession> {
+
+        @Override
+        public void onSessionEnded(CastSession session, int error) {
+            if (session == mCastSession) {
+                mCastSession = null;
+            }
+            setHasOptionsMenu(true);
+            Log.i("HYUNJOO", "onSessionEnded");
+        }
+
+        @Override
+        public void onSessionResumed(CastSession session, boolean wasSuspended) {
+            mCastSession = session;
+            setHasOptionsMenu(true);
+            Log.i("HYUNJOO", "onSessionResumed");
+        }
+
+        @Override
+        public void onSessionStarted(CastSession session, String sessionId) {
+            mCastSession = session;
+            setHasOptionsMenu(true);
+            Log.i("HYUNJOO", "onSessionStarted");
+        }
+
+        @Override
+        public void onSessionStarting(CastSession session) {
+            Log.i("HYUNJOO", "onSessionStarting");
+        }
+
+        @Override
+        public void onSessionStartFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionStartFailed");
+        }
+
+        @Override
+        public void onSessionEnding(CastSession session) {
+            Log.i("HYUNJOO", "onSessionEnding");
+        }
+
+        @Override
+        public void onSessionResuming(CastSession session, String sessionId) {
+            Log.i("HYUNJOO", "onSessionResuming");
+        }
+
+        @Override
+        public void onSessionResumeFailed(CastSession session, int error) {
+            Log.i("HYUNJOO", "onSessionResumeFailed");
+        }
+
+        @Override
+        public void onSessionSuspended(CastSession session, int reason) {
+            Log.i("HYUNJOO", "onSessionSuspended");
+        }
+    }
+
+    private CastSession mCastSession;
+    private CastContext mCastContext;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +116,9 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
 
         // Instantiate the JW Player event handler class
         new JWEventHandler(mPlayerView, outputTextView);
+
+        // Instantiate Cast Context
+        mCastContext = CastContext.getSharedInstance(getActivity());
 
         // Setup JWPlayerView
         setupJWPlayerFrag(file);
@@ -97,6 +164,13 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
 
     @Override
     public void onResume() {
+        mCastContext.getSessionManager().addSessionManagerListener(
+                mSessionManagerListener, CastSession.class);
+        if (mCastSession == null) {
+            mCastSession = CastContext.getSharedInstance(getActivity()).getSessionManager()
+                    .getCurrentCastSession();
+        }
+
         // Let JW Player know that the app has returned from the background
         super.onResume();
         if (mPlayerView != null) {
@@ -107,6 +181,9 @@ public class VideoDetailFragment extends Fragment implements VideoPlayerEvents.O
 
     @Override
     public void onPause() {
+
+        mCastContext.getSessionManager().removeSessionManagerListener(
+                mSessionManagerListener, CastSession.class);
         // Let JW Player know that the app is going to the background
         if (mPlayerView != null) {
             Log.i("HYUNJOO", "onPause()");
