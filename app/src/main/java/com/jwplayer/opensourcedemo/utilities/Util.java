@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.utilities;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;

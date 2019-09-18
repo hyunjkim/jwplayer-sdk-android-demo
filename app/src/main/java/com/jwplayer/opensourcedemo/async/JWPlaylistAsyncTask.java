@@ -3,7 +3,7 @@ package com.jwplayer.opensourcedemo.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.jwplayer.opensourcedemo.Util;
+import com.jwplayer.opensourcedemo.utilities.Util;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import org.json.JSONArray;

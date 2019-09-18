@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.cast;
 
 import android.content.Context;
 
@@ -9,6 +9,7 @@ import com.google.android.gms.cast.framework.SessionProvider;
 import com.google.android.gms.cast.framework.media.CastMediaOptions;
 import com.google.android.gms.cast.framework.media.MediaIntentReceiver;
 import com.google.android.gms.cast.framework.media.NotificationOptions;
+import com.jwplayer.opensourcedemo.VideoDetailFragment;
 
 import java.util.Arrays;
 import java.util.List;
