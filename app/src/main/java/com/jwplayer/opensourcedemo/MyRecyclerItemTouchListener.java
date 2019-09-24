@@ -28,8 +28,11 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
                 View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
 
                 if (e.getAction() == MotionEvent.ACTION_UP && clicklistener != null) {
-                    clicklistener.onItemClick(child, recyclerView.getChildAdapterPosition(child));
+
                     Log.i("JWEVENTHANDLER", "onSingleTapUp: x - " + e.getX() + "y - " + e.getY());
+
+                    // Pass the Position the Recycler Adapter is located
+                    clicklistener.onItemClick(child, recyclerView.getChildAdapterPosition(child));
                 }
                 return true;
             }
@@ -41,6 +44,7 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
 
                 View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
 
+                // TODO: remove the item / make the item movable
                 if (child != null && clicklistener != null) {
                     clicklistener.onLongClick(child, recyclerView.getChildAdapterPosition(child));
                 }
@@ -54,6 +58,8 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
         View child = rv.findChildViewUnder(e.getX(), e.getY());
 
         if (child != null && clicklistener != null && gestureDetector.onTouchEvent(e)) {
+
+            // Talk back to MainActivity and pass the Video + RV Position
             clicklistener.onItemClick(child, rv.getChildAdapterPosition(child));
         }
 
@@ -64,7 +70,6 @@ class MyRecyclerItemTouchListener implements RecyclerView.OnItemTouchListener {
     public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
     }
 
-    @Override
     public void onRequestDisallowInterceptTouchEvent(boolean b) {
     }
 

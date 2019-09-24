@@ -13,14 +13,15 @@ import android.widget.Toast;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyRecyclerViewHolder> {
 
     private List<PlaylistItem> list;
 
-    MyRecyclerAdapter(List<PlaylistItem> myPlaylist) {
-        list = myPlaylist;
+    MyRecyclerAdapter() {
+        list = new ArrayList<>();
     }
 
     @NonNull
@@ -40,6 +41,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    void updatePlaylist(List<PlaylistItem> playlistItemList) {
+        list = playlistItemList;
+        notifyDataSetChanged();
     }
 
     /*

@@ -1,11 +1,9 @@
 package com.jwplayer.opensourcedemo;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import org.json.JSONArray;
@@ -40,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout fragmentContainer;
     private RecyclerView mRecyclerView;
     private List<PlaylistItem> playlistItemList;
+    private VideoDetailFragment mCurrFragment = new VideoDetailFragment();
+    private MyRecyclerAdapter mRecyclerViewAdapter;
+    private MyRecyclerItemTouchListener myRecyclerItemTouchListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +51,16 @@ public class MainActivity extends AppCompatActivity {
         fragmentContainer = findViewById(R.id.container);
         mRecyclerView = findViewById(R.id.rv);
 
-        Thread t = new Thread(() -> {
+        // Setup RecyclerView
+        setupRecyclerView();
+
+        AsyncTask.execute(() -> {
             // Setup the Playlist for the recyclerview
             playlistItemList = createPlaylist();
         });
-        t.start();
 
-        Handler handler = new Handler(getMainLooper());
-
-        Runnable runnable = () -> {
-            // Setup JWPlayerView Fragment, play the first item on the playlist
-            setupJWPlayerFrag(new VideoDetailFragment());
-
-            // Setup RecyclerView
-            setupRecyclerView();
-        };
-        handler.postDelayed(runnable, 2000);
+        // Setup JWPlayerView Fragment, play the first item on the playlist
+        setupJWPlayerFrag();
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
@@ -74,13 +70,21 @@ public class MainActivity extends AppCompatActivity {
     /*
      * JWPlayerView using Support Fragments in One Activity Example
      * */
-    public void setupJWPlayerFrag(Fragment fragment) {
+    public void setupJWPlayerFrag() {
+
+        if (mCurrFragment == null) {
+            mCurrFragment = new VideoDetailFragment();
+        }
+
         // Attach the Fragment to our layout
         FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(fragmentContainer.getId(), fragment);
-        ft.addToBackStack(null);
-        ft.commit();
+        fm.beginTransaction()
+                .replace(fragmentContainer.getId(), mCurrFragment)
+                .addToBackStack(null)
+                .commit();
+
+        //retain their instance for orientation reasons
+        mCurrFragment.setRetainInstance(true);
 
         // Make sure all the pending fragment transactions have been completed, otherwise
         fm.executePendingTransactions();
@@ -92,12 +96,17 @@ public class MainActivity extends AppCompatActivity {
     private List<PlaylistItem> createPlaylist() {
 
         List<PlaylistItem> list = null;
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 byte[] response = Util.executePost("https://cdn.jwplayer.com/v2/playlists/l3EGQ9TD");
                 String json = new String(response, StandardCharsets.UTF_8);
                 JSONArray playlist = new JSONObject(json).getJSONArray("playlist");
                 list = PlaylistItem.listFromJson(playlist);
+                list.add(new PlaylistItem.Builder()
+                        .file("https://cdn-videos.akamaized.net/btv/desktop/fastly/us/live/primary.m3u8")
+                        .image("https://cdn.jwplayer.com/v2/media/jumBvHdL/poster.jpg")
+                        .build());
 
             } else {
                 list = new ArrayList<>();
@@ -112,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        mRecyclerViewAdapter.updatePlaylist(list);
+
         return list;
     }
 
@@ -120,37 +131,54 @@ public class MainActivity extends AppCompatActivity {
      * */
     private void setupRecyclerView() {
 
+        mRecyclerViewAdapter = new MyRecyclerAdapter();
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
-        MyRecyclerItemTouchListener myRecyclerItemTouchListener =
-                new MyRecyclerItemTouchListener(this, mRecyclerView, new MyRecyclerItemTouchListener.MyClickListener() {
-                    @Override
-                    public void onItemClick(View view, final int position) {
+        myRecyclerItemTouchListener = new MyRecyclerItemTouchListener(this, mRecyclerView, new MyRecyclerItemTouchListener.MyClickListener() {
+            @Override
+            public void onItemClick(View view, final int position) {
 
-                        // Values are passing to activity & to fragment as well
-                        Toast.makeText(MainActivity.this,
-                                "Single Click on position :" + position,
-                                Toast.LENGTH_SHORT).show();
+                if (mCurrFragment != null) {
 
-                        String fileClicked = playlistItemList.get(position).getSources().get(0).getFile();
+                    // Release resources related to JWPlayerView
+                    mCurrFragment.onStop();
+                }
 
-                        VideoDetailFragment videoDetailFragment = new VideoDetailFragment();
-                        videoDetailFragment.passFile(fileClicked);
+                // Create new Fragment
+                mCurrFragment = new VideoDetailFragment();
 
-                        setupJWPlayerFrag(videoDetailFragment);
-                    }
+                // Toast
+                Toast.makeText(MainActivity.this, "File :" + position, Toast.LENGTH_SHORT).show();
 
-                    @Override
-                    public void onLongClick(View view, int position) {
-                        Toast.makeText(MainActivity.this,
-                                "Long press on position :" + position,
-                                Toast.LENGTH_LONG).show();
-                        // TODO: remove the item from the playlist
-                    }
-                });
+                // Values are passing to activity & to fragment as well
+                PlaylistItem itemClicked = playlistItemList.get(position);
 
+                String fileClicked;
+
+                if (itemClicked.getSources().size() > 0) {
+                    fileClicked = itemClicked.getSources().get(0).getFile();
+                } else {
+                    fileClicked = itemClicked.getFile();
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putString("file", fileClicked);
+
+                // Pass the file to the Fragment
+                mCurrFragment.setArguments(bundle);
+
+                // Setup the new Fragment
+                setupJWPlayerFrag();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                // TODO: remove the item from the playlist
+                Toast.makeText(MainActivity.this, "Long press on position :" + position, Toast.LENGTH_LONG).show();
+            }
+        });
         mRecyclerView.addOnItemTouchListener(myRecyclerItemTouchListener);
-        mRecyclerView.setAdapter(new MyRecyclerAdapter(playlistItemList));
     }
 
     @Override
@@ -161,5 +189,13 @@ public class MainActivity extends AppCompatActivity {
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
                 R.id.media_route_menu_item);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Remove listener
+        mRecyclerView.removeOnItemTouchListener(myRecyclerItemTouchListener);
     }
 }

@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 ext {
-    jwplayerVersion = '3.5.0'
+    jwplayerVersion = '3.7.0'
 }
 android {
     compileSdkVersion 28
@@ -45,9 +45,4 @@ dependencies {
     implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
     // Only required if using FreeWheel
     implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
-    // Only required if using Chromecast
-    // Only required if importing with AAR / JAR
-    //	implementation 'com.google.android.gms:play-services-ads:' // Only required if using IMA features
-    //	implementation 'com.google.ads.interactivemedia.v3:interactivemedia:' // Only required if using IMA features
-    // 	implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1' // Only required if using Chromecast
 }

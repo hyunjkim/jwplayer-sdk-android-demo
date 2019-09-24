@@ -6,6 +6,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
@@ -30,7 +31,7 @@
         <!--TODO Set your license key-->
         <meta-data
             android:name="JW_LICENSE_KEY"
-            android:value="Place_your_License_key_here" />
+            android:value="qngSiJ14kqJ2G+BW3lu/OmzqSVs2xZOF3GCH2z42tKjBElMJ" />
     </application>
 
 </manifest>
