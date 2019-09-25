@@ -42,8 +42,6 @@ public class JWPlayerFragmentView extends Fragment implements VideoPlayerEvents.
         View view = inflater.inflate(R.layout.layout_jwplayerfragment, container, false);
 
         mPlayerView = view.findViewById(R.id.jwplayer);
-
-        MediaRouteButton mediaRouteButton = view.findViewById(R.id.media_route_button);
         TextView outputTextView = view.findViewById(R.id.output);
         ScrollView scrollView = view.findViewById(R.id.scroll);
         mLinearLayout = view.findViewById(R.id.jwplayerfragment);
@@ -63,14 +61,26 @@ public class JWPlayerFragmentView extends Fragment implements VideoPlayerEvents.
         // Setup JWPlayer
         setupJWPlayer();
 
+        // TODO: Option 3 - if I am instantiating from Fragment with my custom button
+        MediaRouteButton mediaRouteButton = view.findViewById(R.id.media_route_button);
 
-//        CastButtonFactory.setUpMediaRouteButton(getActivity(),mediaRouteButton);
+        CastButtonFactory.setUpMediaRouteButton(getActivity(), mediaRouteButton);
 
         // CastContext is lazily initialized when the CastContext.getSharedInstance() is called.
         CastContext.getSharedInstance(getActivity());
 
         return view;
     }
+
+    // TODO: Option 2 - if I am instantiating from Fragment with my actionbar / toolbar
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        super.onCreateOptionsMenu(menu, inflater);
+//
+//        inflater.inflate(R.menu.menu_fragment, menu);
+//
+//        CastButtonFactory.setUpMediaRouteButton(getActivity(), menu, R.id.media_route_menu_item);
+//    }
 
     private void setupJWPlayer() {
 

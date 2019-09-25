@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,17 +27,21 @@ public class MainActivity extends AppCompatActivity {
 
         fm.executePendingTransactions();
 
+        // TODO: Option 1 - if I am instantiating from Activity with my actionbar / toolbar
+//        CastContext.getSharedInstance(this);
     }
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
 
-        getMenuInflater().inflate(R.menu.menu_fragment, menu);
-
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(),
-                menu,
-                R.id.media_route_menu_item);
-
-        return true;
-    }
+    // TODO: Option 1 - if I am instantiating from Activity with my actionbar / toolbar
+//    @Override public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//
+//        getMenuInflater().inflate(R.menu.menu_fragment, menu);
+//
+//        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(),
+//                menu,
+//                R.id.media_route_menu_item);
+//
+//        return true;
+//    }
 
 }
