@@ -307,7 +307,7 @@ public class JWEventHandler implements
     @Override
     public void onTime(TimeEvent timeEvent) {
 //        updateOutput(" " + "onTime " + timeEvent);
-//        print(" " + "onTime);
+//        print(" " + "onTime");
     }
 
     @Override

@@ -125,7 +125,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .mute(true)
                 .allowCrossProtocolRedirects(true)
 //				.skinConfig(skinConfig)
-//				.advertising(vastAdvertising)
+				.advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
 //				.advertising(vmapAdvertising)
                 .build();

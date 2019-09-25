@@ -183,6 +183,7 @@ public class JWAdEventHandler implements
     @Override
     public void onAdTime(AdTimeEvent adTimeEvent) {
         // Do nothing - this fires several times per second
+//        print(" " + "onAdTime");
     }
 
     @Override
