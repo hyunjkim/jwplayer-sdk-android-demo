@@ -1,13 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/jw_linearlayout"
+    android:id="@+id/jwplayerfragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
+    android:background="@color/white"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:tag="fragment_container"
+    <android.support.v7.app.MediaRouteButton
+        android:id="@+id/media_route_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:mediaRouteTypes="user"
+        android:visibility="gone" />
+
+    <com.longtailvideo.jwplayer.JWPlayerView
+        android:id="@+id/jwplayer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -23,13 +32,13 @@
             android:id="@+id/output"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:textSize="@dimen/myfontsize"
             android:fontFamily="@string/myfontdefault"
-            android:textColor="@color/white" />
-    </ScrollView>
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/myfontsize" />
 
+    </ScrollView>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.cast;
 
 import android.content.Context;
 
@@ -9,6 +9,7 @@ import com.google.android.gms.cast.framework.SessionProvider;
 import com.google.android.gms.cast.framework.media.CastMediaOptions;
 import com.google.android.gms.cast.framework.media.MediaIntentReceiver;
 import com.google.android.gms.cast.framework.media.NotificationOptions;
+import com.jwplayer.opensourcedemo.JWPlayerFragmentView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,12 +30,12 @@ public class CastOptionsProvider implements OptionsProvider {
                         MediaIntentReceiver.ACTION_SKIP_NEXT,
                         MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
                         MediaIntentReceiver.ACTION_STOP_CASTING), new int[]{0, 1, 2})
-                .setTargetActivityClassName(JWPlayerViewExample.class.getName())
+                .setTargetActivityClassName(JWPlayerFragmentView.class.getName())
                 .build();
 
         final CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setNotificationOptions(notificationOptions)
-                .setExpandedControllerActivityClassName(JWPlayerViewExample.class.getName())
+                .setExpandedControllerActivityClassName(JWPlayerFragmentView.class.getName())
                 .build();
 
         return new CastOptions.Builder()
