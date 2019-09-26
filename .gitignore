@@ -1,4 +1,5 @@
 # Android secret license key
+demo/src/main/res/values/secrets.xml
 app/src/main/res/values/secrets.xml
 
 # Built application files
