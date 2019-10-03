@@ -122,10 +122,9 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .playlist(playlistItemList)
                 .autostart(true)
                 .preload(true)
-                .mute(true)
                 .allowCrossProtocolRedirects(true)
 //				.skinConfig(skinConfig)
-				.advertising(vastAdvertising)
+//				.advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
 //				.advertising(vmapAdvertising)
                 .build();

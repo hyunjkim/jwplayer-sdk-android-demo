@@ -18,7 +18,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -30,6 +30,16 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            def requested = details.requested
+            if (requested.group == "com.android.support") {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion "26.+"
+                }
+            }
+        }
     }
 }
 
@@ -47,11 +57,9 @@ dependencies {
 
     // Only required if using IMA / Chromecast / Freewheel features
     implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
-    implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
     implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
 
-    // Only required if using AAR / JAR
-    //	implementation 'com.google.android.gms:play-services-ads:15.0.1'
-    //	implementation 'com.google.ads.interactivemedia.v3:interactivemedia:3.8.7'
-    //      implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1'
+    // For min SDK < 21
+    implementation 'com.android.support:multidex:1.0.3'
+
 }
