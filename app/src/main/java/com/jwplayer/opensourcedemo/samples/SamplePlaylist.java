@@ -13,6 +13,7 @@ public class SamplePlaylist {
     public static List<PlaylistItem> createPlaylist() {
 
         String[] playlist = {
+                "https://cdn.jwplayer.com/manifests/TEWVVMeh.m3u8",
                 "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
                 "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
                 "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
@@ -22,6 +23,7 @@ public class SamplePlaylist {
                 "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
         };
         String[] titles = {
+                "Iz*One - Highlight",
                 "Alaskan Dogs",
                 "Surfer Dudes",
                 "Beach Waves",
