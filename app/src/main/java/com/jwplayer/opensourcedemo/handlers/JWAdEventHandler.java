@@ -1,10 +1,11 @@
-package com.jwplayer.opensourcedemo;
+package com.jwplayer.opensourcedemo.handlers;
 
 import android.os.Build;
 import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.jwplayer.opensourcedemo.jwutils.Logger;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.AdBreakEndEvent;
 import com.longtailvideo.jwplayer.events.AdBreakStartEvent;
@@ -24,12 +25,8 @@ import com.longtailvideo.jwplayer.events.BeforeCompleteEvent;
 import com.longtailvideo.jwplayer.events.BeforePlayEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class JWAdEventHandler implements
         AdvertisingEvents.OnAdBreakEndListener,
@@ -54,7 +51,7 @@ public class JWAdEventHandler implements
     private JWPlayerView mPlayer;
 
 
-    JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
+    public JWAdEventHandler(JWPlayerView jwPlayerView, TextView output, ScrollView scrollview) {
         mPlayer = jwPlayerView;
         mScroll = scrollview;
         mOutput = output;

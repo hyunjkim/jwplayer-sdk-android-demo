@@ -2,7 +2,6 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -10,14 +9,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
+import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
+import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
+import com.jwplayer.opensourcedemo.jwutils.Logger;
+import com.jwplayer.opensourcedemo.samples.SampleAds;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.configuration.RelatedConfig;
@@ -55,10 +58,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
         mPlayerView.addOnFullscreenListener(this);
 
@@ -80,9 +83,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
 
-
     }
-
     /*
      * Setup RelatedConfig Example with JWPlayerView
      * */
@@ -121,7 +122,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .autoPlayTimer(3)
                 .onComplete(RelatedConfig.RELATED_ON_COMPLETE_AUTOPLAY)
                 .onClick(RelatedConfig.RELATED_ON_CLICK_PLAY)
-                .displayMode(RELATED_DISPLAY_MODE_OVERLAY)
+                .displayMode(RelatedConfig.RELATED_DISPLAY_MODE_SHELF)
                 .build();
 
         PlayerConfig config = new PlayerConfig.Builder()
