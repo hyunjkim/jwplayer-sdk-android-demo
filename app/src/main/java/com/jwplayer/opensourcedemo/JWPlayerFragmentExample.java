@@ -2,14 +2,15 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.jwplayer.opensourcedemo.jwutil.Logger;
@@ -52,7 +53,8 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
         outputTextView.setText(Logger.generateLogLine("JWPlayerFragmentExample \r\nBuild version: " + mPlayerView.getVersionCode()));
     }
 
-    /** Setup JW Player
+    /**
+     * Setup JW Player
      * More info about our Player Configuration and other available Configurations: {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
      * 1 - PlayerConfig
      * 2 - LogoConfig
