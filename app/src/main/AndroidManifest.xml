@@ -22,7 +22,8 @@
 
         <activity
             android:name=".JWPlayerFragmentExample"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+        </activity>
 
         <!--TODO Add this if you are using Chromecast -->
         <meta-data

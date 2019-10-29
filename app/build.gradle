@@ -14,7 +14,6 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-//        multiDexEnabled true // For min SDK < 21 & not using Androidx
 
     }
     buildTypes {
@@ -32,27 +31,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    configurations.all {
-        resolutionStrategy.eachDependency { details ->
-            def requested = details.requested
-            if (requested.group == "com.android.support") {
-                if (!requested.name.startsWith("multidex")) {
-                    details.useVersion "26.+"
-                }
-            }
-        }
-    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-//    implementation("com.android.support:appcompat-v7:${supportLibVersion}") {
-//        force = 'true'
-//    }
-//    implementation("com.android.support:design:${supportLibVersion}") {
-//        force = 'true'
-//    }
+
+    implementation'androidx.appcompat:appcompat:1.0.0'
+
+    implementation'com.google.android.material:material:1.0.0'
+
+    implementation("com.android.support:appcompat-v7:${supportLibVersion}") {
+        force = 'true'
+    }
+    implementation("com.android.support:design:${supportLibVersion}") {
+        force = 'true'
+    }
 
     implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
     implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
@@ -60,8 +54,5 @@ dependencies {
     // Only required if using IMA / Chromecast / Freewheel features
     implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
     implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
-
-    // For min SDK < 21 & not using Androidx
-//    implementation 'com.android.support:multidex:1.0.3'
 
 }

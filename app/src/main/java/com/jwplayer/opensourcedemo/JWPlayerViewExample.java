@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -19,19 +20,16 @@ import com.jwplayer.opensourcedemo.jwutil.Logger;
 import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
 import com.jwplayer.opensourcedemo.listeners.JWEventHandler;
 import com.jwplayer.opensourcedemo.listeners.KeepScreenOnHandler;
-import com.jwplayer.opensourcedemo.samples.SampleAds;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
-import com.longtailvideo.jwplayer.configuration.SkinConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.ads.Advertising;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
-import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
+
+//import com.jwplayer.opensourcedemo.listeners.JWAdEventHandler;
 
 public class JWPlayerViewExample extends AppCompatActivity implements
         VideoPlayerEvents.OnFullscreenListener {
@@ -57,10 +55,25 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+
         mPlayerView = findViewById(R.id.jwplayer);
         TextView outputTextView = findViewById(R.id.output);
         ScrollView scrollView = findViewById(R.id.scroll);
         mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
+
+        findViewById(R.id.audioplaylist1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setupJWPlayer("1");
+            }
+        });
+
+        findViewById(R.id.audioplaylist2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setupJWPlayer("");
+            }
+        });
 
         // Print JWPlayer Version
         outputTextView.setText(Logger.generateLogLine("JWPlayerViewExample \r\nBuild version: " + mPlayerView.getVersionCode()));
@@ -78,7 +91,7 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
 
         // Setup JWPlayer
-        setupJWPlayer();
+        setupJWPlayer("");
 
         // CastContext is lazily initialized when the CastContext.getSharedInstance() is called.
         mCastContext = CastContext.getSharedInstance(this);
@@ -98,25 +111,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      * More info about our Player Configuration and other available Configurations:
      * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
      */
-    private void setupJWPlayer() {
+    private void setupJWPlayer(String setup) {
 
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
+        List<PlaylistItem> playlistItemList;
 
-        // Ima Tag Example
-        ImaAdvertising imaAdvertising = SampleAds.getImaAd();
-
-        // VAST Tag Example
-        Advertising vastAdvertising = SampleAds.getVastAd();
-
-        // VMAP Tag Example
-        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("vast");
-
-        // Skin Config
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.host.com/css/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
+        if(setup.equals("1")){
+            playlistItemList = SamplePlaylist.createAudioPlaylist();
+        } else {
+            playlistItemList = SamplePlaylist.createAudioMediaSourcePlaylist();
+        }
 
         // PlayerConfig
         PlayerConfig config = new PlayerConfig.Builder()
@@ -124,10 +127,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .autostart(true)
                 .preload(true)
                 .allowCrossProtocolRedirects(true)
-//				.skinConfig(skinConfig)
-//				.advertising(vastAdvertising)
-//				.advertising(imaAdvertising)
-//				.advertising(vmapAdvertising)
                 .build();
 
         mPlayerView.setup(config);

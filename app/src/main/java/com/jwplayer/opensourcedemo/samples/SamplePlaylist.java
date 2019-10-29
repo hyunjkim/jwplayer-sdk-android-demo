@@ -1,12 +1,11 @@
 package com.jwplayer.opensourcedemo.samples;
 
-import android.util.Log;
-
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SamplePlaylist {
@@ -19,13 +18,9 @@ public class SamplePlaylist {
 
         String[] playlist = {
                 "https://cdn.jwplayer.com/manifests/RDn7eg0o.m3u8",
-                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
-                "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
+                "https://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
                 "https://cdn.jwplayer.com/manifests/8TbJTFy5.m3u8",
-                "https://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "https://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+                "https://cdn.jwplayer.com/manifests/RDn7eg0o.m3u8",
         };
 
         for (String each : playlist) {
@@ -41,6 +36,78 @@ public class SamplePlaylist {
             PlaylistItem item = new PlaylistItem.Builder()
                     .file(each)
                     .title(array[1])
+                    .build();
+
+            playlistItemList.add(item);
+        }
+
+        return playlistItemList;
+    }
+
+
+    /*
+     * Create a Audio Playlist Example
+     * */
+    public static List<PlaylistItem> createAudioPlaylist() {
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+        String[] audios = {
+                "1g8jjku3",
+                "RDn7eg0o",
+                "yp34SRmf",
+                "1b02B03R"
+        };
+
+        for (int index = 0; index < audios.length; index++) {
+
+            String mediaId = audios[index];
+
+            String audio = "https://cdn.jwplayer.com/videos/" + mediaId + "-g8UjtXW6.m4a";
+
+            PlaylistItem item = new PlaylistItem.Builder()
+                    .file(audio)
+                    .title(mediaId)
+                    .image("https://cdn.jwplayer.com/v2/media/"+mediaId+"/poster.jpg")
+                    .build();
+            playlistItemList.add(item);
+        }
+
+        return playlistItemList;
+    }
+
+    /**
+     * MediaSource with only Audio Playlist Example
+     * <p>
+     * Adaptive Streaming for more info: https://support.jwplayer.com/articles/adaptive-streaming-reference
+     */
+    public static List<PlaylistItem> createAudioMediaSourcePlaylist() {
+
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+
+        String[] audios = {
+                "1g8jjku3",
+                "RDn7eg0o",
+                "yp34SRmf",
+                "1b02B03R"
+        };
+
+        for (int index = 0; index < audios.length; index++) {
+
+            String mediaId = audios[index];
+
+            String audio = "https://cdn.jwplayer.com/videos/" + mediaId + "-g8UjtXW6.m4a";
+
+            MediaSource ms = new MediaSource.Builder()
+                    .file(audio)
+                    .label("AAC Audio " + mediaId)
+                    .type(MediaType.AAC)
+                    .build();
+
+            List<MediaSource> mediaSourceList = Collections.singletonList(ms);
+
+            PlaylistItem item = new PlaylistItem.Builder()
+                    .sources(mediaSourceList)
+                    .image("https://cdn.jwplayer.com/v2/media/"+mediaId+"/poster.jpg")
                     .build();
 
             playlistItemList.add(item);
