@@ -2,7 +2,9 @@ package com.jwplayer.opensourcedemo.jwrecyclerview;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.jwplayer.opensourcedemo.R;
 import com.jwplayer.opensourcedemo.jwrecyclerview.RecyclerViewFragment.ViewHolderLifeCycleCallback;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 /**
@@ -23,30 +26,49 @@ public class JWPlayerViewHolder extends RecyclerView.ViewHolder implements ViewH
     private final TextView textView;
     private JWPlayerView mPlayerView;
     private ImageView mImageView;
+    private FrameLayout mFrameLayout;
+    private ProgressBar mProgressBar;
 
     public JWPlayerViewHolder(View v) {
         super(v);
 
         mImageView = v.findViewById(R.id.imageview);
+        mFrameLayout = v.findViewById(R.id.temp_framelayout);
+        mProgressBar = v.findViewById(R.id.temp_progressbar);
         mPlayerView = v.findViewById(R.id.jwplayerview);
         textView = v.findViewById(R.id.textView);
-
-        hide(true);
 
         mPlayerView.getConfig().setPreload(true);
         mPlayerView.setControls(false);
 
-        mPlayerView.addOnFirstFrameListener(firstFrameEvent -> hide(false));
+        hide(true, getCurrPlayerStateIdleOrBuffer());
+
+        mPlayerView.addOnIdleListener(idleEvent -> hide(true,true));
+        mPlayerView.addOnBufferListener(bufferEvent -> hide(true,true));
+        mPlayerView.addOnFirstFrameListener(firstFrameEvent -> hide(false, false));
+        mPlayerView.addOnCompleteListener(completeEvent -> hide(true,false));
     }
 
-    public void hide(boolean hidePlayer) {
+    public boolean getCurrPlayerStateIdleOrBuffer(){
+        return mPlayerView.getState().equals(PlayerState.IDLE) || mPlayerView.getState().equals(PlayerState.BUFFERING);
+    }
 
-        if (hidePlayer) {
+    public void hide(boolean hidePlayer, boolean showProgressBar) {
+
+        if(showProgressBar) {
             mPlayerView.setVisibility(View.GONE);
+            mFrameLayout.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mProgressBar.bringToFront();
+            mImageView.setVisibility(View.VISIBLE);
+        } else if (hidePlayer){
+            mPlayerView.setVisibility(View.GONE);
+            mFrameLayout.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
             mImageView.setVisibility(View.VISIBLE);
         } else {
-            mImageView.setVisibility(View.GONE);
             mPlayerView.setVisibility(View.VISIBLE);
+            mFrameLayout.setVisibility(View.GONE);
         }
     }
 
@@ -61,14 +83,14 @@ public class JWPlayerViewHolder extends RecyclerView.ViewHolder implements ViewH
                 .load(image)
                 .into(mImageView);
 
-        hide(true);
-
+        hide(true, false);
     }
 
     public void showPlayer(PlaylistItem item) {
+        Log.d(TAG, "showPlayer()");
         mPlayerView.load(item);
         mPlayerView.play();
-        hide(false);
+        hide(false, getCurrPlayerStateIdleOrBuffer());
     }
 
     public JWPlayerView getPlayer() {

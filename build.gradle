@@ -18,7 +18,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            url 'https://origin-mvn.jwplayer.com/content/repositories/develop/'
+            url 'https://mvn.jwplayer.com/content/repositories/releases/'
         }
     }
 }

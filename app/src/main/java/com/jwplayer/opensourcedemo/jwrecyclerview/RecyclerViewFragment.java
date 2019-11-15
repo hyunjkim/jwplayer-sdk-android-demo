@@ -19,6 +19,9 @@ import java.util.List;
 
 /**
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager}.
+ *
+ * Credits to : Google
+ * {link - @https://github.com/android/views-widgets-samples/blob/master/RecyclerView/Application/src/main/java/com/example/android/recyclerview/CustomAdapter.java}
  */
 public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.PlayerActiveCallback {
 
@@ -28,7 +31,7 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
     private RecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<PlaylistItem> playlist;
-    private View viewHolderParent;
+    private View mActiveViewHolder;
     private int activePosition, oldPosition;
 
     @Override
@@ -72,38 +75,50 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
         mRecyclerView.setAdapter(mAdapter);
         // END_INCLUDE(initializeRecyclerView)
 
+
+        // Credits to : https://androidwave.com/exoplayer-in-recyclerview-in-android/
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                // There's a special case when the end of the list has been reached.
-                // Need to handle that with this bit of logic
-
-                if (recyclerView.canScrollVertically(0)) {
+                //  if the recyclerview is scrolling vertically
+                if (recyclerView.canScrollVertically(View.SCROLL_AXIS_VERTICAL)) {
 
                     LinearLayoutManager myLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                    // This is handled by the LinearLayoutManager Class that checks with layoutbounds and layout flags
                     int scrollPosition = myLayoutManager.findFirstCompletelyVisibleItemPosition();
 
-                    viewHolderParent = recyclerView.getLayoutManager().findViewByPosition(scrollPosition);
+                    // Active View Holder
+                    mActiveViewHolder = recyclerView.getLayoutManager().findViewByPosition(scrollPosition);
 
                     oldPosition = activePosition;
-                    activePosition = recyclerView.getChildAdapterPosition(viewHolderParent);
 
-                    Log.d(TAG, "onScroll - old position: " + oldPosition);
-                    Log.d(TAG, "onScroll - active position: " + activePosition);
+                    // Get the Active Holder position in the Adapter
+                    activePosition = recyclerView.getChildAdapterPosition(mActiveViewHolder);
+
+                    Log.d(TAG, "onScroll - OLD position: " + oldPosition);
+                    Log.d(TAG, "onScroll - ACTIVE position: " + activePosition);
 
                 } else {
+
+                    // If the recyclerview stopped scrolling
                     oldPosition = activePosition;
-                    activePosition = recyclerView.getAdapter().getItemCount()-1;
+
+                    // I am at the end of the recyclerview, this is the active view
+                    activePosition = recyclerView.getAdapter().getItemCount() - 1;
                 }
 
+                // If the old view and the active view are the same - do nothing
+                if (oldPosition != activePosition) {
 
-                // release the older position of the video
-                mAdapter.notifyItemChanged(oldPosition, false);
+                    // STOP the video before
+                    mAdapter.notifyItemChanged(oldPosition, false);
 
-                // autoplay the next video
-                mAdapter.notifyItemChanged(activePosition, true);
+                    // SETUP + AUTOPLAY this video
+                    mAdapter.notifyItemChanged(activePosition, true);
+                }
             }
 
 
@@ -113,24 +128,34 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
             }
         });
 
+
+        // Check when the view disappears
+        // Credits to : https://androidwave.com/exoplayer-in-recyclerview-in-android/
         mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
-            public void onChildViewAttachedToWindow(@NonNull View view) {
+            public void onChildViewAttachedToWindow(@NonNull View currentView) {
+//
+//                int preparePosition = mRecyclerView.getChildAdapterPosition(currentView);
+//
+//                mRecyclerView.post(new Runnable(){
+//                    @Override
+//                    public void run() {
+//                        mAdapter.notifyItemChanged(preparePosition, false);
+//                    }
+//                });
             }
 
             @Override
-            public void onChildViewDetachedFromWindow(@NonNull View view) {
-                if (viewHolderParent != null && viewHolderParent.equals(view)) {
+            public void onChildViewDetachedFromWindow(@NonNull View currView) {
+
+                // STOP THE CURRENT VIDEO - If this was the active view and it is leaving the view
+
+                if (mActiveViewHolder != null && mActiveViewHolder.equals(currView)) {
+
                     Log.d(TAG, "onChildViewDetachedFromWindow: ");
 
-
                     // TODO: https://stackoverflow.com/questions/43221847/cannot-call-this-method-while-recyclerview-is-computing-a-layout-or-scrolling-wh
-                    mRecyclerView.post(new Runnable(){
-                        @Override
-                        public void run() {
-                            mAdapter.notifyItemChanged(oldPosition, false);
-                        }
-                    });
+                    mRecyclerView.post(() -> mAdapter.notifyItemChanged(oldPosition, false));
                 }
             }
         });
@@ -139,6 +164,7 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
     }
 
 
+    // TODO: work on the lifecycle callbacks
     @Override
     public void onStart() {
         super.onStart();
@@ -158,6 +184,7 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
 //        viewHolderCallBack.onPause();
         super.onPause();
     }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -171,18 +198,6 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
         super.onDestroy();
     }
 
-    public void addViewHolderLifeCycleCallback(){
-
-    }
-
-    public interface ViewHolderLifeCycleCallback{
-        void onStart();
-        void onResume();
-        void onPause();
-        void onStop();
-        void onDestroy();
-    }
-    
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save currently selected layout manager.
@@ -200,5 +215,17 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
     @Override
     public int playerActivePosition() {
         return activePosition;
+    }
+
+    public interface ViewHolderLifeCycleCallback {
+        void onStart();
+
+        void onResume();
+
+        void onPause();
+
+        void onStop();
+
+        void onDestroy();
     }
 }
