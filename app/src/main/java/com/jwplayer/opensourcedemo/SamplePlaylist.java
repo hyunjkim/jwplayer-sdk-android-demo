@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo.samples;
+package com.jwplayer.opensourcedemo;
 
 import android.util.Log;
 
@@ -19,14 +19,20 @@ public class SamplePlaylist {
 
         String[] playlist = {
                 "https://cdn.jwplayer.com/manifests/RDn7eg0o.m3u8",
-                "http://content.jwplatform.com/videos/RDn7eg0o-cIp6U8lV.mp4",
-                "https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8",
                 "http://content.jwplatform.com/videos/tkM1zvBq-cIp6U8lV.mp4",
                 "https://cdn.jwplayer.com/manifests/8TbJTFy5.m3u8",
                 "https://content.jwplatform.com/videos/i3q4gcBi-cIp6U8lV.mp4",
-                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4",
-                "https://content.jwplatform.com/videos/8TbJTFy5-cIp6U8lV.mp4",
+                "http://content.jwplatform.com/videos/iLwfYW2S-cIp6U8lV.mp4"
         };
+        String[] images = {
+                "RDn7eg0o",
+                "tkM1zvBq",
+                "8TbJTFy5",
+                "i3q4gcBi",
+                "iLwfYW2S"
+        };
+
+        int index = 0;
 
         for (String each : playlist) {
 
@@ -40,8 +46,11 @@ public class SamplePlaylist {
 
             PlaylistItem item = new PlaylistItem.Builder()
                     .file(each)
+                    .image("https://cdn.jwplayer.com/v2/media/"+images[index]+"/poster.jpg")
                     .title(array[1])
                     .build();
+
+            index+=1;
 
             playlistItemList.add(item);
         }

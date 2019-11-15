@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">JW Player SDK Android Demo</string>
-    <string name="fragment_example">JWPlayerFragment Example</string>
-    <string name="view_example">JWPlayerView Example</string>
+    <string name="app_name">JW Player SDK v3.9.0</string>
+    <string name="view_example">JW Player AutoPlay RV</string>
     <string name="media_route_menu_title">Cast</string>
     <string name="myfontdefault">monospace</string>
 </resources>
