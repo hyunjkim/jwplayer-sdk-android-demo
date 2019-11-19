@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<JWPlayerViewHolder> {
 
     // BEGIN_INCLUDE(recyclerViewOnCreateViewHolder)
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
     public JWPlayerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
@@ -61,6 +63,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<JWPlayerViewHolder> {
         String image = mPlaylist.get(position).getImage();
         String url = mPlaylist.get(position).getFile();
 
+        viewHolder.currPosition(position);
         viewHolder.getPlayer().getConfig().setImage(image);
         viewHolder.getTextView().setText(title);
 
@@ -86,7 +89,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<JWPlayerViewHolder> {
 
         String image = mPlaylist.get(position).getImage();
 
-        if (!payloads.isEmpty() && payloads.contains("false")) {
+        if (!payloads.isEmpty() && payloads.get(0).equals("false")) {
             JWPlayerViewHolder.hidePlayer(image);
         }
     }

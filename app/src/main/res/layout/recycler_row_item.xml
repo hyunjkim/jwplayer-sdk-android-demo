@@ -1,35 +1,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent_vh_layout"
     android:layout_width="match_parent"
     android:layout_height="500dp"
     android:layout_margin="16dp"
     android:gravity="center_vertical"
     android:orientation="vertical">
 
-    <com.longtailvideo.jwplayer.JWPlayerView
-        android:id="@+id/jwplayerview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"
-        app:jw_controls="false"
-        app:jw_preload="true" />
-
-    <!--        android:background="@drawable/ic_launcher"-->
-
     <FrameLayout
         android:id="@+id/temp_framelayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight=".85">
+
+        <com.longtailvideo.jwplayer.JWPlayerView
+            android:id="@+id/jwplayerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:jw_controls="false"
+            app:jw_preload="true" />
 
         <ProgressBar
             android:id="@+id/temp_progressbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="150dp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/imageview"
@@ -48,6 +46,16 @@
         android:background="@color/cardview_dark_background"
         android:gravity="center"
         android:text="Row Text"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/player_size_tv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".15"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="Player Size: "
         android:textColor="@color/white"
         android:textStyle="bold" />
 </LinearLayout>

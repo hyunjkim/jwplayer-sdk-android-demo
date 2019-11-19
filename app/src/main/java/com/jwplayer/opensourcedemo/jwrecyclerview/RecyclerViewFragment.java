@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager}.
- *
+ * <p>
  * Credits to : Google
  * {link - @https://github.com/android/views-widgets-samples/blob/master/RecyclerView/Application/src/main/java/com/example/android/recyclerview/CustomAdapter.java}
  */
@@ -32,7 +32,7 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
     private RecyclerView.LayoutManager mLayoutManager;
     private List<PlaylistItem> playlist;
     private View mActiveViewHolder;
-    private int activePosition, oldPosition;
+    private int activePosition = 0, oldPosition = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,9 +75,9 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
         mRecyclerView.setAdapter(mAdapter);
         // END_INCLUDE(initializeRecyclerView)
 
-
         // Credits to : https://androidwave.com/exoplayer-in-recyclerview-in-android/
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -85,29 +85,58 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
                 //  if the recyclerview is scrolling vertically
                 if (recyclerView.canScrollVertically(View.SCROLL_AXIS_VERTICAL)) {
 
+
+                    RecyclerView.LayoutManager mRecyclerLayoutManager = recyclerView.getLayoutManager();
                     LinearLayoutManager myLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                    // This is handled by the LinearLayoutManager Class that checks with layoutbounds and layout flags
-                    int scrollPosition = myLayoutManager.findFirstCompletelyVisibleItemPosition();
+                    // TODO: Make this view active if I can see 70%
+                    if (myLayoutManager != null && mRecyclerLayoutManager != null) {
 
-                    // Active View Holder
-                    mActiveViewHolder = recyclerView.getLayoutManager().findViewByPosition(scrollPosition);
+                        // This is handled by the LinearLayoutManager Class that checks with layoutbounds and layout flags
+                        int scrollPosition = myLayoutManager.findFirstCompletelyVisibleItemPosition();
 
-                    oldPosition = activePosition;
+                        View currView = mRecyclerLayoutManager.findViewByPosition(scrollPosition);
 
-                    // Get the Active Holder position in the Adapter
-                    activePosition = recyclerView.getChildAdapterPosition(mActiveViewHolder);
+                        if (currView != null) {
 
-                    Log.d(TAG, "onScroll - OLD position: " + oldPosition);
-                    Log.d(TAG, "onScroll - ACTIVE position: " + activePosition);
+                            Log.d(TAG, "onScrollStateChanged - height: " + currView.getHeight());
+
+                            int currHeight  = currView.getHeight();
+
+
+                            //  Get 70% of the view that I don't need
+                            double seventyPercent = currHeight * (.7);
+
+                            // Get 30% of the view that I don't need
+                            double thirtyPercent = currHeight * (.3);
+
+                            // Is this current view able to return 70%
+                            boolean isSeventy = thirtyPercent < seventyPercent;
+
+                            // If I can see 70% of the view & the view is not active
+                            if (isSeventy) {
+
+                                // Active View Holder
+                                mActiveViewHolder = currView;
+
+                                oldPosition = activePosition;
+
+                                // Get the Active Holder position in the Adapter
+                                activePosition = recyclerView.getChildAdapterPosition(mActiveViewHolder);
+                            }
+                        }
+                    }
+//                    Log.d(TAG, "onScroll - OLD position: " + oldPosition);
+//                    Log.d(TAG, "onScroll - ACTIVE position: " + activePosition);
 
                 } else {
-
                     // If the recyclerview stopped scrolling
                     oldPosition = activePosition;
 
                     // I am at the end of the recyclerview, this is the active view
-                    activePosition = recyclerView.getAdapter().getItemCount() - 1;
+                    if (recyclerView.getAdapter() != null) {
+                        activePosition = recyclerView.getAdapter().getItemCount() - 1;
+                    }
                 }
 
                 // If the old view and the active view are the same - do nothing
@@ -134,15 +163,6 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
         mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View currentView) {
-//
-//                int preparePosition = mRecyclerView.getChildAdapterPosition(currentView);
-//
-//                mRecyclerView.post(new Runnable(){
-//                    @Override
-//                    public void run() {
-//                        mAdapter.notifyItemChanged(preparePosition, false);
-//                    }
-//                });
             }
 
             @Override
@@ -152,7 +172,7 @@ public class RecyclerViewFragment extends Fragment implements RecyclerAdapter.Pl
 
                 if (mActiveViewHolder != null && mActiveViewHolder.equals(currView)) {
 
-                    Log.d(TAG, "onChildViewDetachedFromWindow: ");
+                    Log.d(TAG, "onChildViewDetachedFromWindow ");
 
                     // TODO: https://stackoverflow.com/questions/43221847/cannot-call-this-method-while-recyclerview-is-computing-a-layout-or-scrolling-wh
                     mRecyclerView.post(() -> mAdapter.notifyItemChanged(oldPosition, false));
