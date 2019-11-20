@@ -138,54 +138,8 @@ public class JWPlayerViewExample extends AppCompatActivity
         invalidateOptionsMenu();
     }
 
-    public void setupFreeWheel() {
-        // Create your FreeWheel advertising settings
-        int networkId = 42015;
-        String serverId = "http://7cee0.v.fwmrm.net/";
-        String profileId = "fw_tutorial_android";
-        String sectionId = "fw_tutorial_android";
-        String mediaId = "fw_simple_tutorial_asset";
-        FwSettings settings = new FwSettings(networkId, serverId, profileId, sectionId, mediaId);
-
-        // Create advertising object
-        FwAdvertising advertising = new FwAdvertising(settings);
-
-        // Construct a new AdBreak with a specific offset
-        // This AdBreak will play a midroll at 10%
-        AdBreak adBreak = new AdBreak("10%", AdSource.FW, "placeholder_string");
-
-        // Add the AdBreak to a List
-        List<AdBreak> schedule = new ArrayList<>();
-        schedule.add(adBreak);
-
-        // Build a PlaylistItem and assign the schedule
-        PlaylistItem video = new PlaylistItem.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .adSchedule(schedule)
-                .build();
-
-        // Add the PlaylistItem to a List
-        List<PlaylistItem> playlist = new ArrayList<>();
-        playlist.add(video);
-
-        // Build the PlayerConfig
-        PlayerConfig playerConfig = new PlayerConfig.Builder()
-                .playlist(playlist)
-                .advertising(advertising)
-                .build();
-
-        // Setup the player
-        mPlayerView.setup(playerConfig);
-    }
-
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-
-        // Set fullscreen when the device is rotated to landscape
-//        currentConfig = newConfig.orientation;
-//        setRequestedOrientation(newConfig.orientation);
-
         super.onConfigurationChanged(newConfig);
     }
 
