@@ -1,1 +1,4 @@
+# Android secret license key
+/src/main/res/values/secrets.xml
+
 /build
