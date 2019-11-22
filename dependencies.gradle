@@ -1,0 +1,24 @@
+ext {
+    // SDK and tools
+    supportLibraryVersion = '1.0.0'
+    jwplayerVersion = '3.9.0'
+
+    // Library dependencies
+    supportDependencies = [
+            androidx            :       "androidx.appcompat:appcompat:${supportLibraryVersion}",
+            materialDesign      :        "com.google.android.material:material:${supportLibraryVersion}"
+    ]
+
+    constraintlayout = [
+            version             :        'androidx.constraintlayout:constraintlayout:1.1.3'
+    ]
+
+    jwplayerDependencies = [
+            core                :        "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}",
+            common              :        "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}",
+            chromecast          :        "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}",
+            ima                 :        "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}",
+            fw                  :        "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
+    ]
+
+}
