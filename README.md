@@ -8,16 +8,16 @@ This application contains an example implementation of the JW Player SDK for And
 -	Open the `AndroidManifest.xml` file and replace `{YOUR_LICENSE_KEY}` with your license key, 
 -   Get your license key from https://www.jwplayer.com/pricing
 
-# For more information on how to use our SDK refer to our developer guide:
+# For more information - How to use our SDK refer to our developer guide:
 
 * **Developer Guide:** [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 * **JWPlayer Java Docs:** https://developer.jwplayer.com/sdk/android/reference/
 * **JWPlayer Demo** https://github.com/jwplayer/jwplayer-sdk-android-demo
 
 ## Demo
-![](https://s3.amazonaws.com/hyunjoo.success.jwplayer.com/android/github/v390-trending-manual.gif)
+![hello](https://s3.amazonaws.com/hyunjoo.success.jwplayer.com/android/github/v390-trending-manual.gif)
 
-* **NOTE** Make sure to have a Manual/Trending Playlist Player ID ready, you can find that from your JW Dashboard 
+### **[NOTE]** Make sure to have a Manual/Trending Playlist Player ID ready, you can find that from your JW Dashboard 
 
 1. **MainActivity** 
     * **New Playlist Item**
