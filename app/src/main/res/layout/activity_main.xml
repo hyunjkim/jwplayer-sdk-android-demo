@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.longtailvideo.jwplayer.JWPlayerView
+        android:id="@+id/jwplayer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="H,16:9"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/firstrow_playlistid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:hint="Enter Manual/Trend Playlist ID"
+        android:imeOptions="actionDone"
+        android:maxLength="8"
+        android:maxLines="1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/firstrow_btn"
+        app:layout_constraintHeight_percent=".065"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/jwplayer"
+        app:layout_constraintWidth_percent=".8" />
+
+    <Button
+        android:id="@+id/firstrow_btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="getNewPlaylist"
+        android:text="Enter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".065"
+        app:layout_constraintTop_toBottomOf="@id/jwplayer"
+        app:layout_constraintWidth_percent=".2" />
+
+    <FrameLayout
+        android:id="@+id/firstrow_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".26"
+        app:layout_constraintTop_toBottomOf="@id/firstrow_playlistid">
+
+        <ProgressBar
+            android:id="@+id/progressbar1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/manual_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+    </FrameLayout>
+
+    <EditText
+        android:id="@+id/secondrow_playlistid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:hint="Enter Manual/Trend Playlist ID"
+        android:imeOptions="actionDone"
+        android:maxLength="8"
+        android:maxLines="1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/secondrow_btn"
+        app:layout_constraintHeight_percent=".065"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/firstrow_rv"
+        app:layout_constraintWidth_percent=".8" />
+
+    <Button
+        android:id="@+id/secondrow_btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="getNewPlaylist"
+        android:text="Enter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".065"
+        app:layout_constraintTop_toBottomOf="@id/firstrow_rv"
+        app:layout_constraintWidth_percent=".2" />
+
+    <FrameLayout
+        android:id="@+id/secondrow_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".26"
+        app:layout_constraintTop_toBottomOf="@id/secondrow_playlistid">
+
+        <ProgressBar
+            android:id="@+id/progressbar2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trending_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
