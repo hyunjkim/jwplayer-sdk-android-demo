@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.jwplayer.opensourcedemo.CallbackScreen
+    <com.example.jwplayersdk.mediasourcedemo.CallbackScreen
         android:id="@+id/callback_screen"
         android:layout_width="0dp"
         android:layout_height="0dp"

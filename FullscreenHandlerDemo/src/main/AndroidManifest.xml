@@ -25,7 +25,7 @@
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.example.jwplayersdk.mediasourcedemo.CastOptionsProvider" />
+            android:value="com.example.jwplayersdk.fullscreenhandlerdemo.CastOptionsProvider" />
 
         <!--TODO Set your license key-->
         <meta-data

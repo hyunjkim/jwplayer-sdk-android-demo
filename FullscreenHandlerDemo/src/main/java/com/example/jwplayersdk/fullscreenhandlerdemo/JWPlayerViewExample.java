@@ -6,15 +6,18 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -32,6 +35,10 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     private CallbackScreen mCallbackScreen;
 
+    // Minimized View Size
+    private ConstraintLayout.LayoutParams minimizedView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,16 +46,70 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mPlayerView = findViewById(R.id.jwplayer);
 
+        // Save the values Minimized layout param values
+        minimizedView = (ConstraintLayout.LayoutParams) mPlayerView.getLayoutParams();
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
-        // Keep the screen on during playback
-        new KeepScreenOnHandler(mPlayerView, getWindow());
+        // My Customer Fullscreen Handler
+        // Fullscreen Vertically and Horizontally; NOT only horizontally
+        mPlayerView.setFullscreenHandler(new FullscreenHandler() {
+
+            @Override
+            public void onFullscreenRequested() {
+
+                // Set window fullscreen and remove title bar, and force landscape orientation
+                ConstraintLayout.LayoutParams fullscreenParams =
+                        new ConstraintLayout.LayoutParams(
+                                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                                ConstraintLayout.LayoutParams.MATCH_PARENT);
+
+                // Set to Fullscreen
+                mPlayerView.setLayoutParams(fullscreenParams);
+
+            }
+
+            @Override
+            public void onFullscreenExitRequested() {
+
+                // Minimize the screen
+                mPlayerView.setLayoutParams(minimizedView);
+
+            }
+
+            @Override
+            public void onResume() {
+            }
+
+            @Override
+            public void onPause() {
+            }
+
+            @Override
+            public void onDestroy() {
+            }
+
+            @Override
+            public void onAllowRotationChanged(boolean b) {
+            }
+
+            @Override
+            public void updateLayoutParams(ViewGroup.LayoutParams layoutParams) {
+            }
+
+            @Override
+            public void setUseFullscreenLayoutFlags(boolean b) {
+            }
+        });
+
 
         // Event Logging
         mCallbackScreen = findViewById(R.id.callback_screen);
         mCallbackScreen.registerListeners(mPlayerView);
+
+        // Keep the screen on during playback
+        new KeepScreenOnHandler(mPlayerView, getWindow());
 
         String url = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
@@ -106,9 +167,6 @@ public class JWPlayerViewExample extends AppCompatActivity
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        // Set fullscreen when the device is rotated to landscape
-        mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
-                true);
         super.onConfigurationChanged(newConfig);
     }
 
