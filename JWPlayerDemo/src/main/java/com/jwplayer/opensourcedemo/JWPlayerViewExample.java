@@ -3,6 +3,7 @@ package com.jwplayer.opensourcedemo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.MetaEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
 
@@ -34,7 +36,6 @@ public class JWPlayerViewExample extends AppCompatActivity
 
         mPlayerView = findViewById(R.id.jwplayer);
 
-
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
@@ -45,15 +46,15 @@ public class JWPlayerViewExample extends AppCompatActivity
         mCallbackScreen = findViewById(R.id.callback_screen);
         mCallbackScreen.registerListeners(mPlayerView);
 
-
         PlayerConfig playerConfig = new PlayerConfig.Builder()
                 .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
-                .autostart(true)
+                .mute(true)
                 .build();
 
         mPlayerView.setup(playerConfig);
 
         // Get a reference to the CastContext
+
         mCastContext = CastContext.getSharedInstance(this);
 
     }
