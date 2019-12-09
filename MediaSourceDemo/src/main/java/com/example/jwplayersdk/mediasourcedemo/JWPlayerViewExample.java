@@ -50,21 +50,23 @@ public class JWPlayerViewExample extends AppCompatActivity
         mCallbackScreen = findViewById(R.id.callback_screen);
         mCallbackScreen.registerListeners(mPlayerView);
 
+        String url = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
-        String url =
-                "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
-//                "http://93.190.141.15:7004/humm_64.mp3?userToken=h2TJgv6ayQW1v9HBDOzDcf8";
+        // List of Media Source
+        List<MediaSource> mslist = new ArrayList<>();
 
-        List<MediaSource> mslist = new ArrayList<MediaSource>() {{
-            add(new MediaSource(url, "mp3", false, MediaType.MP3, null));
-        }};
+        // Build the Media Source
+        MediaSource ms = new MediaSource(url, "HLS", false, MediaType.HLS, null);
+
+        // Add the HLS Media Source
+        mslist.add(ms);
 
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
-                .file(url)
-//                .sources(mslist)
+                .sources(mslist)
                 .build();
 
+        // Load and Play
         mPlayerView.load(pi);
 
         // Get a reference to the CastContext

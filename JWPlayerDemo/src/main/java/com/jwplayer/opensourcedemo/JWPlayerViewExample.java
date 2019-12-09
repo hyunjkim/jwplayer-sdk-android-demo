@@ -54,9 +54,7 @@ public class JWPlayerViewExample extends AppCompatActivity
         mPlayerView.setup(playerConfig);
 
         // Get a reference to the CastContext
-
         mCastContext = CastContext.getSharedInstance(this);
-
     }
 
 
