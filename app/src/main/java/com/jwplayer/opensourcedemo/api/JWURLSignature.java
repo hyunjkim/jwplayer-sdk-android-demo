@@ -18,15 +18,13 @@ public class JWURLSignature {
     private long time = 0L;
 
     /**
-     * For more info:
-     * {@Link - https://developer.android.com/reference/java/security/MessageDigest}
-     * {@link - https://mobikul.com/converting-string-md5-hashes-android/}
+     * Credits to:
+     *
+     * First Step -
+     * How to create a signature - {@link - https://developer.jwplayer.com/jwplayer/docs/authentication}
+     * How to create a SHA-1 Hash - {@link - https://developer.android.com/reference/java/security/MessageDigest}
      */
-    public void createSignature(String playerId, long seconds) {
-
-        long milliseconds = TimeUnit.SECONDS.toMillis(50000);
-
-        time = (time == 0L) ? milliseconds : (time += milliseconds);
+    public void createSignature(String playerId) {
 
         long api_nonce = System.currentTimeMillis();
         long api_expireTimeStamp = (System.currentTimeMillis() / 1000L);
@@ -41,7 +39,9 @@ public class JWURLSignature {
 
         try {
             MessageDigest mDigest = MessageDigest.getInstance("SHA-1");
+
             byte[] messageDigestBytes = new byte[0];
+
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                 messageDigestBytes = md5_signature.getBytes(StandardCharsets.UTF_8);
             }
@@ -67,8 +67,10 @@ public class JWURLSignature {
         print("Player URL signature: " + player_url_signature);
     }
 
-    /*
-     * Second step: https://mobikul.com/converting-string-md5-hashes-android/
+    /**
+     * Credits to:
+     *
+     * Second step - {@link - https://mobikul.com/converting-string-md5-hashes-android/}
      * */
     private String createHexString(byte[] messageDigest) {
 

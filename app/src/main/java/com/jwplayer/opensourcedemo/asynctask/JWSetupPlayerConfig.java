@@ -21,7 +21,8 @@ import java.net.URL;
 
 import static com.google.android.exoplayer2.util.Util.toByteArray;
 
-public class JWSetupPlayerConfig extends Activity implements JWPlayerCallback {
+public class JWSetupPlayerConfig extends Activity
+        implements JWPlayerCallback {
 
     private static final String TAG = "JWEVENT";
 
@@ -32,11 +33,14 @@ public class JWSetupPlayerConfig extends Activity implements JWPlayerCallback {
         // TODO: Get your player ID here
         String playerId = "add_your_player_id";
 
+        // Create and get URL Signature
         JWURLSignature jwurlSignature = new JWURLSignature();
-        jwurlSignature.createSignature(playerId, 50);
+        jwurlSignature.createSignature(playerId);
 
+        // API reference - https://developer.jwplayer.com/jwplayer/reference#get_libraries-player-id-js
         String configURL = "https://api.jwplatform.com/v1/players/show" + jwurlSignature.getPlayerApiUrlSignature();
 
+        // Make the network call
         new MyAsyncTask(this).execute(configURL);
 
     }
@@ -44,6 +48,8 @@ public class JWSetupPlayerConfig extends Activity implements JWPlayerCallback {
     // Setup JWPlayer Config
     @Override
     public void setupJWPlayer() {
+
+        // Start a new activity and we will setup JWPlayerView there
         Intent intent = new Intent(this, JWPlayerViewExample.class);
         startActivity(intent);
     }
@@ -52,6 +58,7 @@ public class JWSetupPlayerConfig extends Activity implements JWPlayerCallback {
 
         private PlayerConfig mConfig;
 
+        // Use this listener to let the UI know config is ready
         private JWPlayerCallback mListener;
 
         public MyAsyncTask(JWPlayerCallback listener) {
@@ -80,17 +87,23 @@ public class JWSetupPlayerConfig extends Activity implements JWPlayerCallback {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            // TODO: show progress dialog here
         }
 
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
+            // TODO: show progress values and pass to the dialog (optional)
         }
 
         @Override
         protected void onPostExecute(PlayerConfig playerConfig) {
             super.onPostExecute(playerConfig);
+
+            // Pass the Config info to the source of truth
             JWPlayerConfig.setConfig(mConfig);
+
+            // Setup JWPlayer
             mListener.setupJWPlayer();
         }
 

@@ -22,6 +22,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
 
     private JWPlayerView mPlayerView;
 
+
+    /**
+    * Go to {@link com.jwplayer.opensourcedemo.asynctask.JWSetupPlayerConfig}
+    * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,14 +42,24 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
         CallbackScreen mCallbackScreen = findViewById(R.id.callback_screen);
         mCallbackScreen.registerListeners(mPlayerView);
 
+        // Get Player Config from the source of truth
         PlayerConfig config = JWPlayerConfig.getConfig();
 
         if (config != null) {
+
             Toast.makeText(this, "getConfig", Toast.LENGTH_SHORT).show();
+
+           // Setup JWPlayer with Player Config
             mPlayerView.setup(config);
+
+            // This does not have a playlist because I made a call to only get the config, not including the media
             if (config.getPlaylist() == null) {
+
+                // Load a playlist item
                 mPlayerView.load(new PlaylistItem("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8"));
             }
+        } else {
+            Toast.makeText(this, "Config if null", Toast.LENGTH_SHORT).show();
         }
     }
 
