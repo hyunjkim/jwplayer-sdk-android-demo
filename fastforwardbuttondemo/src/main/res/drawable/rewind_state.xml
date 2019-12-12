@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:targetApi="lollipop">
+
+    <!-- provide a different drawable for each state-->
+    <item
+        android:id="@+id/rewind_pressed"
+        android:drawable="@drawable/custom_rewind_button"
+        android:state_pressed="true" />
+
+    <item
+        android:id="@+id/focused"
+        android:drawable="@color/softwhite"
+        android:state_focused="true" />
+
+    <item
+        android:id="@+id/original"
+        android:drawable="@color/opaque" />
+
+    <!-- specify a transition -->
+    <transition
+        android:fromId="@id/original"
+        android:toId="@id/rewind_pressed">
+        <animation-list android:oneshot="true">
+            <item
+                android:drawable="@drawable/custom_rewind_button"
+                android:duration="100" />
+            <item
+                android:drawable="@color/gray"
+                android:duration="100" />
+            <item
+                android:drawable="@color/opaque"
+                android:duration="100" />
+        </animation-list>
+    </transition>
+
+</animated-selector>

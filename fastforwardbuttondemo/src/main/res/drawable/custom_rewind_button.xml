@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <corners
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="100dp"
+                android:radius="1dp"
+                android:topLeftRadius="0dp"
+                android:topRightRadius="100dp" />
+            <solid android:color="@color/softwhite" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/exo_controls_rewind">
+        <color android:color="@color/gray"/>
+    </item>
+</layer-list>

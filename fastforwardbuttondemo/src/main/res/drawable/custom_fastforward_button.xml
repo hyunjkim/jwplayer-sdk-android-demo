@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <corners
+                android:bottomLeftRadius="100dp"
+                android:bottomRightRadius="0dp"
+                android:radius=".5dp"
+                android:topLeftRadius="100dp"
+                android:topRightRadius="0dp" />
+            <solid android:color="@color/softwhite" />
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/exo_controls_fastforward">
+        <color android:color="@color/gray"/>
+    </item>
+</layer-list>

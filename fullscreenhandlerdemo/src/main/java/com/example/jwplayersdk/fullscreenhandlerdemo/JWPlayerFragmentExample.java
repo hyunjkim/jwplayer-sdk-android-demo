@@ -32,7 +32,7 @@ public class JWPlayerFragmentExample extends AppCompatActivity {
 
         // Construct a new JWPlayerSupportFragment (since we're using AppCompatActivity)
         mPlayerFragment = JWPlayerSupportFragment.newInstance(new PlayerConfig.Builder()
-                .file("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .file("https://lelive.akamaized.net/hls/live/2006512/MBR/playlist.m3u8")
                 .build());
 
         // Attach the Fragment to our layout

@@ -111,24 +111,26 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Keep the screen on during playback
         new KeepScreenOnHandler(mPlayerView, getWindow());
 
-        String url = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
+        List<PlaylistItem> item = new ArrayList<>();
 
-        // List of Media Source
-        List<MediaSource> mslist = new ArrayList<>();
-
-        // Build the Media Source
-        MediaSource ms = new MediaSource(url, "HLS", false, MediaType.HLS, null);
-
-        // Add the HLS Media Source
-        mslist.add(ms);
+        String url = "https://lelive.akamaized.net/hls/live/2006512/MBR/playlist.m3u8";
+        String url1 = "https://cdn-videos.akamaized.net/btv/desktop/fastly/us/live/primary.m3u8";
 
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
-                .sources(mslist)
+                .file(url)
                 .build();
 
+        // Load a media source
+        PlaylistItem pi1 = new PlaylistItem.Builder()
+                .file(url1)
+                .build();
+
+        item.add(pi);
+        item.add(pi1);
+
         // Load and Play
-        mPlayerView.load(pi);
+        mPlayerView.load(item);
 
         // Get a reference to the CastContext
         mCastContext = CastContext.getSharedInstance(this);
