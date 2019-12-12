@@ -7,7 +7,14 @@ import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.configuration.SkinConfig;
+import com.longtailvideo.jwplayer.media.playlists.MediaSource;
+import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity {
@@ -20,15 +27,36 @@ public class JWPlayerViewExample extends AppCompatActivity {
         setContentView(R.layout.activity_jwplayerview);
 
         mPlayerView = findViewById(R.id.jwplayer);
+        List<MediaSource> mediaSourceList = new ArrayList<>();
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
 
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
+        String mp3 = "https://ccrma.stanford.edu/~jos/mp3/oboe-bassoon.mp3";
+
+        MediaSource ms = new MediaSource.Builder()
+                .file(mp3)
+                .type(MediaType.MP3)
+                .build();
+        mediaSourceList.add(ms);
+
+        PlaylistItem item = new PlaylistItem.Builder()
+                .sources(mediaSourceList)
+                .image("https://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg")
                 .build();
 
-        mPlayerView.load(pi);
+        playlistItemList.add(item);
+
+        SkinConfig skinConfig = new SkinConfig.Builder()
+                .url("https://s3.amazonaws.com/hyunjoo.success.jwplayer.com/css/smallplayer.css")
+                .name("smallplayer")
+                .build();
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlistItemList)
+                .autostart(true)
+                .skinConfig(skinConfig)
+                .build();
+
+        mPlayerView.setup(config);
     }
 
 
