@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 
 ext {
-    jwplayerVersion = '3.7.1'
-    supportLibVersion27 = '27.1.1'
+    jwplayerVersion = '3.9.0'
     supportLibVersion = '28.0.0'
 }
 android {
@@ -29,19 +28,10 @@ android {
         abortOnError false
         disable "GoogleAppIndexingWarning"
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    configurations.all {
-        resolutionStrategy.eachDependency { details ->
-            def requested = details.requested
-            if (requested.group == "com.android.support") {
-                if (!requested.name.startsWith("multidex")) {
-                    details.useVersion "26.+"
-                }
-            }
-        }
     }
 }
 
@@ -54,8 +44,34 @@ dependencies {
     implementation("com.android.support:design:${supportLibVersion}") {
         force = 'true'
     }
-    implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
-    implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
+
+    implementation ('com.google.android.exoplayer:exoplayer-core:2.9.0'){
+        force = 'true'
+    }
+    implementation ('com.google.android.exoplayer:exoplayer-dash:2.9.0'){
+        force = 'true'
+    }
+    implementation ('com.google.android.exoplayer:exoplayer-hls:2.9.0'){
+        force = 'true'
+    }
+    implementation ('com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.0'){
+        force = 'true'
+    }
+    implementation ('com.google.android.exoplayer:exoplayer-ui:2.9.0'){
+        force = 'true'
+    }
+    implementation ('com.google.android.exoplayer:exoplayer:2.9.0'){
+        force = 'true'
+    }
+
+    implementation("com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}") {
+        exclude group: 'com.google.android.exoplayer', module: 'exoplayer-core'
+        exclude group: 'com.google.android.exoplayer', module: 'exoplayer-dash'
+        exclude group: 'com.google.android.exoplayer', module: 'exoplayer-hls'
+        exclude group: 'com.google.android.exoplayer', module: 'exoplayer-smoothstreaming'
+        exclude group: 'com.google.android.exoplayer', module: 'exoplayer-ui'
+    }
+    implementation"com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
 
     // Only required if using IMA / Chromecast / Freewheel features
     implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"

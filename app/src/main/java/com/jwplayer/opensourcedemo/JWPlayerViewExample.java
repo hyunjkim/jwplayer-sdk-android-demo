@@ -83,39 +83,14 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /**
-     * Setup JW Player
-     * <p>
-     * 1 - PlayerConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlayerConfig.Builder.html}
-     * 2 - LogoConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/LogoConfig.html}
-     * 3 - PlaybackRateConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/PlaybackRateConfig.html}
-     * 4 - CaptionsConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/CaptionsConfig.html}
-     * 5 - RelatedConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/RelatedConfig.html}
-     * 6 - SharingConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SharingConfig.html}
-     * 7 - SkinConfig - {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/SkinConfig.Builder.html}
-     * <p>
-     * More info about our Player Configuration and other available Configurations:
-     * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/configuration/package-summary.html}
-     */
     private void setupJWPlayer() {
 
         List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
-
         // Ima Tag Example
         ImaAdvertising imaAdvertising = SampleAds.getImaAd();
 
         // VAST Tag Example
         Advertising vastAdvertising = SampleAds.getVastAd();
-
-        // VMAP Tag Example
-        VMAPAdvertising vmapAdvertising = SampleAds.getVMAP("vast");
-
-        // Skin Config
-        SkinConfig skinConfig = new SkinConfig.Builder()
-                .url("https://www.host.com/css/mycustomcss.css")
-                .name("mycustomcss")
-                .build();
 
         // PlayerConfig
         PlayerConfig config = new PlayerConfig.Builder()
@@ -123,10 +98,8 @@ public class JWPlayerViewExample extends AppCompatActivity implements
                 .autostart(true)
                 .preload(true)
                 .allowCrossProtocolRedirects(true)
-//				.skinConfig(skinConfig)
 //				.advertising(vastAdvertising)
 //				.advertising(imaAdvertising)
-//				.advertising(vmapAdvertising)
                 .build();
 
         mPlayerView.setup(config);
