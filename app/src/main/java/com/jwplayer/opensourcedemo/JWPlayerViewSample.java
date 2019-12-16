@@ -29,7 +29,7 @@ public class JWPlayerViewSample extends Fragment implements View.OnClickListener
     final String TAB_JWPLAYER = "JWPlayerViewSample";
 
     private JWPlayerView mPlayerView;
-    private boolean isPlayerIsLoading, userClickedPause;
+    private boolean userClickedPause;
     private PlaylistItem pi;
     private PlayerConfig config;
 
@@ -41,7 +41,6 @@ public class JWPlayerViewSample extends Fragment implements View.OnClickListener
         mPlayerView = v.findViewById(R.id.jwplayer);
         v.findViewById(R.id.pausebtn).setOnClickListener(this);
         v.findViewById(R.id.loadbtn).setOnClickListener(this);
-        isPlayerIsLoading = false;
         userClickedPause = false;
 
         // Load a media source
