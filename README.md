@@ -6,18 +6,24 @@ This application contains an example implementation of the JW Player SDK for And
 For more information on how to use our SDK refer to our developer guide:
 [https://developer.jwplayer.com/sdk/android/docs/developer-guide/](https://developer.jwplayer.com/sdk/android/docs/developer-guide/)
 
+## Google Developer Guide - ViewPager
+[navigation-swipe-view](https://developer.android.com/guide/navigation/navigation-swipe-view)
+- Best place to learn how to create it from scratch
+- It was easy to understand and use
 
 #### Usage instructions:
 
--	Clone the repository into your Android Studio workspace, `git clone git@github.com:jwplayer/jwplayer-sdk-android-demo.git`
--	Open the `AndroidManifest.xml` file and replace `{YOUR_LICENSE_KEY}` with your license key
+- Clone the repository into your Android Studio workspace, `git clone git@github.com:jwplayer/jwplayer-sdk-android-demo.git`
+- Open the `AndroidManifest.xml` file and replace `{YOUR_LICENSE_KEY}` with your license key
 - The demo application should now build and run. 
 
 ![](https://s3.amazonaws.com/hyunjoo.success.jwplayer.com/android/github/v390-viewpager.gif)
 
 
 ## SplashActivity + ![layout_container.xml](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_viewpager/app/src/main/res/layout/layout_container.xml)
-`public class SplashActivity extends AppCompatActivity {
+
+```
+public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,11 +35,14 @@ For more information on how to use our SDK refer to our developer guide:
                 .addToBackStack(null)
                 .commit();
     }
-}`
+}
+```
+
 
 ## JWTab + ![fragment_viewpager.xml](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_viewpager/app/src/main/res/layout/fragment_viewpager.xml)
 
-`public class JWTab extends Fragment {
+```
+public class JWTab extends Fragment {
 
     private DemoCollectionPagerAdapter demoCollectionPagerAdapter;
     private ViewPager viewPager;
@@ -93,11 +102,14 @@ For more information on how to use our SDK refer to our developer guide:
         }
     }
 
-}`
+}
+```
+
 
 ## JWPlayerViewSample + ![activity_jwplayer.xml](https://github.com/hyunjkim/jwplayer-sdk-android-demo/blob/v3_viewpager/app/src/main/res/layout/activity_jwplayerview.xml)
 
-`public class JWPlayerViewSample extends Fragment implements View.OnClickListener {
+```
+public class JWPlayerViewSample extends Fragment implements View.OnClickListener {
 
     final String TAB_JWPLAYER = "JWPlayerViewSample";
 
@@ -235,4 +247,5 @@ For more information on how to use our SDK refer to our developer guide:
         mPlayerView.onDestroy();
     }
 
-}`
+}
+```
