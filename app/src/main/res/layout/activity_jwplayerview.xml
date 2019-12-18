@@ -1,58 +1,55 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_jwplayerview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.longtailvideo.jwplayer.JWPlayerView
+        android:id="@+id/jwplayer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="H,16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttons"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/gray"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/jwplayer">
 
-        <com.longtailvideo.jwplayer.JWPlayerView
-            android:id="@+id/jwplayer"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-        </com.longtailvideo.jwplayer.JWPlayerView>
+        <EditText
+            android:id="@+id/skinurl"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:hint="Enter Skin URL"
+            android:maxLines="1"
+            app:layout_constraintEnd_toStartOf="@id/enterbtn"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <EditText
-                android:id="@+id/skinurl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/enterbtn"
-                android:text="Enter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
-        <ScrollView
-            android:id="@+id/scroll"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="vertical">
+        <Button
+            android:id="@+id/enterbtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Enter"
+            android:onClick="enter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/skinurl" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/output"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:textSize="@dimen/myfontsize"
-                android:fontFamily="@string/myfontdefault"
-                android:textColor="@color/white" />
 
-        </ScrollView>
-    </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+    <com.jwplayer.opensourcedemo.CallbackScreen
+        android:id="@+id/callback_screen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttons" />
+</androidx.constraintlayout.widget.ConstraintLayout>

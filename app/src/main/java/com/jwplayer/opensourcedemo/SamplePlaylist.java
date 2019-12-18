@@ -1,4 +1,4 @@
-package com.jwplayer.opensourcedemo.samples;
+package com.jwplayer.opensourcedemo;
 
 import com.longtailvideo.jwplayer.media.playlists.MediaSource;
 import com.longtailvideo.jwplayer.media.playlists.MediaType;
