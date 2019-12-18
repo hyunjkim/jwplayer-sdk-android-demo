@@ -1,4 +1,4 @@
-# JW Player SDK for Android Open Source Demo
+# [UNOFFICIAL] JW Player SDK for Android Open Source Demo
 
 ## Chromecast Example
 This application contains an example implementation of the JW Player SDK for Android.
