@@ -14,6 +14,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/jwplayer">
+
+        <Button
+            android:id="@+id/vastbtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="VAST AD"
+            app:layout_constraintEnd_toStartOf="@id/imabtn"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/imabtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="IMA AD"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/vastbtn" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.jwplayer.opensourcedemo.CallbackScreen
         android:id="@+id/callback_screen"
         android:orientation="vertical"
@@ -22,5 +49,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/jwplayer" />
+        app:layout_constraintTop_toBottomOf="@id/buttons" />
 </androidx.constraintlayout.widget.ConstraintLayout>
