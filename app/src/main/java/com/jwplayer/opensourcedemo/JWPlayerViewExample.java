@@ -47,9 +47,12 @@ public class JWPlayerViewExample extends AppCompatActivity {
         mPlayerView = findViewById(R.id.jwplayer);
         skinURL = findViewById(R.id.skinurl);
 
+        // Register EventListeners
+        CallbackScreen cbs = findViewById(R.id.callback_screen);
+        cbs.registerListeners(mPlayerView);
+
         // Setup JWPlayer
         setupJWPlayer();
-
     }
 
     /**
