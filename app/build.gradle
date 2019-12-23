@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 ext {
-    jwplayerVersion = '3.6.0'
-    supportVersion = '28.0.0'
+    jwplayerVersion = '3.10.0'
 }
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.jwplayer.opensourcedemo"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -32,23 +31,16 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    implementation("com.android.support:appcompat-v7:${supportVersion}") {
-        force = true
-    }
-    implementation("com.android.support:design:${supportVersion}") {
-        force = true
-    }
 
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
     implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
     implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
-    // Only required if using IMA features
+
+    // Only required if using FreeWheel features
     implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
-    // Only required if using FreeWheel
-    implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
-    // Only required if using Chromecast
-    // Only required if importing with AAR / JAR
-    //	implementation 'com.google.android.gms:play-services-ads:'				// Only required if using IMA features
-    //	implementation 'com.google.ads.interactivemedia.v3:interactivemedia:'	// Only required if using IMA features
-    //  implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.9.1' // Only required if using Chromecast
+
+    implementation group: 'com.google.android.gms', name: 'play-services-auth', version: '17.0.0'
+
 }

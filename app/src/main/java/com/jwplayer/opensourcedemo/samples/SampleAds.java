@@ -4,8 +4,6 @@ import android.util.Log;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
-import com.jwplayer.opensourcedemo.listener.MyThreadListener;
-import com.jwplayer.opensourcedemo.util.Util;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdRules;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
@@ -16,10 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class SampleAds {
@@ -29,15 +24,22 @@ public class SampleAds {
     public static JSONObject adRules;
     public static List<AdBreak> adbreaklist;
 
+    private void print(String s) {
+        Log.i("SAMPLEADS", "JSON OBJECT RESPONSE: " + s + "\r\n");
+    }
+
     /*
      * Vast Ad Setup Example
      * */
-
     public Advertising getVastAd() {
+
         adbreaklist = new ArrayList<>();
 
         for (int i = 0; i < schedule.length(); i++) {
+
             AdBreak adBreak = null;
+            print("Schedule is null " + (schedule == null));
+
             try {
                 adBreak = AdBreak.parseJson(schedule.getJSONObject(i));
                 print("AdBreak: " + adBreak.toJson().toString());
@@ -49,6 +51,7 @@ public class SampleAds {
 
         Advertising vastad = new Advertising(AdSource.VAST, adbreaklist);
         vastad.setVpaidControls(true);
+
         AdRules mAdRules = null;
 
         try {
@@ -106,10 +109,6 @@ public class SampleAds {
         return imaAdvertising;
     }
 
-
-    private void print(String s) {
-        Log.i("SAMPLEADS", "JSON OBJECT RESPONSE: " + s + "\r\n");
-    }
 
     public String getClient() {
         return client;

@@ -2,11 +2,9 @@ package com.jwplayer.opensourcedemo.asynctask;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ProgressBar;
 
 import com.jwplayer.opensourcedemo.listener.MyThreadListener;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
-import com.jwplayer.opensourcedemo.util.Util;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import org.json.JSONArray;
@@ -39,7 +37,6 @@ public class MediaIdAsyncTask extends AsyncTask<String, String, List<PlaylistIte
                 String strResponse = new String(response);
 
                 JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
-//                print(jsonArray.toString());
                 SamplePlaylist.mPlaylist = PlaylistItem.listFromJson(jsonArray);
 
                 return PlaylistItem.listFromJson(jsonArray);

@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.jwplayer.opensourcedemo.listener.MyThreadListener;
 import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
-import com.jwplayer.opensourcedemo.util.Util;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import org.json.JSONArray;
@@ -39,8 +38,8 @@ public class PlaylistIdAysncTask extends AsyncTask<String, String, List<Playlist
                 String strResponse = new String(response);
 
                 JSONArray jsonArray = new JSONObject(strResponse).getJSONArray("playlist");
-//                print(jsonArray.toString());
                 SamplePlaylist.mPlaylist = PlaylistItem.listFromJson(jsonArray);
+
                 return PlaylistItem.listFromJson(jsonArray);
 
             } catch (IOException | JSONException e) {
