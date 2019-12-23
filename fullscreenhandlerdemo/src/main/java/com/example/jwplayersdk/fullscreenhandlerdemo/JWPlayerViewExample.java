@@ -1,25 +1,18 @@
 package com.example.jwplayersdk.fullscreenhandlerdemo;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
-import com.longtailvideo.jwplayer.media.playlists.MediaSource;
-import com.longtailvideo.jwplayer.media.playlists.MediaType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -30,8 +23,6 @@ public class JWPlayerViewExample extends AppCompatActivity
         implements VideoPlayerEvents.OnFullscreenListener {
 
     private JWPlayerView mPlayerView;
-
-    private CastContext mCastContext;
 
     private CallbackScreen mCallbackScreen;
 
@@ -108,13 +99,10 @@ public class JWPlayerViewExample extends AppCompatActivity
         mCallbackScreen = findViewById(R.id.callback_screen);
         mCallbackScreen.registerListeners(mPlayerView);
 
-        // Keep the screen on during playback
-        new KeepScreenOnHandler(mPlayerView, getWindow());
-
         List<PlaylistItem> item = new ArrayList<>();
 
-        String url = "https://lelive.akamaized.net/hls/live/2006512/MBR/playlist.m3u8";
-        String url1 = "https://cdn-videos.akamaized.net/btv/desktop/fastly/us/live/primary.m3u8";
+        String url = "https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4";
+        String url1 = "https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8";
 
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
@@ -132,8 +120,6 @@ public class JWPlayerViewExample extends AppCompatActivity
         // Load and Play
         mPlayerView.load(item);
 
-        // Get a reference to the CastContext
-        mCastContext = CastContext.getSharedInstance(this);
     }
 
 
@@ -196,27 +182,4 @@ public class JWPlayerViewExample extends AppCompatActivity
         }
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-
-        // Register the MediaRouterButton
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.switch_to_fragment:
-                Intent i = new Intent(this, JWPlayerFragmentExample.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }

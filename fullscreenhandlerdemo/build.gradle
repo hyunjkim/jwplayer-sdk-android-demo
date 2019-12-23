@@ -46,7 +46,7 @@ dependencies {
 
     implementation jwplayerDependencies.core
     implementation jwplayerDependencies.common
-    implementation jwplayerDependencies.ima
-    implementation jwplayerDependencies.chromecast
+
+    implementation group: 'com.google.android.gms', name: 'play-services-auth', version: '17.0.0'
 
 }

@@ -1,7 +1,7 @@
 ext {
     // SDK and tools
     supportLibraryVersion = '1.0.0'
-    jwplayerVersion = '3.9.0'
+    jwplayerVersion = '3.10.0'
 
     // Library dependencies
     supportDependencies = [
