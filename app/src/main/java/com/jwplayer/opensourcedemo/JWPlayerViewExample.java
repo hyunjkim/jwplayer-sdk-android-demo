@@ -29,6 +29,11 @@ public class JWPlayerViewExample extends AppCompatActivity {
                 .build();
 
         mPlayerView.load(pi);
+
+
+        // Initialize event listeners
+        CallbackScreen cbs = findViewById(R.id.callback_screen);
+        cbs.registerListeners(mPlayerView);
     }
 
 
