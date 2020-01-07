@@ -8,6 +8,7 @@ This application contains an example implementation of the JW Player SDK for And
 -	Open the `AndroidManifest.xml` file and replace `{YOUR_LICENSE_KEY}` with your license key
 
 The demo application should now build and run. 
+
 For more information on how to use our SDK refer to our developer guide:
 
 [How to Enable FreeWheel Ad Manager with JWPlayerView](https://developer.jwplayer.com/jwplayer/docs/android-enable-freewheel-ad-manager#section-add-a-pre-roll-ad-to-a-playlist)
@@ -46,4 +47,3 @@ For more information on how to use our SDK refer to our developer guide:
         mPlayerView.setup(config);
     }
     
-    ```
