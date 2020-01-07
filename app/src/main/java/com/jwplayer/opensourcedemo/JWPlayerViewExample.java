@@ -1,149 +1,116 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
-import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.events.FullscreenEvent;
-import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
-
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.CaptionsConfig;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-public class JWPlayerViewExample extends AppCompatActivity
-		implements VideoPlayerEvents.OnFullscreenListener {
-
-	private JWPlayerView mPlayerView;
-
-	private CastContext mCastContext;
-
-	private CallbackScreen mCallbackScreen;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_jwplayerview);
-
-		mPlayerView = findViewById(R.id.jwplayer);
+import java.util.ArrayList;
+import java.util.List;
 
 
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
+public class JWPlayerViewExample extends AppCompatActivity {
 
-		// Keep the screen on during playback
-		new KeepScreenOnHandler(mPlayerView, getWindow());
+    private JWPlayerView mPlayerView;
 
-		// Event Logging
-		mCallbackScreen = findViewById(R.id.callback_screen);
-		mCallbackScreen.registerListeners(mPlayerView);
+    private CallbackScreen mCallbackScreen;
 
-		// Load a media source
-		PlaylistItem pi = new PlaylistItem.Builder()
-				.file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-				.title("BipBop")
-				.description("A video player testing video.")
-				.build();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView.load(pi);
+        mPlayerView = findViewById(R.id.jwplayer);
 
-		// Get a reference to the CastContext
-		mCastContext = CastContext.getSharedInstance(this);
+        // Event Logging
+        mCallbackScreen = findViewById(R.id.callback_screen);
+        mCallbackScreen.registerListeners(mPlayerView);
 
+        // Setup WebVTT
+        setupWebVTT();
+    }
 
-	}
+    /**
+     * Setup WebVTT Example with JWPlayerView
+     * <p>
+     * For more info: {@link - https://developer.jwplayer.com/jwplayer/docs/android-add-captions}
+     */
 
+    public void setupWebVTT() {
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		mPlayerView.onStart();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mPlayerView.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mPlayerView.onPause();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		mPlayerView.onStop();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		mPlayerView.onDestroy();
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// Set fullscreen when the device is rotated to landscape
-		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
-								  true);
-		super.onConfigurationChanged(newConfig);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Exit fullscreen when the user pressed the Back button
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (mPlayerView.getFullscreen()) {
-				mPlayerView.setFullscreen(false, true);
-				return false;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public void onFullscreen(FullscreenEvent fullscreenEvent) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
-	}
+        //  customize the font, font color, window color, background color, and edge style of the captions in your app
+        CaptionsConfig captionsConfig = new CaptionsConfig.Builder()
+                .fontFamily("zapfino")
+                .fontSize(12)
+                .fontOpacity(100)
+                .color("#FFFFFF")
+                .edgeStyle(CaptionsConfig.CAPTION_EDGE_STYLE_RAISED)
+                .windowColor("#000000")
+                .windowOpacity(50)
+                .backgroundColor("#000000")
+                .backgroundOpacity(100)
+                .build();
 
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+        // To add videos or streams with embedded captions to your app
+        List<Caption> captionTracks = new ArrayList<>();
 
-		// Register the MediaRouterButton
-		CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-												R.id.media_route_menu_item);
+        Caption captionEn = new Caption.Builder()
+                .file("https://cdn.jwplayer.com/manifests/{MEDIA_ID}.vtt")
+                .label("English")
+                .isdefault(true)
+                .build();
+        captionTracks.add(captionEn);
 
-		return true;
-	}
+        PlaylistItem playlistItem = new PlaylistItem.Builder()
+                .file("https://cdn.jwplayer.com/manifests/{MEDIA_ID}.m3u8")
+                .title("WebVTT Example")
+                .tracks(captionTracks)
+                .build();
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.switch_to_fragment:
-				Intent i = new Intent(this, JWPlayerFragmentExample.class);
-				startActivity(i);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
+        List<PlaylistItem> playlist = new ArrayList<>();
+        playlist.add(playlistItem);
+
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlist)
+                .captionsConfig(captionsConfig)
+                .build();
+        mPlayerView.setup(config);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPlayerView.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPlayerView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPlayerView.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPlayerView.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPlayerView.onDestroy();
+    }
 }
