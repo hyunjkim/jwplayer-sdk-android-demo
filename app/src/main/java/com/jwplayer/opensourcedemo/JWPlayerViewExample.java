@@ -1,149 +1,108 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
-import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.events.FullscreenEvent;
-import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
-
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
+import com.longtailvideo.jwplayer.freewheel.media.ads.FwAdvertising;
+import com.longtailvideo.jwplayer.freewheel.media.ads.FwSettings;
+import com.longtailvideo.jwplayer.media.ads.AdBreak;
+import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-public class JWPlayerViewExample extends AppCompatActivity
-		implements VideoPlayerEvents.OnFullscreenListener {
-
-	private JWPlayerView mPlayerView;
-
-	private CastContext mCastContext;
-
-	private CallbackScreen mCallbackScreen;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_jwplayerview);
-
-		mPlayerView = findViewById(R.id.jwplayer);
+import java.util.ArrayList;
+import java.util.List;
 
 
-		// Handle hiding/showing of ActionBar
-		mPlayerView.addOnFullscreenListener(this);
+public class JWPlayerViewExample extends AppCompatActivity{
 
-		// Keep the screen on during playback
-		new KeepScreenOnHandler(mPlayerView, getWindow());
+    private JWPlayerView mPlayerView;
 
-		// Event Logging
-		mCallbackScreen = findViewById(R.id.callback_screen);
-		mCallbackScreen.registerListeners(mPlayerView);
+    private CallbackScreen mCallbackScreen;
 
-		// Load a media source
-		PlaylistItem pi = new PlaylistItem.Builder()
-				.file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-				.title("BipBop")
-				.description("A video player testing video.")
-				.build();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jwplayerview);
 
-		mPlayerView.load(pi);
+        mPlayerView = findViewById(R.id.jwplayer);
 
-		// Get a reference to the CastContext
-		mCastContext = CastContext.getSharedInstance(this);
+        // Event Logging
+        mCallbackScreen = findViewById(R.id.callback_screen);
+        mCallbackScreen.registerListeners(mPlayerView);
 
+        // Setup FreeWheel Ad
+        setupFreeWheel();
+    }
 
-	}
+    /** Enable FreeWheel
+     * For more info:
+     * {@link - https://developer.jwplayer.com/jwplayer/docs/android-enable-freewheel-ad-manager#section-add-a-pre-roll-ad-to-a-playlist}
+     * */
+    private void setupFreeWheel(){
+        int networkId = 42015;
+        String serverId = "http://7cee0.v.fwmrm.net/";
+        String profileId = "fw_tutorial_android";
+        String sectionId = "fw_tutorial_android";
+        String mediaId = "fw_simple_tutorial_asset";
+        FwSettings settings = new FwSettings(networkId, serverId, profileId, sectionId, mediaId);
 
+        List<AdBreak> adSchedule = new ArrayList<>();
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		mPlayerView.onStart();
-	}
+        AdBreak adBreak = new AdBreak.Builder()
+                .tag("fw_preroll")
+                .source(AdSource.FW)
+                .build();
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mPlayerView.onResume();
-	}
+        adSchedule.add(adBreak);
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mPlayerView.onPause();
-	}
+        FwAdvertising advertising = new FwAdvertising(settings, adSchedule);
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-		mPlayerView.onStop();
-	}
+        PlaylistItem playlistItem = new PlaylistItem.Builder()
+                .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+                .build();
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		mPlayerView.onDestroy();
-	}
+        List<PlaylistItem> playlist = new ArrayList<>();
+        playlist.add(playlistItem);
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// Set fullscreen when the device is rotated to landscape
-		mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
-								  true);
-		super.onConfigurationChanged(newConfig);
-	}
+        PlayerConfig config = new PlayerConfig.Builder()
+                .playlist(playlist)
+                .advertising(advertising)
+                .build();
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Exit fullscreen when the user pressed the Back button
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (mPlayerView.getFullscreen()) {
-				mPlayerView.setFullscreen(false, true);
-				return false;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+        mPlayerView.setup(config);
+    }
 
-	@Override
-	public void onFullscreen(FullscreenEvent fullscreenEvent) {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			if (fullscreenEvent.getFullscreen()) {
-				actionBar.hide();
-			} else {
-				actionBar.show();
-			}
-		}
-	}
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPlayerView.onStart();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPlayerView.onResume();
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPlayerView.onPause();
+    }
 
-		// Register the MediaRouterButton
-		CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-												R.id.media_route_menu_item);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPlayerView.onStop();
+    }
 
-		return true;
-	}
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPlayerView.onDestroy();
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.switch_to_fragment:
-				Intent i = new Intent(this, JWPlayerFragmentExample.class);
-				startActivity(i);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
 }
