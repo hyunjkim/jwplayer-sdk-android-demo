@@ -41,6 +41,12 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/videolist_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Video List" />
+        <Button
             android:id="@+id/media_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

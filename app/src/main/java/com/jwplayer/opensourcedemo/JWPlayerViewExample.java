@@ -3,7 +3,6 @@ package com.jwplayer.opensourcedemo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -13,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jwplayer.opensourcedemo.asynctask.AdvertisingAsyncTask;
 import com.jwplayer.opensourcedemo.asynctask.MediaIdAsyncTask;
 import com.jwplayer.opensourcedemo.asynctask.PlaylistIdAysncTask;
+import com.jwplayer.opensourcedemo.asynctask.VideoListAsyncTask;
 import com.jwplayer.opensourcedemo.listener.CallbackScreen;
 import com.jwplayer.opensourcedemo.listener.MyThreadListener;
 import com.jwplayer.opensourcedemo.samples.SampleAds;
@@ -37,9 +37,10 @@ public class JWPlayerViewExample extends AppCompatActivity implements
     private SampleAds mSampleAds;
     private EditText et;
     private TextView countdown;
-    private MediaIdAsyncTask mediaAsync;
-    private PlaylistIdAysncTask playAsync;
-    private AdvertisingAsyncTask adAsync;
+    private MediaIdAsyncTask mMediaAsync;
+    private PlaylistIdAysncTask mPlaylistAsync;
+    private AdvertisingAsyncTask mAdAsync;
+    private VideoListAsyncTask mVideoAsync;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,26 +70,27 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         String id = et.getText().toString();
 
         if (id.length() > 0) {
-
             switch (v.getId()) {
                 case R.id.media_btn:
-                    mediaAsync = new MediaIdAsyncTask(this);
-                    mediaAsync.execute(id);
+                    mMediaAsync = new MediaIdAsyncTask(this);
+                    mMediaAsync.execute(id);
                     break;
                 case R.id.playlist_btn:
-                    playAsync = new PlaylistIdAysncTask(this);
-                    playAsync.execute(id);
+                    mPlaylistAsync = new PlaylistIdAysncTask(this);
+                    mPlaylistAsync.execute(id);
                     break;
                 case R.id.ad_btn:
                     mSampleAds = null;
-                    adAsync = new AdvertisingAsyncTask(this);
-                    adAsync.execute(id);
+                    mAdAsync = new AdvertisingAsyncTask(this);
+                    mAdAsync.execute(id);
                     mSampleAds = new SampleAds();
                     break;
             }
-            et.setText("");
+        } else if (v.getId() == R.id.videolist_btn) {
+            mVideoAsync = new VideoListAsyncTask(this);
+            mVideoAsync.execute(id);
         }
-
+        et.setText("");
     }
 
     @Override
@@ -118,13 +120,19 @@ public class JWPlayerViewExample extends AppCompatActivity implements
 
         print("setupJWPlayer()");
 
+        AdvertisingBase advertising;
+
         List<PlaylistItem> playlistItemList = SamplePlaylist.getPlaylist();
 
-        AdvertisingBase advertising = null;
+        if (playlistItemList == null) {
+            playlistItemList = SamplePlaylist.getDefaultPlaylist();
+        }
 
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlistItemList)
                 .allowCrossProtocolRedirects(true)
+                .displayTitle(true)
+                .displayDescription(true)
                 .autostart(true)
                 .build();
 
@@ -152,63 +160,61 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onStart();
         mPlayerView.onStart();
 
-        // I need to know when my SampleAd is ready to setup JWPlayerView
-        mediaAsync = new MediaIdAsyncTask(this);
-        mediaAsync.execute("jumBvHdL");
+        // Start to get Video List
+        mVideoAsync = new VideoListAsyncTask(this);
+        mVideoAsync.execute();
     }
 
     @Override
     protected void onResume() {
         // Let JW Player know that the app has returned from the background
-        super.onResume();
         mPlayerView.onResume();
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
         // Let JW Player know that the app is going to the background
-        mPlayerView.onPause();
         super.onPause();
+        mPlayerView.onPause();
+        cancelRunningAsyncTasks();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         mPlayerView.onStop();
-
     }
 
     public void cancelRunningAsyncTasks() {
         print(" - cancel asyncs");
-        if (mediaAsync != null) mediaAsync.cancel(true);
-        if (playAsync != null) playAsync.cancel(true);
-        if (adAsync != null) adAsync.cancel(true);
+        if (mVideoAsync != null) {
+            mVideoAsync.cancel(true);
+        }
+        if (mMediaAsync != null) {
+            mMediaAsync.cancel(true);
+        }
+        if (mPlaylistAsync != null) {
+            mPlaylistAsync.cancel(true);
+        }
+        if (mAdAsync != null) {
+            mAdAsync.cancel(true);
+        }
+        mVideoAsync = null;
+        mMediaAsync = null;
+        mPlaylistAsync = null;
+        mAdAsync = null;
     }
 
     @Override
     protected void onDestroy() {
         // Let JW Player know that the app is being destroyed
         print(" - onDestroy()");
-        mPlayerView.onDestroy();
         super.onDestroy();
-        mediaAsync = null;
-        playAsync = null;
-        adAsync = null;
+        mPlayerView.onDestroy();
         cancelRunningAsyncTasks();
     }
 
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Exit fullscreen when the user pressed the Back button
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false, true);
-                return false;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
     private void print(String s) {
         Log.i("JWPLAYERVIEWEXAMPLE", " - HYUNJOO - " + s);
