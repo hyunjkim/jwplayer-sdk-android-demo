@@ -1,8 +1,9 @@
-package com.jwplayer.opensourcedemo.samples;
+package com.jwplayer.opensourcedemo;
 
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.ImaSdkSettings;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
+import com.longtailvideo.jwplayer.media.ads.AdRules;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.Advertising;
 import com.longtailvideo.jwplayer.media.ads.AdvertisingBase;
@@ -23,25 +24,32 @@ public class SampleAds {
     public static Advertising getVastAd() {
         List<AdBreak> adbreaklist = new ArrayList<>();
 
-        String ad = "";
+        String ad = "https://playertest.longtailvideo.com/vast-30s-ad.xml";
         String vpaid = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinearvpaid2js&correlator=";
 
-        AdBreak adbreak = new AdBreak("pre", AdSource.VAST, vpaid);
-        adbreaklist.add(adbreak);
+        AdBreak adbreak = new AdBreak("pre", AdSource.VAST, ad);
+        AdBreak adbreak1 = new AdBreak("10%", AdSource.VAST, ad);
+        AdBreak adbreak2 = new AdBreak("40%", AdSource.VAST, ad);
+        AdBreak adbreak3 = new AdBreak("60%", AdSource.VAST, ad);
 
-//		AdRules adRules = new AdRules.Builder()
-//				.frequency(1)
-//				.startOn(0)
-//				.startOnSeek(AdRules.RULES_START_ON_SEEK_PRE)
-//				.timeBetweenAds(2)
-//				.build();
+        adbreaklist.add(adbreak);
+        adbreaklist.add(adbreak1);
+        adbreaklist.add(adbreak2);
+        adbreaklist.add(adbreak3);
+
+        AdRules adRules = new AdRules.Builder()
+                .frequency(1)
+                .startOn(0)
+                .startOnSeek(AdRules.RULES_START_ON_SEEK_PRE)
+                .timeBetweenAds(2)
+                .build();
 
         Advertising vastad = new Advertising(AdSource.VAST, adbreaklist);
-		vastad.setVpaidControls(true);
-//		vastad.setAdRules(adRules);
-//		vastad.setClient(AdSource.VAST);
+        vastad.setVpaidControls(true);
+        vastad.setAdRules(adRules);
+        vastad.setClient(AdSource.VAST);
+        vastad.setSkipOffset(1);
 //		vastad.setRequestTimeout(2);
-//		vastad.setSkipOffset(1);
 //		vastad.setAdMessage("");
 //		vastad.setCueText("");
 //		vastad.setSkipMessage("");
@@ -51,17 +59,8 @@ public class SampleAds {
     }
 
     /**
-     * VAST VMAP Ad Example
-     * {@link - https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/vast/#vmap-advertising}
-     *
-     * @see VMAPAdvertising
-     */
-    public static VMAPAdvertising vastVMAP() {
-        return new VMAPAdvertising(AdSource.VAST, "https://playertest.longtailvideo.com/adtags/vmap2.xml");
-    }
-
-    /**
      * IMA Ad Example
+     * <p>
      * {@link - https://developer.jwplayer.com/sdk/android/reference/com/longtailvideo/jwplayer/media/ads/ImaAdvertising.html}
      *
      * @see ImaAdvertising
@@ -70,11 +69,17 @@ public class SampleAds {
 
         List<AdBreak> adbreaklist = new ArrayList<>();
 
-        String ad1 = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
         String ad = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
 
         AdBreak adBreak = new AdBreak("pre", AdSource.IMA, ad);
+        AdBreak adBreak1 = new AdBreak("10%", AdSource.IMA, ad);
+        AdBreak adBreak2 = new AdBreak("40%", AdSource.IMA, ad);
+        AdBreak adBreak3 = new AdBreak("60%", AdSource.IMA, ad);
+
         adbreaklist.add(adBreak);
+        adbreaklist.add(adBreak1);
+        adbreaklist.add(adBreak2);
+        adbreaklist.add(adBreak3);
 
         ImaSdkSettings imaSettings = ImaSdkFactory.getInstance().createImaSdkSettings();
 //		imaSettings.setRestrictToCustomPlayer(true);
@@ -83,11 +88,21 @@ public class SampleAds {
 //		imaSettings.setPlayerType("");
 //		imaSettings.setMaxRedirects(1);
 //		imaSettings.setLanguage("");
-        imaSettings.setEnableOmidExperimentally(true);
 //		imaSettings.setDebugMode(true);
-		imaSettings.setAutoPlayAdBreaks(true);
+        imaSettings.setAutoPlayAdBreaks(true);
 
         return new ImaAdvertising(adbreaklist, imaSettings);
+    }
+
+    /**
+     * VAST VMAP Ad Example
+     * {@link - https://developer.jwplayer.com/sdk/android/docs/developer-guide/advertising/vast/#vmap-advertising}
+     *
+     * @see VMAPAdvertising
+     */
+
+    public static VMAPAdvertising vastVMAP() {
+        return new VMAPAdvertising(AdSource.VAST, "https://playertest.longtailvideo.com/adtags/vmap2.xml");
     }
 
     /**

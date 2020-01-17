@@ -1,33 +1,18 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
-import com.jwplayer.opensourcedemo.handlers.JWAdEventHandler;
-import com.jwplayer.opensourcedemo.handlers.JWEventHandler;
-import com.jwplayer.opensourcedemo.handlers.KeepScreenOnHandler;
-import com.jwplayer.opensourcedemo.samples.SampleAds;
-import com.jwplayer.opensourcedemo.samples.SamplePlaylist;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.util.List;
-
-import static com.jwplayer.opensourcedemo.samples.SampleAds.getImaAd;
+import java.util.Collections;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
@@ -38,45 +23,21 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      */
     private JWPlayerView mPlayerView;
 
-    /**
-     * Reference to the {@link CastContext}
-     */
-    private CastContext mCastContext;
-
-    /**
-     * Stored instance of CoordinatorLayout
-     * http://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html
-     */
-    private CoordinatorLayout mCoordinatorLayout;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
         mPlayerView = findViewById(R.id.jwplayer);
-        TextView outputTextView = findViewById(R.id.output);
-        ScrollView scrollView = findViewById(R.id.scroll);
-        mCoordinatorLayout = findViewById(R.id.activity_jwplayerview);
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
 
-        // Keep the screen on during playback
-        new KeepScreenOnHandler(mPlayerView, getWindow());
-
-        // Instantiate the JW Player event handler class
-        new JWEventHandler(mPlayerView, outputTextView, scrollView);
-
-        // Instantiate the JW Player Ad event handler class
-        new JWAdEventHandler(mPlayerView, outputTextView, scrollView);
-
         // Setup JWPlayer
         setupJWPlayer();
 
-        // Get a reference to the CastContext
-        mCastContext = CastContext.getSharedInstance(this);
+        CallbackScreen cbs = findViewById(R.id.callback_screen);
+        cbs.registerListeners(mPlayerView);
     }
 
 
@@ -85,13 +46,15 @@ public class JWPlayerViewExample extends AppCompatActivity implements
      * */
     private void setupJWPlayer() {
 
-//		List<PlaylistItem> playlistItemList = SamplePlaylist.createMediaSourcePlaylist();
-        List<PlaylistItem> playlistItemList = SamplePlaylist.createPlaylist();
+        PlaylistItem item = new PlaylistItem.Builder()
+                .file("https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4")
+                .build();
 
         PlayerConfig playerConfig = new PlayerConfig.Builder()
-                .playlist(playlistItemList)
+                .playlist(Collections.singletonList(item))
                 .autostart(true)
                 .allowCrossProtocolRedirects(true)
+//                .advertising(SampleAds.getAd("vast"))  // Vast Ad Example
                 .advertising(SampleAds.getAd("ima"))  // Ima Ad Example
                 .build();
 
@@ -141,18 +104,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         super.onDestroy();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Exit fullscreen when the user pressed the Back button
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false, true);
-                return false;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
     /**
      * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
      *
@@ -167,37 +118,6 @@ public class JWPlayerViewExample extends AppCompatActivity implements
             } else {
                 actionBar.show();
             }
-        }
-
-        // When going to Fullscreen we want to set fitsSystemWindows="false"
-        mCoordinatorLayout.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
-    }
-
-    /*
-     * Upper right corner, drop down menu XML
-     * */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
-
-        // Register the MediaRouterButton on the JW Player SDK
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
-        return true;
-    }
-
-    /*
-     * The items to add to the list on the drop down menu
-     * */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.switch_to_fragment:
-                Intent i = new Intent(this, JWPlayerFragmentExample.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 }
