@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 
 ext {
-    jwplayerVersion = '3.9.0'
-    supportLibVersion = '28.0.0'
+    jwplayerVersion = '3.10.0'
 }
 android {
     compileSdkVersion 29
@@ -38,12 +37,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
 
-    implementation('androidx.appcompat:appcompat:1.0.0') {
-        force = 'true'
-    }
-    implementation('com.google.android.material:material:1.0.0') {
-        force = 'true'
-    }
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
 
     // Performance is much better to other layout
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
