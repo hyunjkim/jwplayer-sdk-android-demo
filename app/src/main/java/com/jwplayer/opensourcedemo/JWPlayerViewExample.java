@@ -1,16 +1,22 @@
 package com.jwplayer.opensourcedemo;
 
-import android.content.res.Configuration;
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 
-public class JWPlayerViewExample extends AppCompatActivity {
+public class JWPlayerViewExample extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
     private JWPlayerView mPlayerView;
 
@@ -19,23 +25,86 @@ public class JWPlayerViewExample extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         mPlayerView = findViewById(R.id.jwplayer);
 
-        // Load a media source
-        PlaylistItem pi = new PlaylistItem.Builder()
-                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
-                .description("A video player testing video.")
-                .build();
+        // Display JWPlayer Alert Dialog
+        findViewById(R.id.dialog_btn).setOnClickListener(view -> {
+            JWDialog();
+        });
 
-        mPlayerView.load(pi);
+        // Handle hiding/showing of ActionBar
+        mPlayerView.addOnFullscreenListener(this);
 
+        // My Custom Fullscreen Handler
+        mPlayerView.setFullscreenHandler(new MyFullscreenHandler(mPlayerView));
+
+        // Load PlaylistItem
+        mPlayerView.load(getPlaylistItem());
 
         // Initialize event listeners
         CallbackScreen cbs = findViewById(R.id.callback_screen);
         cbs.registerListeners(mPlayerView);
     }
 
+    private PlaylistItem getPlaylistItem() {
+        // Load a media source
+        return new PlaylistItem.Builder()
+                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .title("BipBop")
+                .description("A video player testing video.")
+                .build();
+    }
+
+    /*
+     * JW Player Dialog Example
+     * */
+    public void JWDialog() {
+
+        if (mPlayerView != null) {
+            mPlayerView.pause();
+
+            LayoutInflater inflater = getLayoutInflater();
+            View layout = inflater.inflate(R.layout.dialog_jwplayer, null);
+
+            JWPlayerView dialogPlayer = layout.findViewById(R.id.dialog_jwplayer_view);
+
+            // My Custom Fullscreen Handler
+            dialogPlayer.setFullscreenHandler(new MyFullscreenHandler(dialogPlayer));
+
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setView(layout)
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialogInterface) {
+                            dialogPlayer.onDestroy();
+                            if (mPlayerView != null) {
+                                mPlayerView.play();
+                            }
+                        }
+                    })
+                    .setCancelable(true)
+                    .create();
+
+            // Load item
+            dialogPlayer.load(getPlaylistItem());
+
+            dialog.show();
+        }
+    }
+
+    @Override
+    public void onFullscreen(FullscreenEvent fullscreenEvent) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            if (fullscreenEvent.getFullscreen()) {
+                actionBar.hide();
+            } else {
+                actionBar.show();
+            }
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -67,23 +136,4 @@ public class JWPlayerViewExample extends AppCompatActivity {
         mPlayerView.onDestroy();
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        // Set fullscreen when the device is rotated to landscape
-        mPlayerView.setFullscreen(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE,
-                true);
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Exit fullscreen when the user pressed the Back button
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false, true);
-                return false;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 }
