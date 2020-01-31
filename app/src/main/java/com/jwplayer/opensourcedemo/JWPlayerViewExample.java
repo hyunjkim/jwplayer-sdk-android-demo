@@ -25,14 +25,13 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayerview);
 
+        // Set orientation to Portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mPlayerView = findViewById(R.id.jwplayer);
 
         // Display JWPlayer Alert Dialog
-        findViewById(R.id.dialog_btn).setOnClickListener(view -> {
-            JWDialog();
-        });
+        findViewById(R.id.dialog_btn).setOnClickListener(view -> JWDialog());
 
         // Handle hiding/showing of ActionBar
         mPlayerView.addOnFullscreenListener(this);
@@ -63,33 +62,38 @@ public class JWPlayerViewExample extends AppCompatActivity implements VideoPlaye
     public void JWDialog() {
 
         if (mPlayerView != null) {
+
+            // Pause the Player
             mPlayerView.pause();
 
+            // Alert Dialog suggest to inflate the view or constructed
             LayoutInflater inflater = getLayoutInflater();
             View layout = inflater.inflate(R.layout.dialog_jwplayer, null);
 
+            // Get a new JWPlayerView
             JWPlayerView dialogPlayer = layout.findViewById(R.id.dialog_jwplayer_view);
 
             // My Custom Fullscreen Handler
             dialogPlayer.setFullscreenHandler(new MyFullscreenHandler(dialogPlayer));
 
+            // Create Alert Dialog
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setView(layout)
-                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialogInterface) {
-                            dialogPlayer.onDestroy();
-                            if (mPlayerView != null) {
-                                mPlayerView.play();
-                            }
+                    .setOnDismissListener(dialogInterface -> {
+
+                        dialogPlayer.onDestroy(); // destroy the JWPlayerView
+
+                        if (mPlayerView != null) { // Play the previous JWPlayerView
+                            mPlayerView.play();
                         }
                     })
                     .setCancelable(true)
                     .create();
 
-            // Load item
+            // Load PlaylistItem
             dialogPlayer.load(getPlaylistItem());
 
+            // Show the Dialog
             dialog.show();
         }
     }

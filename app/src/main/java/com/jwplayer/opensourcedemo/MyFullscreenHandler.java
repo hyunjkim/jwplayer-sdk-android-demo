@@ -13,6 +13,7 @@ import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 *
 * */
 public class MyFullscreenHandler implements FullscreenHandler {
+
     // Minimized View Size
     private ConstraintLayout.LayoutParams minimizedView;
 
@@ -28,11 +29,14 @@ public class MyFullscreenHandler implements FullscreenHandler {
 
     @Override
     public void onFullscreenRequested() {
+
         // Set window fullscreen and remove title bar, and force landscape orientation
         ConstraintLayout.LayoutParams fullscreenParams =
                 new ConstraintLayout.LayoutParams(
                         ConstraintLayout.LayoutParams.MATCH_PARENT,
                         ConstraintLayout.LayoutParams.MATCH_PARENT);
+
+        // Set the Fullscreen Params
         mPlayer.setLayoutParams(fullscreenParams);
     }
 
