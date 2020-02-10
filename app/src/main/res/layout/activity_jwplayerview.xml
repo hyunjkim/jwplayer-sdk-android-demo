@@ -14,6 +14,50 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/jwplayer">
+
+        <Button
+            android:id="@+id/none"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="None"
+            app:layout_constraintEnd_toStartOf="@id/fit"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/fit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Exact Fit"
+            app:layout_constraintEnd_toEndOf="@id/fill"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/none" />
+
+        <Button
+            android:id="@+id/fill"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Fill"
+            app:layout_constraintEnd_toStartOf="@id/uniform"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/fit" />
+        <Button
+            android:id="@+id/uniform"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Uniform"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/fill"  />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.jwplayer.opensourcedemo.CallbackScreen
         android:id="@+id/callback_screen"
         android:orientation="vertical"
@@ -22,5 +66,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/jwplayer" />
+        app:layout_constraintTop_toBottomOf="@id/buttons" />
 </androidx.constraintlayout.widget.ConstraintLayout>
