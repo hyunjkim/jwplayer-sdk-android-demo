@@ -8,35 +8,67 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Rational;
 import android.view.KeyEvent;
 
-import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity {
 
-    private final int REQUEST_PLAY = 1;
-    private final int REQUEST_PAUSE = 0;
-    private final int PLAYER_STATE_PLAY= 1;
-    private final int PLAYER_STATE_PAUSE = 0;
+    /**
+     * Intent action for media controls from Picture-in-Picture mode.
+     */
     private final String JWPLAYER_MEDIA_ACTION_CONTROLS = "media_control";
+
+    /**
+     * Intent extra for media controls from Picture-in-Picture mode.
+     */
     private final String EXTRA_PLAYER_STATE = "player_state";
+
+    /**
+     * The request code for play action PendingIntent.
+     */
+    private final int REQUEST_PLAY = 1;
+
+    /**
+     * The request code for pause action PendingIntent.
+     */
+    private final int REQUEST_PAUSE = 0;
+
+    /**
+     * The intent extra value for play action.
+     */
+    private final int PLAYER_STATE_PLAY = 1;
+
+    /**
+     * The intent extra value for pause action.
+     */
+    private final int PLAYER_STATE_PAUSE = 0;
+
+    /*
+     * JWPlayerView
+     * */
     private JWPlayerView mPlayerView;
     /**
      * The arguments to be used for Picture-in-Picture mode.
      */
     private PictureInPictureParams.Builder mPictureInPictureParamsBuilder;
+
+    /*
+     * Send broadcast to update the picture-in-picture UI
+     * */
     private BroadcastReceiver mReceiver;
+    private boolean gotoPipMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,82 +77,80 @@ public class JWPlayerViewExample extends AppCompatActivity {
 
         mPlayerView = findViewById(R.id.jwplayer);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Instantiate Picture in Picture Builder
+        mPictureInPictureParamsBuilder = new PictureInPictureParams.Builder();
 
-            mPictureInPictureParamsBuilder = new PictureInPictureParams.Builder();
+        // On Play, update UI to show Pause button
+        mPlayerView.addOnPlayListener(playEvent -> {
+            if (isInPictureInPictureMode()) {
+                updatePictureInPictureMode(REQUEST_PAUSE);
+            }
+        });
 
-            mPlayerView.addOnPlayListener(playEvent -> {
-                if (isInPictureInPictureMode()) {
-                    updatePictureInPictureMode(REQUEST_PAUSE);
-                }
-            });
-            mPlayerView.addOnPauseListener(pauseEvent -> {
-                if (isInPictureInPictureMode()) {
-                    updatePictureInPictureMode(REQUEST_PLAY);
-                }
-            });
-        }
+        // On Pause, update UI to show Play button
+        mPlayerView.addOnPauseListener(pauseEvent -> {
+            if (isInPictureInPictureMode()) {
+                updatePictureInPictureMode(REQUEST_PLAY);
+            }
+        });
 
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
                 .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
+                .title("ShortVideo")
                 .description("A video player testing video.")
                 .build();
 
-        mPlayerView.load(pi);
+        // List of Playlistitem
+        List<PlaylistItem> item = new ArrayList<>();
+
+        item.add(pi);
+        item.add(pi);
+
+        // Load Playlist
+        mPlayerView.load(item);
 
         // Initialize event listeners
         CallbackScreen cbs = findViewById(R.id.callback_screen);
         cbs.registerListeners(mPlayerView);
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /*
+     * If user clicks back & home button
+     * Then, they will enter PIP
+     * */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            // Goes into picture in picture
-            case KeyEvent.KEYCODE_BACK:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Rational aspectRatio = new Rational(mPlayerView.getWidth(), mPlayerView.getHeight());
-                    mPictureInPictureParamsBuilder.setAspectRatio(aspectRatio);
-                    this.enterPictureInPictureMode(mPictureInPictureParamsBuilder.build());
-                }
-                return true;
-            case KeyEvent.KEYCODE_MEDIA_PLAY:
-                mPlayerView.play();
-                updatePictureInPictureMode(REQUEST_PAUSE);
-                return true;
-            case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                mPlayerView.pause();
-                updatePictureInPictureMode(REQUEST_PLAY);
-                return true;
+        // Goes into picture in picture
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Rational aspectRatio = new Rational(mPlayerView.getWidth(), mPlayerView.getHeight());
+            mPictureInPictureParamsBuilder.setAspectRatio(aspectRatio);
+            this.enterPictureInPictureMode(mPictureInPictureParamsBuilder.build());
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
-        // TODO: handle playback resume
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /**
+     * Adding Controls - Handles the PiP UI
+     * <p>
+     * For more info:
+     * {@link - https://developer.android.com/guide/topics/ui/picture-in-picture#adding-controls}
+     * {@link -  https://github.com/googlearchive/android-PictureInPicture/blob/master/app/src/main/java/com/example/android/pictureinpicture/MediaSessionPlaybackActivity.java}
+     */
     void updatePictureInPictureMode(int request) {
+
         final ArrayList<RemoteAction> actions = new ArrayList<>();
         final int[] icons = {R.drawable.exo_icon_pause, R.drawable.exo_icon_play};
-        Icon icon = Icon.createWithResource(getApplicationContext(), icons[request]);
 
+        Icon icon = Icon.createWithResource(getApplicationContext(), icons[request]);
         Intent mediaState = new Intent(JWPLAYER_MEDIA_ACTION_CONTROLS).putExtra(EXTRA_PLAYER_STATE, request);
 
-        PendingIntent intent =
-                PendingIntent.getBroadcast(
-                        getApplicationContext(),
-                        request,
-                        mediaState,
-                        0);
+        PendingIntent intent = PendingIntent.getBroadcast(
+                getApplicationContext(),
+                request,
+                mediaState,
+                0);
 
         RemoteAction action = new RemoteAction(icon, "", "", intent);
         actions.add(action);
@@ -129,26 +159,37 @@ public class JWPlayerViewExample extends AppCompatActivity {
         setPictureInPictureParams(mPictureInPictureParamsBuilder.build());
     }
 
-    void hideActionBar() {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
+    /*
+     * Show/Hide action bar
+     * */
+    void hideActionBar(boolean hide) {
+        ActionBar mActionBar = getSupportActionBar();
+
+        if (mActionBar != null) {
+            if (hide) {
+                mActionBar.hide();
+            } else {
+                mActionBar.show();
+            }
         }
     }
 
-    void showActionBar() {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().show();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    /*
+     * Register Receivers
+     * */
     @Override
     protected void onStart() {
         super.onStart();
+        mPlayerView.onStart();
 
         if (isInPictureInPictureMode()) {
-            hideActionBar();
+            // Hide action bar
+            hideActionBar(true);
+
+            // Don't show player controls, PIP controls can show
             mPlayerView.setControls(false);
+
+            // When PIP UI needs update
             mReceiver =
                     new BroadcastReceiver() {
                         @Override
@@ -159,11 +200,16 @@ public class JWPlayerViewExample extends AppCompatActivity {
                             }
                             // This is where we are called back from Picture-in-Picture action items.
                             if (intent.hasExtra(EXTRA_PLAYER_STATE)) {
-                                int playerState = 0;
+
+                                // Default player state
+                                int playerState = PLAYER_STATE_PAUSE;
+
                                 Bundle bundle = intent.getExtras();
+
                                 if (bundle != null) {
                                     playerState = bundle.getInt(EXTRA_PLAYER_STATE, playerState);
                                 }
+
                                 switch (playerState) {
                                     case PLAYER_STATE_PLAY:
                                         mPlayerView.play();
@@ -175,15 +221,22 @@ public class JWPlayerViewExample extends AppCompatActivity {
                             }
                         }
                     };
+
+            // Registered receiver
             registerReceiver(mReceiver, new IntentFilter(JWPLAYER_MEDIA_ACTION_CONTROLS));
         } else {
-            showActionBar();
+            // not PIP
+            hideActionBar(false);
             mPlayerView.setControls(true);
         }
-        mPlayerView.onStart();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    /**
+     * Resume Playback
+     * When your activity switches out of PIP mode back to full-screen mode,
+     * the system resumes your activity and calls your onResume() method.
+     * {@link - https://developer.android.com/guide/topics/ui/picture-in-picture#continuing_playback}
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -194,7 +247,11 @@ public class JWPlayerViewExample extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    /*
+     * When your activity switches to PIP,
+     * the system places the activity in the paused state and calls the activity's onPause() method.
+     * Video playback should not be paused and should continue playing if the activity is paused while in PIP mode.
+     * */
     @Override
     protected void onPause() {
         super.onPause();
@@ -203,11 +260,17 @@ public class JWPlayerViewExample extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    /*
+     * In Android 7.0 and later,
+     * you should pause and resume video playback
+     * when the system calls your activity's onStop() and onStart().
+     *
+     * Todo: this needs fix
+     * */
     @Override
     protected void onStop() {
         super.onStop();
-        // We are out of PiP mode. We can stop receiving events from it.
+
         if (isInPictureInPictureMode()) {
             mPlayerView.onPause();
         } else {
@@ -218,11 +281,12 @@ public class JWPlayerViewExample extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPlayerView.onDestroy();
+        if (!isInPictureInPictureMode()) {
+            mPlayerView.onDestroy();
+        }
     }
 
 }
