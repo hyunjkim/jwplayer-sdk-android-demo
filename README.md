@@ -1,8 +1,9 @@
 # [UNOFFICIAL] JW Player SDK for Android Open Source Demo
 
-## ONLY JWPlayerView and EventListeners Example
+## ONLY JWPlayerView and Picture-in-Picture Demo
 
 This application contains an example implementation of the JW Player SDK for Android.
+Many credits to Google Example: https://github.com/googlearchive/android-PictureInPicture
 
 #### Usage instructions:
 
