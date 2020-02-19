@@ -1,9 +1,12 @@
 package com.jwplayer.opensourcedemo;
 
 import android.os.Bundle;
+import android.view.Menu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.freewheel.media.ads.FwAdvertising;
@@ -16,11 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class JWPlayerViewExample extends AppCompatActivity{
+public class JWPlayerViewExample extends AppCompatActivity {
 
     private JWPlayerView mPlayerView;
 
     private CallbackScreen mCallbackScreen;
+
+    /**
+     * Reference to the {@link CastContext}
+     */
+    private CastContext mCastContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,33 +43,56 @@ public class JWPlayerViewExample extends AppCompatActivity{
 
         // Setup FreeWheel Ad
         setupFreeWheel();
+
+        // Get a reference to the CastContext
+        mCastContext = CastContext.getSharedInstance(this);
     }
 
-    /** Enable FreeWheel
+    /**
+     * Enable FreeWheel
      * For more info:
      * {@link - https://developer.jwplayer.com/jwplayer/docs/android-enable-freewheel-ad-manager#section-add-a-pre-roll-ad-to-a-playlist}
-     * */
-    private void setupFreeWheel(){
+     */
+    private void setupFreeWheel() {
         int networkId = 42015;
         String serverId = "http://7cee0.v.fwmrm.net/";
         String profileId = "fw_tutorial_android";
         String sectionId = "fw_tutorial_android";
         String mediaId = "fw_simple_tutorial_asset";
-        FwSettings settings = new FwSettings(networkId, serverId, profileId, sectionId, mediaId);
 
+        // FreeWheel Settings
+        FwSettings fwSettings = new FwSettings(networkId, serverId, profileId, sectionId, mediaId);
+
+        // Ad Schedule
         List<AdBreak> adSchedule = new ArrayList<>();
 
-        AdBreak adBreak = new AdBreak.Builder()
-                .tag("fw_preroll")
-                .source(AdSource.FW)
-                .build();
+        String[] tags = {
+                "fw_preroll",
+                "fw-midroll",
+                "fw-postroll"};
 
-        adSchedule.add(adBreak);
+        int offset = 0;
 
-        FwAdvertising advertising = new FwAdvertising(settings, adSchedule);
+        String[] offsets = {"pre","mid","post"};
 
+        // Ad breaks
+        for (int each = 0; each < tags.length; each++){
+
+            AdBreak adBreak = new AdBreak.Builder()
+                    .tag(tags[each])
+                    .offset(offsets[each])
+                    .source(AdSource.FW)
+                    .build();
+            adSchedule.add(adBreak);
+        }
+
+        // Fw Advertising setup
+        FwAdvertising fwadvertising = new FwAdvertising(fwSettings, adSchedule);
+
+        // PlaylistItem + FreeWheel Ads
         PlaylistItem playlistItem = new PlaylistItem.Builder()
-                .file("https://cdn.jwplayer.com/manifests/jumBvHdL.m3u8")
+                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
+                .freewheelSettings(fwSettings)
                 .build();
 
         List<PlaylistItem> playlist = new ArrayList<>();
@@ -69,7 +100,7 @@ public class JWPlayerViewExample extends AppCompatActivity{
 
         PlayerConfig config = new PlayerConfig.Builder()
                 .playlist(playlist)
-                .advertising(advertising)
+                .advertising(fwadvertising)
                 .build();
 
         mPlayerView.setup(config);
@@ -105,4 +136,13 @@ public class JWPlayerViewExample extends AppCompatActivity{
         mPlayerView.onDestroy();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_jwplayerview, menu);
+
+        // Register the MediaRouterButton on the JW Player SDK
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+        return true;
+    }
 }
