@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
+    buildToolsVersion = '29.0.3'
 
     defaultConfig {
         applicationId "com.jwplayer.opensourcedemo"
@@ -27,19 +28,35 @@ android {
 
 ext {
     jwplayerVersion = '3.11.0'
+    supportLibVersion = '28.0.0'
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
-    implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
+    // Android Classic Support Library
+    implementation ("com.android.support:appcompat-v7:${supportLibVersion}"){
+        force = true
+    }
+    implementation ("com.android.support:design:${supportLibVersion}"){
+        force = true
+    }
+    implementation ('com.android.support:support-annotations:28.0.0'){
+        force = true
+    }
+    implementation ('com.android.support:support-media-compat:28.0.0'){
+        force = true
+    }
+
+    // JWPlayer SDK Library
+    implementation ("com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"){
+        exclude group: 'androidx.annotation', module:'annotation'
+        exclude group: 'androidx.media', module:'media'
+    }
+
     implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
-
-    // Only required if using IMA features
     implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
-
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-
+    implementation "com.longtailvideo.jwplayer:jwplayer-chromecast:${jwplayerVersion}"
+    implementation "com.longtailvideo.jwplayer:jwplayer-freewheel:${jwplayerVersion}"
 }

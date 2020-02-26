@@ -2,17 +2,19 @@ package com.jwplayer.opensourcedemo;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.captions.CaptionType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class JWPlayerViewExample extends AppCompatActivity implements
@@ -34,31 +36,23 @@ public class JWPlayerViewExample extends AppCompatActivity implements
         mPlayerView.addOnFullscreenListener(this);
 
         // Setup JWPlayer
-        setupJWPlayer();
-
-        CallbackScreen cbs = findViewById(R.id.callback_screen);
-        cbs.registerListeners(mPlayerView);
-    }
-
-
-    /*
-     * Setup JWPlayer
-     * */
-    private void setupJWPlayer() {
+        List<PlaylistItem> playlist = new ArrayList<>();
 
         PlaylistItem item = new PlaylistItem.Builder()
-                .file("https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4")
+                .file("https://cdn.jwplayer.com/manifests/DHfpVnJB.m3u8")
                 .build();
 
+        playlist.add(item);
+
         PlayerConfig playerConfig = new PlayerConfig.Builder()
-                .playlist(Collections.singletonList(item))
                 .autostart(true)
-                .allowCrossProtocolRedirects(true)
-//                .advertising(SampleAds.getAd("vast"))  // Vast Ad Example
-                .advertising(SampleAds.getAd("ima"))  // Ima Ad Example
+                .playlist(playlist)
                 .build();
 
         mPlayerView.setup(playerConfig);
+
+        CallbackScreen cbs = findViewById(R.id.callback_screen);
+        cbs.registerListeners(mPlayerView);
     }
 
     /*
