@@ -1,4 +1,4 @@
-# JW Player Android SDK (version 3+) - VAST & IMA Example
+# [UNOFFICIAL] JW Player Android SDK (version 3+) - VAST & IMA Example
 
 This application contains an example implementation of the JW Player SDK for Android.
 
