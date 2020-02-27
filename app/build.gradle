@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 ext {
-    jwplayerVersion = '3.10.0'
+    jwplayerVersion = '3.11.0'
 }
 android {
     compileSdkVersion 29
@@ -31,20 +31,10 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation ('com.google.android.gms:play-services-base:17.1.0'){
-        force = true
-    }
-    implementation ('com.google.android.gms:play-services-basement:17.1.0'){
-        force = true
-    }
     implementation "com.longtailvideo.jwplayer:jwplayer-core:${jwplayerVersion}"
-    implementation ("com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"){
-        exclude group: 'com.google.android.gms', module: 'play-services-base'
-        exclude group: 'com.google.android.gms', module: 'play-services-basement'
-    }
-
+    implementation "com.longtailvideo.jwplayer:jwplayer-common:${jwplayerVersion}"
     // Only required if using IMA features
     implementation "com.longtailvideo.jwplayer:jwplayer-ima:${jwplayerVersion}"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
