@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -24,7 +24,7 @@ android {
 }
 
 ext{
-    jwplayerVersion = '3.11.0'
+    jwplayerVersion = '3.12.0'
 }
 
 dependencies {
