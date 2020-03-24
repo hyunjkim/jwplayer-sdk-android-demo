@@ -7,6 +7,9 @@ import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.events.CompleteEvent;
+import com.longtailvideo.jwplayer.events.CustomButtonClickEvent;
+import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 
@@ -21,10 +24,38 @@ public class JWPlayerViewExample extends AppCompatActivity {
 
         mPlayerView = findViewById(R.id.jwplayer);
 
+        String fficon = "https://s3.amazonaws.com/hyunjoo.success.jwplayer.com/icon/fast-forward-icon.png";
+        String button_tooltip = "Fastforward";
+        VideoPlayerEvents.OnCustomButtonClickListener buttonClickListener =  new VideoPlayerEvents.OnCustomButtonClickListener() {
+            @Override
+            public void onCustomButtonClick(CustomButtonClickEvent customButtonClickEvent) {
+                mPlayerView.seek(5);
+            }
+        };
+        String button_id = "ff-btn-id";
+        String button_class = "ff-btn-class";
+
+        // Fast forward button
+        mPlayerView.addButton(
+                fficon,
+                button_tooltip,
+                buttonClickListener,
+                button_id,
+                button_class
+        );
+
+        // Remove fast forward button
+        mPlayerView.addOnCompleteListener(new VideoPlayerEvents.OnCompleteListener() {
+            @Override
+            public void onComplete(CompleteEvent completeEvent) {
+                mPlayerView.removeButton("ff-btn-id");
+            }
+        });
+
         // Load a media source
         PlaylistItem pi = new PlaylistItem.Builder()
-                .file("https://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
-                .title("BipBop")
+                .file("https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4")
+                .title("Big Buck Bunny")
                 .description("A video player testing video.")
                 .build();
 
