@@ -12,6 +12,8 @@ import com.longtailvideo.jwplayer.events.CustomButtonClickEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
+import java.util.ArrayList;
+
 
 public class JWPlayerViewExample extends AppCompatActivity {
 
@@ -45,10 +47,11 @@ public class JWPlayerViewExample extends AppCompatActivity {
         );
 
         // Remove fast forward button
+        // Remove button does not work now, but will be fixed in v3.13 or later
         mPlayerView.addOnCompleteListener(new VideoPlayerEvents.OnCompleteListener() {
             @Override
             public void onComplete(CompleteEvent completeEvent) {
-                mPlayerView.removeButton("ff-btn-id");
+                mPlayerView.removeButton(button_id);
             }
         });
 
@@ -59,7 +62,14 @@ public class JWPlayerViewExample extends AppCompatActivity {
                 .description("A video player testing video.")
                 .build();
 
-        mPlayerView.load(pi);
+        // Load a media source
+        PlaylistItem pi2 = new PlaylistItem.Builder()
+                .file("https://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4")
+                .title("Big Buck Bunny")
+                .description("A video player testing video.")
+                .build();
+
+        mPlayerView.load(new ArrayList<PlaylistItem>(){{add(pi);add(pi2);}});
 
 
         // Initialize event listeners
